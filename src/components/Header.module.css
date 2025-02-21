@@ -1,0 +1,74 @@
+.header {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo img {
+  height: 40px;
+}
+
+.mainNav ul {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mainNav a {
+  text-decoration: none;
+  color: #333;
+}
+
+.authNav {
+  display: flex;
+  align-items: center;
+}
+
+.userMenu {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.guestMenu {
+  display: flex;
+  gap: 16px;
+}
+
+.username {
+  font-weight: 500;
+  color: #333;
+}
+
+.logoutButton {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px 8px;
+  font-size: 14px;
+}
+
+.logoutButton:hover {
+  color: #ff6b6b;
+}
+
+.authNav a {
+  text-decoration: none;
+  color: #666;
+  font-size: 14px;
+}
+
+.authNav a:hover {
+  color: #ff6b6b;
+}
