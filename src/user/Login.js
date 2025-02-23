@@ -18,8 +18,19 @@ function Login() {
     setLoginInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const onLogin = async (e) => {
-    e.preventDefault();
+  async function handleLogin() {
+    setError("");  // 에러 메시지 초기화
+
+    // 필수 입력값 검증
+    if (!loginInput.username.trim()) {
+      setError("아이디를 입력해주세요.");
+      return;
+    }
+    if (!loginInput.password.trim()) {
+      setError("비밀번호를 입력해주세요.");
+      return;
+    }
+
     try {
       const res = await axiosInstance.post(`${config.apiUrl}/api/user/login`, loginInput);
       if (res.status === 200) {
@@ -27,16 +38,23 @@ function Login() {
         navigate('/');
       }
     } catch (error) {
-      setError("로그인에 실패했습니다.");
+      console.log();
+      // 서버에서 전달받은 에러 메시지가 있다면 그것을 사용, 없다면 기본 메시지 사용
+      setError((error.response?.data?.message || "로그인에 실패했습니다") + " (" + error.response.status + ")");
+      // 입력 필드 초기화
+      setLoginInput({
+        username: "",
+        password: "",
+      });
     }
-  };
+  }
 
   return (
     <div className={styles.loginPage}>
       <div className={styles.loginContainer}>
         <h2 className={styles.loginTitle}>로그인</h2>
         {error && <p className={styles.errorMessage}>{error}</p>}
-        <form onSubmit={onLogin}>
+        <form>
           <div className={styles.inputGroup}>
             <label>아이디</label>
             <input
@@ -55,6 +73,12 @@ function Login() {
               name="password"
               value={loginInput.password}
               onChange={handleInputChange}
+              onKeyUp={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  handleLogin();
+                }
+              }}
               placeholder="비밀번호를 입력하세요"
               required
             />
@@ -68,8 +92,9 @@ function Login() {
               회원가입
             </button>
             <button
-              type="submit"
+              type="button"
               className={`btn-primary ${styles.submitArrow}`}
+              onClick={handleLogin}
             >
               →
             </button>
