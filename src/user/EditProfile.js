@@ -1,0 +1,92 @@
+import React, { useState } from "react";
+import styles from './EditProfile.module.css';
+
+function EditProfile() {
+  const [profileInput, setProfileInput] = useState({
+    nickname: "",
+    phoneNumber: "",
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const handleInputChange = (e) => {
+    setProfileInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    if (profileInput.newPassword !== profileInput.confirmPassword) {
+      alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      return;
+    }
+    // 여기에 프로필 업데이트 로직을 추가하세요
+    console.log("프로필 업데이트:", profileInput);
+  };
+
+  return (
+    <div className={styles.editProfilePage}>
+      <h2>내 정보 수정</h2>
+      <form onSubmit={onSubmit}>
+        <div className={styles.inputGroup}>
+          <label>닉네임</label>
+          <input
+            type="text"
+            name="nickname"
+            value={profileInput.nickname}
+            onChange={handleInputChange}
+            placeholder="닉네임을 입력하세요"
+            required
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>전화번호</label>
+          <input
+            type="text"
+            name="phoneNumber"
+            value={profileInput.phoneNumber}
+            onChange={handleInputChange}
+            placeholder="전화번호를 입력하세요"
+            required
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>현재 비밀번호</label>
+          <input
+            type="password"
+            name="currentPassword"
+            value={profileInput.currentPassword}
+            onChange={handleInputChange}
+            placeholder="현재 비밀번호를 입력하세요"
+            required
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>새 비밀번호</label>
+          <input
+            type="password"
+            name="newPassword"
+            value={profileInput.newPassword}
+            onChange={handleInputChange}
+            placeholder="새 비밀번호를 입력하세요"
+            required
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>비밀번호 확인</label>
+          <input
+            type="password"
+            name="confirmPassword"
+            value={profileInput.confirmPassword}
+            onChange={handleInputChange}
+            placeholder="비밀번호를 다시 입력하세요"
+            required
+          />
+        </div>
+        <button type="submit" className={styles.submitButton}>수정 완료</button>
+      </form>
+    </div>
+  );
+}
+
+export default EditProfile;

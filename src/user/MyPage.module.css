@@ -1,0 +1,112 @@
+.mypageContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.profileSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.profileImageContainer {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 20px;
+  background-color: #f5f5f5;
+}
+
+.profileImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profileName {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.profileStats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.statItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.statLabel {
+  font-size: 14px;
+  color: #666;
+}
+
+.statValue {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 40px;
+}
+
+.actionButtons {
+  flex: 0 0 250px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actionButton {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+}
+
+.gray {
+  background-color: #757575;
+  color: white;
+}
+
+.gray:hover {
+  background-color: #616161;
+}
+
+.orange {
+  background-color: #ff7f50;
+  color: white;
+}
+
+.orange:hover {
+  background-color: #ff6b6b;
+}
+
+.deleteUser {
+  margin-top: auto;  /* 버튼을 맨 아래로 밀어냄 */
+}
+
+.contentSection {
+  flex: 1;
+  min-height: 500px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  padding: 20px;
+}

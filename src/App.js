@@ -1,29 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import Home from './pages/Home';
+import Login from './user/Login';
+import Signup from './user/Signup';
+import MyPage from './user/MyPage';
+import { AuthProvider } from './context/AuthContext';
+import styles from './App.module.css';
 
-const apiUrl = process.env.REACT_APP_API_URL;
 function App() {
-  const [message, setMessage] = useState("");
-
-  useEffect(() => {
-    fetch(apiUrl + '/api/test')
-      .then(response => response.text())
-      .then(message => {
-        setMessage(message);
-      });
-  }, []);
-
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <h1 className="App-title">{message}</h1>
-      </header>
-      <p className="App-intro">
-        To get started, edit <code>src/App.js</code> and save to reload.
-      </p>
-    </div>
+    <AuthProvider>
+      <Router>
+        <div className={styles.appContainer}>
+          <Header />
+          <main className={styles.mainContent}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+              <Route path="/mypage/*" element={<MyPage />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
+      </Router>
+    </AuthProvider>
   );
 }
 

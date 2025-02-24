@@ -1,0 +1,27 @@
+.footer {
+  background: #333;
+  color: white;
+  padding: 2rem 0;
+  margin-top: auto;
+}
+
+.footerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.footerInfo {
+  margin-bottom: 1rem;
+}
+
+.footerInfo p {
+  margin: 0.5rem 0;
+  color: #ccc;
+}
+
+.footerCopyright {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #999;
+}
