@@ -1,9 +1,11 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Routes, Route } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import defaultProfile from '../logo.svg'; // 임시 프로필 이미지
 import styles from './MyPage.module.css';
 import config from '../config/config';
+import EditProfile from './EditProfile';
+import MyPosts from './MyPosts';
 
 function MyPage() {
   const { user, logout } = useAuth();
@@ -57,10 +59,20 @@ function MyPage() {
       </div>
       <div className={styles.contentWrapper}>
         <div className={styles.actionButtons}>
-          <button className={`${styles.actionButton} ${styles.gray}`}>작성글</button>
+          <button
+            className={`${styles.actionButton} ${styles.gray}`}
+            onClick={() => navigate('/mypage/my-posts')}
+          >
+            작성글
+          </button>
           <button className={`${styles.actionButton} ${styles.gray}`}>댓글</button>
           <button className={`${styles.actionButton} ${styles.gray}`}>좋아요</button>
-          <button className={`${styles.actionButton} ${styles.orange}`}>내 정보 수정</button>
+          <button
+            className={`${styles.actionButton} ${styles.orange}`}
+            onClick={() => navigate('/mypage/edit-profile')}
+          >
+            내 정보 수정
+          </button>
           <button
             className={`${styles.actionButton} ${styles.gray} ${styles.deleteUser}`}
             onClick={handleDeleteUser}
@@ -69,7 +81,10 @@ function MyPage() {
           </button>
         </div>
         <div className={styles.contentSection}>
-          {/* 여기에 선택된 카테고리에 따른 컨텐츠가 표시됩니다 */}
+          <Routes>
+            <Route path="edit-profile" element={<EditProfile />} />
+            <Route path="my-posts" element={<MyPosts />} />
+          </Routes>
         </div>
       </div>
     </div>
