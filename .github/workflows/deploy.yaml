@@ -7,27 +7,27 @@ on:
     types: [opened, synchronize, reopened]
 
 env:
-  AWS_REGION: ap-northeast-2
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/${{ github.repository }}
+  REPO_NAME: ${{ github.repository }}
   ECS_SERVICE: carematching-frontend-ecs-service
   ECS_CLUSTER: carematching-frontend-ecs-cluster
-  CONTAINER_NAME: carematching-frontend-container
 
 permissions:
   contents: read
   packages: write
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+
+    - name: Set lowercase to repository name
+      run: echo "REPO_LOWER=${REPO_NAME,,}" >> $GITHUB_ENV
 
     - name: Set up Node.js
-      uses: actions/setup-node@v2
+      uses: actions/setup-node@v4
       with:
         node-version: '22'
 
@@ -44,36 +44,34 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Set lowercase to image name
-      run: echo "IMAGE_NAME=${IMAGE_NAME,,}" >> $GITHUB_ENV
+    - name: Docker Build and Push Action
+      uses: docker/setup-buildx-action@v2
 
-    - name: Build and push Docker image
-      env:
-        IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $IMAGE_NAME:$IMAGE_TAG -f ./deployment/Dockerfile .
-        docker push $IMAGE_NAME:$IMAGE_TAG
+    - name: GHCR Login
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Configure AWS credentials
+    - name: Use metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}
+
+    - name: Build and Push Image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./deployment/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY }}/${{ env.REPO_LOWER }}:latest
+
+    - name: Deploy to AWS
       uses: aws-actions/configure-aws-credentials@v1
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ env.AWS_REGION }}
-
-    - name: Fill in the new image ID in the Amazon ECS task definition
-      id: task-def
-      uses: aws-actions/amazon-ecs-render-task-definition@v1
-      with:
-        task-definition: ./deployment/task-definition.json
-        container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
-
-    - name: Deploy Amazon ECS task definition
-      uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-      with:
-        task-definition: ${{ steps.task-def.outputs.task-definition }}
-        service: ${{ env.ECS_SERVICE }}
-        cluster: ${{ env.ECS_CLUSTER }}
-        wait-for-service-stability: true
+        aws-region: ap-northeast-2
+    - run: aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE }} --force-new-deployment
