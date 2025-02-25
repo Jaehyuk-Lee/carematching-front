@@ -9,9 +9,9 @@ env:
   AWS_REGION: ap-northeast-2
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-  ECS_SERVICE: carematching-service
-  ECS_CLUSTER: carematching-cluster
-  CONTAINER_NAME: carematching-container
+  ECS_SERVICE: carematching-frontend-ecs-service
+  ECS_CLUSTER: carematching-frontend-ecs-cluster
+  CONTAINER_NAME: carematching-frontend-container
 
 permissions:
   contents: read
