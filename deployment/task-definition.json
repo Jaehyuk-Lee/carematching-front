@@ -1,5 +1,6 @@
 {
   "family": "carematching-frontend-task",
+  "executionRoleArn": "arn:aws:iam::559050241077:role/ROLE_NAME",
   "containerDefinitions": [
       {
           "name": "carematching-frontend-container",

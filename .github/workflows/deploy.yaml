@@ -1,14 +1,15 @@
 name: Deploy to GitHub Packages & AWS ECS
 
 on:
-  push:
+  pull_request:
     branches:
       - main
+    types: [opened, synchronize, reopened]
 
 env:
   AWS_REGION: ap-northeast-2
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  IMAGE_NAME: ${{ github.repository_owner }}/${{ github.repository }}
   ECS_SERVICE: carematching-frontend-ecs-service
   ECS_CLUSTER: carematching-frontend-ecs-cluster
   CONTAINER_NAME: carematching-frontend-container
@@ -43,12 +44,15 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Set lowercase to image name
+      run: echo "IMAGE_NAME=${IMAGE_NAME,,}" >> $GITHUB_ENV
+
     - name: Build and push Docker image
       env:
-        IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/carematching-frontend
+        IMAGE_NAME: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         IMAGE_TAG: ${{ github.sha }}
       run: |
-        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+        docker build -t $IMAGE_NAME:$IMAGE_TAG -f ./deployment/Dockerfile .
         docker push $IMAGE_NAME:$IMAGE_TAG
 
     - name: Configure AWS credentials
@@ -64,7 +68,7 @@ jobs:
       with:
         task-definition: ./deployment/task-definition.json
         container-name: ${{ env.CONTAINER_NAME }}
-        image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+        image: ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
     - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
