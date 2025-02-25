@@ -10,6 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build-react:
     runs-on: ubuntu-latest
@@ -28,13 +31,6 @@ jobs:
     - name: Build React app
       run: npm run build
 
-  build-docker:
-    runs-on: ubuntu-latest
-    needs: build-react
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-
     - name: Check for Dockerfile changes
       id: check_dockerfile
       run: |
@@ -47,10 +43,11 @@ jobs:
           echo "dockerfile_changed=false" >> $GITHUB_ENV
         fi
 
-    - name: Build and push Docker image
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
       if: env.dockerfile_changed == 'true'
-      env:
-        IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/carematching-frontend
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $IMAGE_NAME:$IMAGE_TAG .
+      with:
+        context: .
+        file: ./deployment/Dockerfile
+        push: false # PR 체크에서는 이미지를 푸시하지 않음
+        tags: ${{ github.repository }}:pr-${{ github.event.pull_request.number }}

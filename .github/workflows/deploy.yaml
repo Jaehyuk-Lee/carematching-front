@@ -5,6 +5,18 @@ on:
     branches:
       - main
 
+env:
+  AWS_REGION: ap-northeast-2
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  ECS_SERVICE: carematching-service
+  ECS_CLUSTER: carematching-cluster
+  CONTAINER_NAME: carematching-container
+
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -39,10 +51,25 @@ jobs:
         docker build -t $IMAGE_NAME:$IMAGE_TAG .
         docker push $IMAGE_NAME:$IMAGE_TAG
 
-    - name: Deploy to ECS
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ./deployment/task-definition.json
+        container-name: ${{ env.CONTAINER_NAME }}
+        image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+    - name: Deploy Amazon ECS task definition
       uses: aws-actions/amazon-ecs-deploy-task-definition@v1
       with:
-        task-definition: ecs-task-definition.json
-        service: my-ecs-service
-        cluster: my-ecs-cluster
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
         wait-for-service-stability: true
