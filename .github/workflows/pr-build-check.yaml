@@ -1,0 +1,53 @@
+name: PR Build Check
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build-react:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build React app
+      run: npm run build
+
+    - name: Check for Dockerfile changes
+      id: check_dockerfile
+      run: |
+        git fetch origin main
+        if git diff --name-only origin/main...HEAD | grep -q 'Dockerfile'; then
+          echo "Dockerfile has changed."
+          echo "dockerfile_changed=true" >> $GITHUB_ENV
+        else
+          echo "Dockerfile has not changed."
+          echo "dockerfile_changed=false" >> $GITHUB_ENV
+        fi
+
+    - name: Build Docker image
+      uses: docker/build-push-action@v5
+      if: env.dockerfile_changed == 'true'
+      with:
+        context: .
+        file: ./deployment/Dockerfile
+        push: false # PR 체크에서는 이미지를 푸시하지 않음
+        tags: ${{ github.repository }}:pr-${{ github.event.pull_request.number }}
