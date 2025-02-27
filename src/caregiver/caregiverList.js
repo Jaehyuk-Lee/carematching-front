@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import "./caregiverList.css";
+import styles from './caregiverList.module.css';
 
 export default function CaregiverListPage() {
   const [caregivers, setCaregivers] = useState([]);
@@ -26,7 +26,7 @@ export default function CaregiverListPage() {
       });
   }, []);
 
-  // 🔍 근무 요일을 이진 문자열에서 한글 요일 문자열로 변환
+  // 근무 요일을 이진 문자열에서 한글 요일 문자열로 변환
   const binaryToKoreanDays = (binaryStr) => {
     const days = ["월", "화", "수", "목", "금", "토", "일"];
     return binaryStr
@@ -35,7 +35,7 @@ export default function CaregiverListPage() {
       .join("");
   };
 
-  // 🔍 검색어에 맞게 요양사 목록을 필터링
+  // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
     const workDaysKorean = binaryToKoreanDays(caregiver.workDays ?? "");
 
@@ -64,19 +64,19 @@ export default function CaregiverListPage() {
     }
   });
 
-  if (loading) return <div className="message">로딩중...</div>;
-  if (error) return <div className="message">에러: {error.message}</div>;
+  if (loading) return <div className={styles.message}>로딩중...</div>;
+  if (error) return <div className={styles.message}>에러: {error.message}</div>;
 
   return (
-    <div className="container">
-      <h1 className="title">요양사 목록</h1>
+    <div className={styles.container}>
+      <h1 className={styles.title}>요양사 목록</h1>
 
-      {/* 🔍 검색바와 검색 필드 선택 추가 */}
-      <div className="search-bar">
+      {/* 검색바와 검색 필드 선택 추가 */}
+      <div className={styles.searchBar}>
         <select
           value={searchField}
           onChange={(e) => setSearchField(e.target.value)}
-          className="search-select"
+          className={styles.searchSelect}
         >
           <option value="전체">전체</option>
           <option value="이름">이름</option>
@@ -91,27 +91,27 @@ export default function CaregiverListPage() {
           placeholder="검색어를 입력하세요..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="search-input"
+          className={styles.searchInput}
         />
       </div>
 
-      <div className="card-grid">
+      <div className={styles.cardGrid}>
         {filteredCaregivers.length === 0 ? (
-          <div className="no-results">검색 결과가 없습니다.</div>
+          <div className={styles.noResults}>검색 결과가 없습니다.</div>
         ) : (
           filteredCaregivers.map((caregiver) => (
             <Link
               key={caregiver.id}
               to={`/caregiver/${caregiver.id}`}
-              className="card-link"
+              className={styles.cardLink}
             >
-              <div className="card">
-                <h3 className="card-title">{caregiver.realName}</h3>
-                <p className="card-text">지역 | {caregiver.loc}</p>
-                <p className="card-text">전문 분야 | {caregiver.servNeeded}</p>
-                <p className="card-text">근무 요일 | {binaryToKoreanDays(caregiver.workDays)}</p>
-                <p className="card-text">봉급 | {caregiver.salary}</p>
-                <p className="card-text">{caregiver.status}</p>
+              <div className={styles.card}>
+                <h3 className={styles.cardTitle}>{caregiver.realName}</h3>
+                <p className={styles.cardText}>지역 | {caregiver.loc}</p>
+                <p className={styles.cardText}>전문 분야 | {caregiver.servNeeded}</p>
+                <p className={styles.cardText}>근무 요일 | {binaryToKoreanDays(caregiver.workDays)}</p>
+                <p className={styles.cardText}>봉급 | {caregiver.salary}</p>
+                <p className={styles.cardText}>{caregiver.status}</p>
               </div>
             </Link>
           ))
