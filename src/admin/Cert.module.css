@@ -1,0 +1,26 @@
+.certContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.certTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.certTable th, .certTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.certTable th {
+  background-color: #f2f2f2;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
