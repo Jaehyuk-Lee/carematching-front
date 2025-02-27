@@ -11,7 +11,11 @@ function Cert() {
   const fetchCertUsers = async () => {
     try {
       const response = await axiosInstance.post(`${config.apiUrl}/api/user/admin/cert`);
-      setCertUsers(response.data);
+      if (Array.isArray(response.data)) {
+        setCertUsers(response.data);
+      } else {
+        throw new Error("서버에서 유효한 사용자 목록을 받지 못했습니다.");
+      }
     } catch (error) {
       setError("자격증 정보를 불러오는 데 실패했습니다.");
       console.error(error);
@@ -48,11 +52,11 @@ function Cert() {
     }
   };
 
-  const filteredUsers = certUsers.filter(user => {
+  const filteredUsers = Array.isArray(certUsers) ? certUsers.filter(user => {
     if (filterOption === "pending") return user.pending;
     if (filterOption === "approved") return !user.pending;
     return true;
-  });
+  }) : [];
 
   return (
     <div className={styles.certContainer}>
