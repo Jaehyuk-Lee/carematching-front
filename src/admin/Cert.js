@@ -60,33 +60,12 @@ function Cert() {
       {error && <p className={styles.error}>{error}</p>}
 
       <div style={{ textAlign: 'right', marginBottom: '10px' }}>
-        <label>
-          <input
-            type="radio"
-            value="all"
-            checked={filterOption === "all"}
-            onChange={() => setFilterOption("all")}
-          />
-          모두 보기
-        </label>
-        <label style={{ marginLeft: '10px' }}>
-          <input
-            type="radio"
-            value="approved"
-            checked={filterOption === "approved"}
-            onChange={() => setFilterOption("approved")}
-          />
-          승인 완료된 항목만 보기
-        </label>
-        <label style={{ marginLeft: '10px' }}>
-          <input
-            type="radio"
-            value="pending"
-            checked={filterOption === "pending"}
-            onChange={() => setFilterOption("pending")}
-          />
-          승인 대기 중인 항목만 보기
-        </label>
+        <label>항목 필터링 선택: </label>
+        <select value={filterOption} onChange={(e) => setFilterOption(e.target.value)}>
+          <option value="all">모두 보기</option>
+          <option value="approved">승인 완료된 항목만 보기</option>
+          <option value="pending">승인 대기 중인 항목만 보기</option>
+        </select>
       </div>
 
       <table className={styles.certTable}>
