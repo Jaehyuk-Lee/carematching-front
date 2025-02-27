@@ -21,7 +21,7 @@ function Header() {
         </Link>
         <nav className={styles.mainNav}>
           <ul>
-            <li><Link to="/request">요양사 찾기</Link></li>
+            <li><Link to="/caregiver">요양사 찾기</Link></li>
             <li><Link to="/apply">수급자 찾기</Link></li>
             <li><Link to="/hospital">요양병원 찾기</Link></li>
             <li><Link to="/community">커뮤니티</Link></li>

@@ -6,6 +6,8 @@ import Home from './pages/Home';
 import Login from './user/Login';
 import Signup from './user/Signup';
 import MyPage from './user/MyPage';
+import CaregiverListPage from './caregiver/caregiverList';
+import CaregiverDetailPage from './caregiver/caregiverDetail';
 import { AuthProvider } from './context/AuthContext';
 import styles from './App.module.css';
 
@@ -21,6 +23,8 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
               <Route path="/mypage/*" element={<MyPage />} />
+              <Route path="/caregiver" element={<CaregiverListPage />} />
+              <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
             </Routes>
           </main>
           <Footer />
