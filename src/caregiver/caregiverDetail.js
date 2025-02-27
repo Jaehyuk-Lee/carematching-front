@@ -8,7 +8,7 @@ export default function CaregiverDetailPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/caregivers/caregiver/${id}`)
+    fetch(`/api/caregivers/${id}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error("네트워크 응답이 올바르지 않습니다.");

@@ -14,8 +14,7 @@ const CaregiverUpdate = () => {
   useEffect(() => {
     const fetchCaregiverData = async () => {
       try {
-        // 1. username을 통해 Caregiver 데이터를 바로 가져오기
-        const caregiverResponse = await fetch(`/api/caregivers/user/${user?.username}`, {
+        const caregiverResponse = await fetch("/api/caregivers/user/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
