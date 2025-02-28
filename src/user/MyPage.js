@@ -6,7 +6,8 @@ import styles from './MyPage.module.css';
 import config from '../config/config';
 import EditProfile from './EditProfile';
 import MyPosts from './MyPosts';
-import CaregiverRegister from '../caregiver/caregiverRegister';
+import CaregiverEdit from '../caregiver/caregiverEdit';
+import axiosInstance from '../api/axiosInstance';
 import CaregiverUpdate from '../caregiver/caregiverUpdate';
 
 function MyPage() {
@@ -16,16 +17,9 @@ function MyPage() {
 
   const checkCaregiverStatus = useCallback(async () => {
     try {
-      const response = await fetch(`/api/caregivers/user/${user?.username}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.ok) {
-        const caregiverData = await response.json();
-        setIsCaregiverRegistered(!!caregiverData); // Caregiver 데이터가 있으면 true
+      const response = await axiosInstance.get("/api/caregivers/check");
+      if (response.status === 200) {
+        setIsCaregiverRegistered(response.data);
       } else {
         setIsCaregiverRegistered(false);
       }
@@ -33,7 +27,7 @@ function MyPage() {
       console.error('Caregiver 등록 여부 확인 실패:', error);
       setIsCaregiverRegistered(false);
     }
-  }, [user?.username]);
+  }, []);
 
   useEffect(() => {
     if (user?.username) {
@@ -105,9 +99,7 @@ function MyPage() {
           </button>
           <button
             className={`${styles.actionButton} ${styles.orange}`}
-            onClick={() => navigate(
-              isCaregiverRegistered ? '/mypage/update-caregiver' : '/mypage/register-caregiver'
-            )}
+            onClick={() => navigate('/mypage/edit-caregiver')}
           >
             {isCaregiverRegistered ? '요양사 정보 수정' : '요양사 등록'}
           </button>
@@ -122,8 +114,18 @@ function MyPage() {
           <Routes>
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="my-posts" element={<MyPosts />} />
-            <Route path="register-caregiver" element={<CaregiverRegister onRegisterSuccess={checkCaregiverStatus} />} />
-            <Route path="update-caregiver" element={<CaregiverUpdate />} />
+            <Route path="edit-caregiver" element={
+              <CaregiverEdit
+                isRegistered={isCaregiverRegistered}
+                onSuccess={checkCaregiverStatus}
+              />
+            } />
+            <Route path="update-caregiver" element={
+              <CaregiverUpdate
+                isRegistered={isCaregiverRegistered}
+                onSuccess={checkCaregiverStatus}
+              />
+            } />
           </Routes>
         </div>
       </div>

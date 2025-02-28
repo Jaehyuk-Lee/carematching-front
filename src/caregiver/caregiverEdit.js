@@ -1,9 +1,8 @@
+import { useEffect, useState } from "react";
 import styles from './caregiverEdit.module.css';
-import { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from 'react-router-dom';
+import axiosInstance from "../api/axiosInstance";
 
-const CaregiverRegister = ({ onRegisterSuccess }) => {
+const CaregiverEdit = ({ isRegistered, onSuccess }) => {
   const [formData, setFormData] = useState({
     realName: "",
     salary: "",
@@ -16,9 +15,25 @@ const CaregiverRegister = ({ onRegisterSuccess }) => {
     status: "OPEN",
   });
 
-  const [workDaysInput, setWorkDaysInput] = useState(""); // 사용자가 입력하는 값을 따로 저장
-  const { user } = useAuth();
-  const navigate = useNavigate();
+  const [workDaysInput, setWorkDaysInput] = useState("");
+
+  useEffect(() => {
+    const fetchCaregiverData = async () => {
+      try {
+        const response = await axiosInstance.get("/api/caregivers/user");
+        if (response.status === 200) {
+          setFormData(response.data);
+          setWorkDaysInput(convertBinaryToDays(response.data.workDays));
+        }
+      } catch (error) {
+        console.error("Caregiver 데이터를 불러오는 중 오류 발생:", error);
+      }
+    };
+
+    if (isRegistered) {
+      fetchCaregiverData();
+    }
+  }, [isRegistered]);
 
   const convertDaysToBinary = (daysString) => {
     if (!daysString) return "";
@@ -26,11 +41,18 @@ const CaregiverRegister = ({ onRegisterSuccess }) => {
     return days.map((day) => (daysString.includes(day) ? "1" : "0")).join("");
   };
 
+  const convertBinaryToDays = (binaryString) => {
+    const days = ["월", "화", "수", "목", "금", "토", "일"];
+    return binaryString
+        .split("")
+        .map((bit, index) => (bit === "1" ? days[index] : ""))
+        .join("");
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-
     if (name === "workDays") {
-      setWorkDaysInput(value); // 사용자 입력을 그대로 유지
+      setWorkDaysInput(value);
     } else {
       setFormData({ ...formData, [name]: value });
     }
@@ -39,7 +61,7 @@ const CaregiverRegister = ({ onRegisterSuccess }) => {
   const handleWorkDaysBlur = () => {
     setFormData({
       ...formData,
-      workDays: convertDaysToBinary(workDaysInput), // 입력이 끝나면 변환 실행
+      workDays: convertDaysToBinary(workDaysInput),
     });
   };
 
@@ -47,32 +69,25 @@ const CaregiverRegister = ({ onRegisterSuccess }) => {
     e.preventDefault();
 
     try {
-      const response = await fetch("/api/caregivers/add", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "username": user?.username || "", // AuthContext에서 username 가져오기
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "요양사 등록 중 오류가 발생했습니다.");
-      }
-
-      alert("요양사 등록이 완료되었습니다!");
-      onRegisterSuccess();
-      navigate("/mypage/update-caregiver");
+      const endpoint = isRegistered ? "/api/caregivers/update" : "/api/caregivers/add";
+        const method = "post";
+        const response = await axiosInstance[method](endpoint, formData);
+        if (response.status === 201) {
+            alert(`요양사 ${isRegistered ? "수정" : "등록"}이 완료되었습니다!`);
+            onSuccess();
+            window.location.reload();
+        }
     } catch (error) {
-      console.error("요양사 등록 실패:", error);
-      alert(`요양사 등록 실패: ${error.message}`);
+      console.error(isRegistered ? "요양사 업데이트 실패:" : "요양사 등록 실패:", error);
+      alert(isRegistered ? "요양사 정보 수정 중 오류가 발생했습니다." : "요양사 등록 중 오류가 발생했습니다.");
     }
-  }
+  };
+
+  if (!formData) return <div>로딩 중...</div>;
 
   return (
     <div className={styles.editCaregiverPage}>
-      <h2>요양사 등록</h2>
+      <h2>{isRegistered ? '요양사 정보 수정' : '요양사 등록'}</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className={styles.inputGroup}>
           <label>실명</label>
@@ -180,10 +195,12 @@ const CaregiverRegister = ({ onRegisterSuccess }) => {
             <option value="CLOSE">비공개</option>
           </select>
         </div>
-        <button type="submit" className={styles.submitButton}>등록하기</button>
+        <button type="submit" className={styles.submitButton}>
+          {isRegistered ? '수정하기' : '등록하기'}
+        </button>
       </form>
     </div>
-  )
-}
+  );
+};
 
-export default CaregiverRegister;
+export default CaregiverEdit;
