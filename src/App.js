@@ -8,6 +8,7 @@ import Signup from './user/Signup';
 import MyPage from './user/MyPage';
 import CaregiverListPage from './caregiver/caregiverList';
 import CaregiverDetailPage from './caregiver/caregiverDetail';
+import Cert from './admin/Cert';
 import { AuthProvider } from './context/AuthContext';
 import styles from './App.module.css';
 
@@ -25,6 +26,7 @@ function App() {
               <Route path="/mypage/*" element={<MyPage />} />
               <Route path="/caregiver" element={<CaregiverListPage />} />
               <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
+              <Route path="/admin/cert" element={<Cert />} />
             </Routes>
           </main>
           <Footer />

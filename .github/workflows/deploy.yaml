@@ -1,10 +1,9 @@
 name: Deploy to GitHub Packages & AWS ECS
 
 on:
-  pull_request:
+  push:
     branches:
       - main
-    types: [opened, synchronize, reopened]
 
 env:
   REGISTRY: ghcr.io
