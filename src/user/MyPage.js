@@ -8,7 +8,6 @@ import EditProfile from './EditProfile';
 import MyPosts from './MyPosts';
 import CaregiverEdit from '../caregiver/caregiverEdit';
 import axiosInstance from '../api/axiosInstance';
-import CaregiverUpdate from '../caregiver/caregiverUpdate';
 
 function MyPage() {
   const { user, logout } = useAuth();
@@ -116,12 +115,6 @@ function MyPage() {
             <Route path="my-posts" element={<MyPosts />} />
             <Route path="edit-caregiver" element={
               <CaregiverEdit
-                isRegistered={isCaregiverRegistered}
-                onSuccess={checkCaregiverStatus}
-              />
-            } />
-            <Route path="update-caregiver" element={
-              <CaregiverUpdate
                 isRegistered={isCaregiverRegistered}
                 onSuccess={checkCaregiverStatus}
               />

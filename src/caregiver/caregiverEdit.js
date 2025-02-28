@@ -69,7 +69,7 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
     e.preventDefault();
 
     try {
-      const endpoint = isRegistered ? "/api/caregivers/update" : "/api/caregivers/add";
+      const endpoint = "/api/caregivers/build";
         const method = "post";
         const response = await axiosInstance[method](endpoint, formData);
         if (response.status === 201) {
