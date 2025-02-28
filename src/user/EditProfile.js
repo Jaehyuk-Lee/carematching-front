@@ -9,6 +9,7 @@ function EditProfile() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    certno: "",
   });
 
   const handleInputChange = (e) => {
@@ -89,6 +90,16 @@ function EditProfile() {
             value={profileInput.phoneNumber}
             onChange={handleInputChange}
             placeholder="전화번호를 입력하세요"
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>자격증 번호</label>
+          <input
+            type="text"
+            name="certno"
+            value={profileInput.certno}
+            onChange={handleInputChange}
+            placeholder="자격증 번호를 입력하세요"
           />
         </div>
         <button type="submit" className={styles.submitButton}>수정 완료</button>
