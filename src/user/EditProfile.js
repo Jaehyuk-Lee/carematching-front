@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styles from './EditProfile.module.css';
+import axiosInstance from "../api/axiosInstance";
 
 function EditProfile() {
   const [profileInput, setProfileInput] = useState({
@@ -8,20 +9,32 @@ function EditProfile() {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
+    certno: "",
   });
 
   const handleInputChange = (e) => {
     setProfileInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     if (profileInput.newPassword !== profileInput.confirmPassword) {
-      alert("새 비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+      alert("새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.");
       return;
     }
-    // 여기에 프로필 업데이트 로직을 추가하세요
-    console.log("프로필 업데이트:", profileInput);
+
+    try {
+      const response = await axiosInstance.post("/api/user/update", profileInput);
+
+      if (response.status !== 200) {
+        throw new Error(response.data?.message || "프로필 업데이트에 실패했습니다.");
+      }
+
+      alert("프로필이 성공적으로 업데이트되었습니다.");
+    } catch (error) {
+      console.error("프로필 업데이트 오류:", error);
+      alert(error.response.data || "프로필 업데이트 중 오류가 발생했습니다.");
+    }
   };
 
   return (
@@ -29,29 +42,7 @@ function EditProfile() {
       <h2>내 정보 수정</h2>
       <form onSubmit={onSubmit}>
         <div className={styles.inputGroup}>
-          <label>닉네임</label>
-          <input
-            type="text"
-            name="nickname"
-            value={profileInput.nickname}
-            onChange={handleInputChange}
-            placeholder="닉네임을 입력하세요"
-            required
-          />
-        </div>
-        <div className={styles.inputGroup}>
-          <label>전화번호</label>
-          <input
-            type="text"
-            name="phoneNumber"
-            value={profileInput.phoneNumber}
-            onChange={handleInputChange}
-            placeholder="전화번호를 입력하세요"
-            required
-          />
-        </div>
-        <div className={styles.inputGroup}>
-          <label>현재 비밀번호</label>
+          <label>현재 비밀번호 (필수)</label>
           <input
             type="password"
             name="currentPassword"
@@ -68,8 +59,7 @@ function EditProfile() {
             name="newPassword"
             value={profileInput.newPassword}
             onChange={handleInputChange}
-            placeholder="새 비밀번호를 입력하세요"
-            required
+            placeholder="새 비밀번호를 입력하세요 (선택)"
           />
         </div>
         <div className={styles.inputGroup}>
@@ -79,8 +69,37 @@ function EditProfile() {
             name="confirmPassword"
             value={profileInput.confirmPassword}
             onChange={handleInputChange}
-            placeholder="비밀번호를 다시 입력하세요"
-            required
+            placeholder="새 비밀번호를 다시 입력하세요 (선택)"
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>닉네임</label>
+          <input
+            type="text"
+            name="nickname"
+            value={profileInput.nickname}
+            onChange={handleInputChange}
+            placeholder="닉네임을 입력하세요"
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>전화번호</label>
+          <input
+            type="text"
+            name="phoneNumber"
+            value={profileInput.phoneNumber}
+            onChange={handleInputChange}
+            placeholder="전화번호를 입력하세요"
+          />
+        </div>
+        <div className={styles.inputGroup}>
+          <label>자격증 번호</label>
+          <input
+            type="text"
+            name="certno"
+            value={profileInput.certno}
+            onChange={handleInputChange}
+            placeholder="자격증 번호를 입력하세요"
           />
         </div>
         <button type="submit" className={styles.submitButton}>수정 완료</button>
