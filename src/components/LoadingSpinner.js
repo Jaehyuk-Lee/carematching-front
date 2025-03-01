@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLoading } from '../context/LoadingContext';
-import styles from './LoadingSpinner.module.css'; // 스타일 추가
+import styles from './LoadingSpinner.module.css';
 
 const LoadingSpinner = () => {
   const { loading } = useLoading();
