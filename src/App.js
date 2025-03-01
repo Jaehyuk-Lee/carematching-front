@@ -9,6 +9,7 @@ import MyPage from './user/MyPage';
 import Cert from './admin/Cert';
 import { AuthProvider } from './context/AuthContext';
 import styles from './App.module.css';
+import Community from './community/Community';
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
               <Route path="/signup" element={<Signup />} />
               <Route path="/mypage/*" element={<MyPage />} />
               <Route path="/admin/cert" element={<Cert />} />
+              <Route path="/community" element={<Community />} />
             </Routes>
           </main>
           <Footer />
