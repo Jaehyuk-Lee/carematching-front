@@ -1,6 +1,5 @@
 import axios from 'axios';
 import config from '../config/config'
-import { useLoading } from '../context/LoadingContext';
 
 const axiosInstance = axios.create({
   baseURL: config.apiUrl,
@@ -14,8 +13,6 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    const { setLoading } = useLoading();
-    setLoading(true);
     return config;
   },
   (error) => {
@@ -26,13 +23,9 @@ axiosInstance.interceptors.request.use(
 // 응답 인터셉터 추가
 axiosInstance.interceptors.response.use(
   (response) => {
-    const { setLoading } = useLoading();
-    setLoading(false);
     return response;
   },
   (error) => {
-    const { setLoading } = useLoading();
-    setLoading(false);
     if (error.response?.status === 401) {
       // 토큰이 만료되었거나 유효하지 않은 경우
       localStorage.removeItem('token');
