@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useCallback, useRef } from "react"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
@@ -67,27 +65,6 @@ export default function Community() {
         return "ALL"
     }
   }, [])
-
-  const fetchMyPosts = useCallback(async () => {
-    if (loading || !hasMore) return
-
-    setLoading(true)
-    try {
-      const response = await axiosInstance.get("/api/community/my-posts", {
-        params: { page, size: 10 },
-      })
-      const { content, last } = response.data
-      setPosts((prevPosts) => {
-        const newPosts = content.filter((newPost) => !prevPosts.some((existingPost) => existingPost.id === newPost.id))
-        return [...prevPosts, ...newPosts]
-      })
-      setHasMore(!last)
-    } catch (error) {
-      console.error("Failed to fetch my posts:", error)
-    } finally {
-      setLoading(false)
-    }
-  }, [page, loading, hasMore])
 
   const fetchPosts = useCallback(async () => {
     if (loading || !hasMore) return
@@ -200,7 +177,6 @@ export default function Community() {
       (statType === "comments" && activeSubTab !== "댓글") ||
       (statType === "likes" && activeSubTab !== "좋아요")
     ) {
-      setActiveMainTab("내 활동")
       switch (statType) {
         case "posts":
           setActiveSubTab("작성글")
@@ -210,6 +186,9 @@ export default function Community() {
           break
         case "likes":
           setActiveSubTab("좋아요")
+          break
+        default:
+          setActiveMainTab("내 활동")
           break
       }
       setPosts([])
