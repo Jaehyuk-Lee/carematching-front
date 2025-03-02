@@ -33,24 +33,19 @@ export default function Community() {
   )
 
   const getMainTabs = useCallback(() => {
-    if (!user) return []
-    switch (user.role) {
-      case "ROLE_ADMIN":
-        return ["전체", "요양사", "수급자", "내 활동"]
-      case "ROLE_CAREGIVER":
-        return ["전체", "요양사", "내 활동"]
-      case "ROLE_USER":
-        return ["전체", "수급자", "내 활동"]
-      default:
-        return []
+    if (!user) return ["전체"]
+    const tabs = ["전체"]
+    if (user.role === "ROLE_USER_CATEGORY" || user.role === "ROLE_ADMIN") {
+      tabs.push("요양사")
     }
+    tabs.push("내 활동")
+    return tabs
   }, [user])
 
   const subTabs = {
     "내 활동": ["작성글", "댓글", "좋아요"],
     전체: ["전체", "인기글"],
     요양사: ["전체", "인기글"],
-    수급자: ["전체", "인기글"],
   }
 
   const getAccessParam = useCallback((tab) => {
@@ -59,8 +54,6 @@ export default function Community() {
         return "ALL"
       case "요양사":
         return "CAREGIVER"
-      case "수급자":
-        return "USER"
       default:
         return "ALL"
     }
@@ -202,9 +195,7 @@ export default function Community() {
 
   const isSearchBarVisible = () => {
     return (
-      (activeMainTab === "전체" && activeSubTab === "전체") ||
-      (activeMainTab === "요양사" && activeSubTab === "전체") ||
-      (activeMainTab === "수급자" && activeSubTab === "전체")
+      (activeMainTab === "전체" && activeSubTab === "전체") || (activeMainTab === "요양사" && activeSubTab === "전체")
     )
   }
 
@@ -315,7 +306,7 @@ export default function Community() {
                 } else {
                   setActiveSubTab("전체")
                 }
-                if (tab === "내 활동" || (tab !== "전체" && tab !== "요양사" && tab !== "수급자")) {
+                if (tab === "내 활동" || tab !== "전체") {
                   setIsSearching(false)
                   setSearchKeyword("")
                 }
