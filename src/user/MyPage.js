@@ -1,11 +1,11 @@
 import React from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
+import axiosInstance from "../api/axiosInstance";
 import { useAuth } from '../context/AuthContext';
 import defaultProfile from '../logo.svg'; // 임시 프로필 이미지
 import styles from './MyPage.module.css';
-import config from '../config/config';
-import EditProfile from './EditProfile';
-import MyPosts from './MyPosts';
+import EditProfile from './myPage/EditProfile';
+import MyPosts from './myPage/MyPosts';
 
 function MyPage() {
   const { user, logout } = useAuth();
@@ -36,7 +36,7 @@ function MyPage() {
   }
 
   return (
-    <div className={styles.mypageContainer}>
+    <div className={styles.myPageContainer}>
       <div className={styles.profileSection}>
         <div className={styles.profileImageContainer}>
           <img src={defaultProfile} alt="프로필" className={styles.profileImage} />
@@ -61,7 +61,7 @@ function MyPage() {
         <div className={styles.actionButtons}>
           <button
             className={`${styles.actionButton} ${styles.gray}`}
-            onClick={() => navigate('/mypage/my-posts')}
+            onClick={() => navigate('/myPage/my-posts')}
           >
             작성글
           </button>
@@ -69,7 +69,7 @@ function MyPage() {
           <button className={`${styles.actionButton} ${styles.gray}`}>좋아요</button>
           <button
             className={`${styles.actionButton} ${styles.orange}`}
-            onClick={() => navigate('/mypage/edit-profile')}
+            onClick={() => navigate('/myPage/edit-profile')}
           >
             내 정보 수정
           </button>
