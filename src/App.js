@@ -10,6 +10,7 @@ import Cert from './admin/Cert';
 import { AuthProvider } from './context/AuthContext';
 import styles from './App.module.css';
 import Community from './community/Community';
+import CreatePost from "./community/CreatePost"
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/mypage/*" element={<MyPage />} />
               <Route path="/admin/cert" element={<Cert />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/create-post" element={<CreatePost />} />
             </Routes>
           </main>
           <Footer />

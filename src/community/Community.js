@@ -1,4 +1,7 @@
+"use client"
+
 import { useState, useCallback, useRef } from "react"
+import { useNavigate } from "react-router-dom"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useEffect } from "react"
@@ -6,6 +9,7 @@ import { useAuth } from "../context/AuthContext"
 
 export default function Community() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [activeMainTab, setActiveMainTab] = useState("전체")
   const [activeSubTab, setActiveSubTab] = useState("전체")
   const [userInfo, setUserInfo] = useState(null)
@@ -164,31 +168,32 @@ export default function Community() {
   }
 
   const handleStatClick = (statType) => {
-    if (
-      activeMainTab !== "내 활동" ||
-      (statType === "posts" && activeSubTab !== "작성글") ||
-      (statType === "comments" && activeSubTab !== "댓글") ||
-      (statType === "likes" && activeSubTab !== "좋아요")
-    ) {
-      switch (statType) {
-        case "posts":
-          setActiveSubTab("작성글")
-          break
-        case "comments":
-          setActiveSubTab("댓글")
-          break
-        case "likes":
-          setActiveSubTab("좋아요")
-          break
-        default:
-          setActiveMainTab("내 활동")
-          break
-      }
-      setPosts([])
-      setPage(0)
-      setHasMore(true)
-      initialLoadDone.current = false
+    let newSubTab
+    switch (statType) {
+      case "posts":
+        newSubTab = "작성글"
+        break
+      case "comments":
+        newSubTab = "댓글"
+        break
+      case "likes":
+        newSubTab = "좋아요"
+        break
+      default:
+        return // 잘못된 statType이 전달된 경우 함수 종료
     }
+
+    // 현재 상태와 동일한 경우 아무 작업도 하지 않음
+    if (activeMainTab === "내 활동" && activeSubTab === newSubTab) {
+      return
+    }
+
+    setActiveMainTab("내 활동")
+    setActiveSubTab(newSubTab)
+    setPosts([])
+    setPage(0)
+    setHasMore(true)
+    initialLoadDone.current = false
   }
 
   const currentSubTabs = subTabs[activeMainTab] || subTabs["전체"]
@@ -339,7 +344,9 @@ export default function Community() {
                 <div className={styles.statValue}>{userInfo?.likeCount || 0}</div>
               </div>
             </div>
-            <button className={styles.writeButton}>게시글 작성</button>
+            <button className={styles.writeButton} onClick={() => navigate("/create-post")}>
+              게시글 작성
+            </button>
           </div>
         </div>
 
