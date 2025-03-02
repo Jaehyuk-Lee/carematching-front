@@ -14,23 +14,18 @@ function MyPage() {
   async function handleDeleteUser() {
     if (window.confirm('정말로 탈퇴하시겠습니까?\n\n작성한 게시글과 댓글, 좋아요 등의 모든 데이터가 삭제됩니다.')) {
       try {
-        const response = await fetch(`${config.apiUrl}/api/user/delete`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-          }
-        });
-
-        if (!response.ok) {
+        const res = await axiosInstance.post(`/api/user/delete`);
+        if (res.status !== 200) {
           throw new Error('회원 탈퇴 실패');
         }
 
         // 로그아웃 처리 및 로컬 스토리지 클리어
         logout();
+        alert('회원 탈퇴가 완료되었습니다!');
         navigate('/');
       } catch (error) {
         console.error('회원 탈퇴 중 오류 발생:', error);
+        alert(error.response.data || "회원 탈퇴 중 오류가 발생했습니다.");
       }
     }
   }
