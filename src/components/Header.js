@@ -32,7 +32,7 @@ function Header() {
           {user ? (
             <div className={styles.userMenu}>
               <span className={styles.username}>{user.username}</span>
-              <Link to="/mypage">마이페이지</Link>
+              <Link to="/myPage">마이페이지</Link>
               <button onClick={handleLogout} className={styles.logoutButton}>로그아웃</button>
             </div>
           ) : (

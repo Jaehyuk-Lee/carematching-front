@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import config from "../config/config";
 import styles from './Signup.module.css';
 
 function Signup() {
@@ -23,7 +22,7 @@ function Signup() {
     setError("");
 
     try {
-      const res = await axiosInstance.post(`${config.apiUrl}/api/user/signup`, signupInput);
+      const res = await axiosInstance.post(`/api/user/signup`, signupInput);
       if (res.status === 200) {
         alert("회원가입이 완료되었습니다. 로그인해주세요.");
         navigate('/login');

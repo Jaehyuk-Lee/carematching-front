@@ -9,15 +9,18 @@ import MyPage from './user/MyPage';
 import CaregiverListPage from './caregiver/caregiverList';
 import CaregiverDetailPage from './caregiver/caregiverDetail';
 import Cert from './admin/Cert';
-import { AuthProvider } from './context/AuthContext';
+import AppProvider from './context/AppProvider';
+import LoadingSpinner from './components/LoadingSpinner';
 import styles from './App.module.css';
+import Community from './community/Community';
 
 function App() {
   return (
-    <AuthProvider>
+    <AppProvider>
       <Router>
         <div className={styles.appContainer}>
           <Header />
+          <LoadingSpinner />
           <main className={styles.mainContent}>
             <Routes>
               <Route path="/" element={<Home />} />
@@ -27,12 +30,13 @@ function App() {
               <Route path="/caregiver" element={<CaregiverListPage />} />
               <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
               <Route path="/admin/cert" element={<Cert />} />
+              <Route path="/community" element={<Community />} />
             </Routes>
           </main>
           <Footer />
         </div>
       </Router>
-    </AuthProvider>
+    </AppProvider>
   );
 }
 
