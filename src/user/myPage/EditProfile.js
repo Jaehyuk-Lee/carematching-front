@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styles from './EditProfile.module.css';
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "../../api/axiosInstance";
 
 function EditProfile() {
   const [profileInput, setProfileInput] = useState({

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
-import config from "../config/config";
 import styles from './Cert.module.css';
 
 function Cert() {
@@ -10,7 +9,7 @@ function Cert() {
 
   const fetchCertUsers = async () => {
     try {
-      const response = await axiosInstance.post(`${config.apiUrl}/api/user/admin/cert`);
+      const response = await axiosInstance.post(`/api/user/admin/cert`);
       if (Array.isArray(response.data)) {
         setCertUsers(response.data);
       } else {
@@ -29,7 +28,7 @@ function Cert() {
   const handleApprove = async (username) => {
     if (window.confirm(`${username} 사용자를 승인하시겠습니까?`)) {
       try {
-        const response = await axiosInstance.post(`${config.apiUrl}/api/user/admin/cert/approve`, { username });
+        const response = await axiosInstance.post(`/api/user/admin/cert/approve`, { username });
         if (response.status === 200) {
           fetchCertUsers();
         }
@@ -42,7 +41,7 @@ function Cert() {
   const handleRevoke = async (username) => {
     if (window.confirm(`${username} 사용자의 승인을 취소하시겠습니까?`)) {
       try {
-        const response = await axiosInstance.post(`${config.apiUrl}/api/user/admin/cert/revoke`, { username });
+        const response = await axiosInstance.post(`/api/user/admin/cert/revoke`, { username });
         if (response.status === 200) {
           fetchCertUsers();
         }
