@@ -30,8 +30,7 @@ axiosInstance.interceptors.response.use(
       // 토큰이 만료되었거나 유효하지 않은 경우
       localStorage.removeItem('token');
       localStorage.removeItem('user');
-      // 에러를 throw하여 각 컴포넌트에서 처리하도록 함
-      throw error;
+      window.location.href = '/login';
     }
     return Promise.reject(error);
   }
