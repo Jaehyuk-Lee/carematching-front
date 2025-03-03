@@ -23,7 +23,7 @@
 }
 
 .inputGroup {
-  margin-bottom: 24px;
+  margin-bottom: 15px;
 }
 
 .inputGroup label {
@@ -67,7 +67,7 @@
 }
 
 .errorMessage {
-  color: #ff4444;
+  color: red;
   text-align: center;
   margin-bottom: 16px;
   font-size: 14px;

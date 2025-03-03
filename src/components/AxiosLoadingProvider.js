@@ -24,11 +24,6 @@ const AxiosLoadingProvider = ({ children }) => {
       },
       (error) => {
         setLoading(false); // 로딩 종료
-        if (error.response?.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          throw error;
-        }
         return Promise.reject(error);
       }
     );
