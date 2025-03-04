@@ -81,7 +81,7 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
           />
         </div>
         <div className={styles.inputGroup}>
-          <label>희망 월급</label>
+          <label>희망 월급 (단위: 만 원)</label>
           <div className={styles.salaryInputContainer}>
             <input
               type="number"
