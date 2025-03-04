@@ -4,6 +4,7 @@ import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useAuth } from "../context/AuthContext"
 import { Eye, Heart, MessageCircle } from "lucide-react"
+import Swal from 'sweetalert2'
 
 export default function Community() {
   const { user } = useAuth()
@@ -159,8 +160,18 @@ export default function Community() {
       if (loginCheckDone.current) return
 
       if (!user) {
-        alert("로그인이 필요합니다.")
-        navigate("/login", { state: { from: location.pathname } })
+        Swal.fire({
+          title: '로그인 필요',
+          text: '로그인이 필요한 서비스입니다.',
+          icon: 'warning',
+          confirmButtonText: '로그인하기',
+          showCancelButton: true,
+          cancelButtonText: '취소'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/login", { state: { from: location.pathname } })
+          }
+        })
       } else {
         try {
           const response = await axiosInstance.get("/api/community/user-info")
