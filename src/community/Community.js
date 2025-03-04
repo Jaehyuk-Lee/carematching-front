@@ -1,13 +1,15 @@
-"use client"
-
 import { useState, useCallback, useRef } from "react"
+import { useNavigate, useLocation } from "react-router-dom"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useEffect } from "react"
 import { useAuth } from "../context/AuthContext"
+import { Eye, Heart, MessageCircle } from "lucide-react"
 
 export default function Community() {
   const { user } = useAuth()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [activeMainTab, setActiveMainTab] = useState("전체")
   const [activeSubTab, setActiveSubTab] = useState("전체")
   const [userInfo, setUserInfo] = useState(null)
@@ -18,6 +20,7 @@ export default function Community() {
   const [searchKeyword, setSearchKeyword] = useState("")
   const [isSearching, setIsSearching] = useState(false)
   const initialLoadDone = useRef(false)
+  const loginCheckDone = useRef(false)
 
   const observer = useRef()
   const lastPostElementRef = useCallback(
@@ -35,24 +38,19 @@ export default function Community() {
   )
 
   const getMainTabs = useCallback(() => {
-    if (!user) return []
-    switch (user.role) {
-      case "ROLE_ADMIN":
-        return ["전체", "요양사", "수급자", "내 활동"]
-      case "ROLE_CAREGIVER":
-        return ["전체", "요양사", "내 활동"]
-      case "ROLE_USER":
-        return ["전체", "수급자", "내 활동"]
-      default:
-        return []
+    if (!user) return ["전체"]
+    const tabs = ["전체"]
+    if (user.role === "ROLE_USER_CATEGORY" || user.role === "ROLE_ADMIN") {
+      tabs.push("요양사")
     }
+    tabs.push("내 활동")
+    return tabs
   }, [user])
 
   const subTabs = {
     "내 활동": ["작성글", "댓글", "좋아요"],
     전체: ["전체", "인기글"],
     요양사: ["전체", "인기글"],
-    수급자: ["전체", "인기글"],
   }
 
   const getAccessParam = useCallback((tab) => {
@@ -61,33 +59,10 @@ export default function Community() {
         return "ALL"
       case "요양사":
         return "CAREGIVER"
-      case "수급자":
-        return "USER"
       default:
         return "ALL"
     }
   }, [])
-
-  const fetchMyPosts = useCallback(async () => {
-    if (loading || !hasMore) return
-
-    setLoading(true)
-    try {
-      const response = await axiosInstance.get("/api/community/my-posts", {
-        params: { page, size: 10 },
-      })
-      const { content, last } = response.data
-      setPosts((prevPosts) => {
-        const newPosts = content.filter((newPost) => !prevPosts.some((existingPost) => existingPost.id === newPost.id))
-        return [...prevPosts, ...newPosts]
-      })
-      setHasMore(!last)
-    } catch (error) {
-      console.error("Failed to fetch my posts:", error)
-    } finally {
-      setLoading(false)
-    }
-  }, [page, loading, hasMore])
 
   const fetchPosts = useCallback(async () => {
     if (loading || !hasMore) return
@@ -154,17 +129,25 @@ export default function Community() {
   }, [page, fetchPosts])
 
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axiosInstance.get("/api/community/user-info")
-        setUserInfo(response.data)
-      } catch (error) {
-        console.error("Failed to fetch user info:", error)
+    const checkLoginAndFetchData = async () => {
+      if (loginCheckDone.current) return
+
+      if (!user) {
+        alert("로그인이 필요합니다.")
+        navigate("/login", { state: { from: location.pathname } })
+      } else {
+        try {
+          const response = await axiosInstance.get("/api/community/user-info")
+          setUserInfo(response.data)
+        } catch (error) {
+          console.error("Failed to fetch user info:", error)
+        }
       }
+      loginCheckDone.current = true
     }
 
-    fetchUserInfo()
-  }, [])
+    checkLoginAndFetchData()
+  }, [user, navigate, location.pathname])
 
   const handleSubTabClick = (tab) => {
     if (tab !== activeSubTab) {
@@ -194,38 +177,39 @@ export default function Community() {
   }
 
   const handleStatClick = (statType) => {
-    if (
-      activeMainTab !== "내 활동" ||
-      (statType === "posts" && activeSubTab !== "작성글") ||
-      (statType === "comments" && activeSubTab !== "댓글") ||
-      (statType === "likes" && activeSubTab !== "좋아요")
-    ) {
-      setActiveMainTab("내 활동")
-      switch (statType) {
-        case "posts":
-          setActiveSubTab("작성글")
-          break
-        case "comments":
-          setActiveSubTab("댓글")
-          break
-        case "likes":
-          setActiveSubTab("좋아요")
-          break
-      }
-      setPosts([])
-      setPage(0)
-      setHasMore(true)
-      initialLoadDone.current = false
+    let newSubTab
+    switch (statType) {
+      case "posts":
+        newSubTab = "작성글"
+        break
+      case "comments":
+        newSubTab = "댓글"
+        break
+      case "likes":
+        newSubTab = "좋아요"
+        break
+      default:
+        return // 잘못된 statType이 전달된 경우 함수 종료
     }
+
+    // 현재 상태와 동일한 경우 아무 작업도 하지 않음
+    if (activeMainTab === "내 활동" && activeSubTab === newSubTab) {
+      return
+    }
+
+    setActiveMainTab("내 활동")
+    setActiveSubTab(newSubTab)
+    setPosts([])
+    setPage(0)
+    setHasMore(true)
+    initialLoadDone.current = false
   }
 
   const currentSubTabs = subTabs[activeMainTab] || subTabs["전체"]
 
   const isSearchBarVisible = () => {
     return (
-      (activeMainTab === "전체" && activeSubTab === "전체") ||
-      (activeMainTab === "요양사" && activeSubTab === "전체") ||
-      (activeMainTab === "수급자" && activeSubTab === "전체")
+      (activeMainTab === "전체" && activeSubTab === "전체") || (activeMainTab === "요양사" && activeSubTab === "전체")
     )
   }
 
@@ -233,17 +217,35 @@ export default function Community() {
     const isMyPostsView = activeMainTab === "내 활동" && activeSubTab === "작성글"
     const isMyCommentsView = activeMainTab === "내 활동" && activeSubTab === "댓글"
 
+    const handlePostClick = () => {
+      navigate(`/community/posts/${post.id}`)
+    }
+
     if (isMyCommentsView) {
       return (
         <div
-          key={`${post.id}-${index}`}
+          key={`${post.postId}-${index}`}
           className={styles.commentItem}
           ref={index === posts.length - 1 ? lastPostElementRef : null}
+          onClick={() => navigate(`/community/posts/${post.postId}`)}
         >
           <h3 className={styles.commentPostTitle}>{post.postTitle}</h3>
           <div className={styles.commentContent}>
             <p className={styles.commentText}>{post.content}</p>
           </div>
+          {!(activeMainTab === "내 활동" && activeSubTab === "댓글") && (
+            <div className={styles.postStats}>
+              <span className={styles.viewCount}>
+                <Eye size={16} /> {post.viewCount}
+              </span>
+              <span className={styles.likeCount}>
+                <Heart size={16} /> {post.likeCount}
+              </span>
+              <span className={styles.commentCount}>
+                <MessageCircle size={16} /> {post.commentCount}
+              </span>
+            </div>
+          )}
           <span className={styles.commentTime}>{post.relativeTime}</span>
         </div>
       )
@@ -255,6 +257,7 @@ export default function Community() {
           key={`${post.id}-${index}`}
           className={styles.myPostItem}
           ref={index === posts.length - 1 ? lastPostElementRef : null}
+          onClick={handlePostClick}
         >
           <div className={styles.myPostContent}>
             <div className={styles.myPostTextContent}>
@@ -272,11 +275,19 @@ export default function Community() {
               <span className={styles.categoryTab}>{post.category || "전체"}</span>
               <span className={styles.postTime}>{post.relativeTime}</span>
             </div>
-            <div className={styles.postStats}>
-              <span className={styles.viewCount}>{post.viewCount}</span>
-              <span className={styles.likeCount}>{post.likeCount}</span>
-              <span className={styles.commentCount}>{post.commentCount}</span>
-            </div>
+            {!(activeMainTab === "내 활동" && activeSubTab === "댓글") && (
+              <div className={styles.postStats}>
+                <span className={styles.viewCount}>
+                  <Eye size={16} /> {post.viewCount}
+                </span>
+                <span className={styles.likeCount}>
+                  <Heart size={16} /> {post.likeCount}
+                </span>
+                <span className={styles.commentCount}>
+                  <MessageCircle size={16} /> {post.commentCount}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )
@@ -287,6 +298,7 @@ export default function Community() {
         key={`${post.id}-${index}`}
         className={styles.postItem}
         ref={index === posts.length - 1 ? lastPostElementRef : null}
+        onClick={handlePostClick}
       >
         <div className={styles.postContent}>
           <div className={styles.postTextContent}>
@@ -305,20 +317,26 @@ export default function Community() {
             <span className={styles.authorName}>{post.nickname}</span>
             <span className={styles.postTime}>{post.relativeTime}</span>
           </div>
-          <div className={styles.postStats}>
-            <div className={styles.postStat}>
-              <span className={styles.viewCount}>{post.viewCount}</span>
+          {!(activeMainTab === "내 활동" && activeSubTab === "댓글") && (
+            <div className={styles.postStats}>
+              <span className={styles.viewCount}>
+                <Eye size={16} /> {post.viewCount}
+              </span>
+              <span className={styles.likeCount}>
+                <Heart size={16} /> {post.likeCount}
+              </span>
+              <span className={styles.commentCount}>
+                <MessageCircle size={16} /> {post.commentCount}
+              </span>
             </div>
-            <div className={styles.postStat}>
-              <span className={styles.likeCount}>{post.likeCount}</span>
-            </div>
-            <div className={styles.postStat}>
-              <span className={styles.commentCount}>{post.commentCount}</span>
-            </div>
-          </div>
+          )}
         </div>
       </div>
     )
+  }
+
+  const handleCreatePost = () => {
+    navigate("/create-post", { state: { from: location.pathname } })
   }
 
   return (
@@ -336,7 +354,7 @@ export default function Community() {
                 } else {
                   setActiveSubTab("전체")
                 }
-                if (tab === "내 활동" || (tab !== "전체" && tab !== "요양사" && tab !== "수급자")) {
+                if (tab === "내 활동" || tab !== "전체") {
                   setIsSearching(false)
                   setSearchKeyword("")
                 }
@@ -369,7 +387,9 @@ export default function Community() {
                 <div className={styles.statValue}>{userInfo?.likeCount || 0}</div>
               </div>
             </div>
-            <button className={styles.writeButton}>게시글 작성</button>
+            <button className={styles.writeButton} onClick={handleCreatePost}>
+              게시글 작성
+            </button>
           </div>
         </div>
 
