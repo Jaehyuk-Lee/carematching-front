@@ -1,8 +1,7 @@
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
-import { useEffect } from "react"
 import { useAuth } from "../context/AuthContext"
 import { Eye, Heart, MessageCircle } from "lucide-react"
 
@@ -21,15 +20,17 @@ export default function Community() {
   const [isSearching, setIsSearching] = useState(false)
   const initialLoadDone = useRef(false)
   const loginCheckDone = useRef(false)
+  const isLoadingRef = useRef(false) // 추가된 부분
+  const loadedPages = useRef(new Set()).current // 추가된 부분
 
   const observer = useRef()
   const lastPostElementRef = useCallback(
     (node) => {
-      if (loading) return
+      if (loading || !hasMore || isLoadingRef.current) return
       if (observer.current) observer.current.disconnect()
       observer.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          setPage((prev) => prev + 1)
+        if (entries[0].isIntersecting && hasMore && !loading && !isLoadingRef.current) {
+          setPage((prevPage) => prevPage + 1)
         }
       })
       if (node) observer.current.observe(node)
@@ -40,7 +41,7 @@ export default function Community() {
   const getMainTabs = useCallback(() => {
     if (!user) return ["전체"]
     const tabs = ["전체"]
-    if (user.role === "ROLE_USER_CATEGORY" || user.role === "ROLE_ADMIN") {
+    if (user.role === "ROLE_USER_CAREGIVER" || user.role === "ROLE_ADMIN") {
       tabs.push("요양사")
     }
     tabs.push("내 활동")
@@ -65,9 +66,14 @@ export default function Community() {
   }, [])
 
   const fetchPosts = useCallback(async () => {
-    if (loading || !hasMore) return
+    if (loading || !hasMore || isLoadingRef.current) return
+    if (page > 0 && loadedPages.has(page)) {
+      return
+    }
 
     setLoading(true)
+    isLoadingRef.current = true
+
     try {
       let endpoint = "/api/community/posts"
       let params = {
@@ -96,25 +102,42 @@ export default function Community() {
 
       const response = await axiosInstance.get(endpoint, { params })
       const { content, last } = response.data
-      setPosts((prevPosts) => {
-        const newPosts = content.filter((newPost) => !prevPosts.some((existingPost) => existingPost.id === newPost.id))
-        return [...prevPosts, ...newPosts]
-      })
+
+      if (content && content.length > 0) {
+        setPosts((prevPosts) => {
+          if (page === 0) {
+            return [...content] // 첫 페이지는 교체
+          } else {
+            return [...prevPosts, ...content] // 이후 페이지는 추가
+          }
+        })
+        loadedPages.add(page) // 로드된 페이지 추적
+      } else {
+        // 새 데이터가 없으면 hasMore를 false로 설정
+        setHasMore(false)
+      }
+
+      // 마지막 페이지인 경우 hasMore를 false로 설정
       setHasMore(!last)
     } catch (error) {
       console.error("Failed to fetch posts:", error)
+      setHasMore(false) // 에러 발생 시 hasMore를 false로 설정
     } finally {
       setLoading(false)
+      isLoadingRef.current = false
     }
-  }, [activeMainTab, activeSubTab, isSearching, page, hasMore, searchKeyword, getAccessParam, loading])
+  }, [getAccessParam, page, activeMainTab, activeSubTab, isSearching, searchKeyword, loading, hasMore, loadedPages])
 
+  // Reset posts when tab or search changes
   useEffect(() => {
     setPosts([])
     setPage(0)
     setHasMore(true)
     initialLoadDone.current = false
-  }, [activeMainTab, activeSubTab, isSearching])
+    loadedPages.clear() // 로드된 페이지 목록 초기화
+  }, [activeMainTab, activeSubTab, isSearching, loadedPages])
 
+  // Initial load or when posts are empty
   useEffect(() => {
     if (!initialLoadDone.current || (posts.length === 0 && hasMore)) {
       fetchPosts()
@@ -122,12 +145,15 @@ export default function Community() {
     }
   }, [fetchPosts, hasMore, posts.length])
 
+  // Load more posts when page changes
   useEffect(() => {
-    if (initialLoadDone.current && page > 0) {
+    if (initialLoadDone.current && page > 0 && hasMore && !loading && !isLoadingRef.current) {
+      // 수정된 부분
       fetchPosts()
     }
-  }, [page, fetchPosts])
+  }, [page, fetchPosts, hasMore, loading]) // 수정된 부분
 
+  // Check login and fetch user info
   useEffect(() => {
     const checkLoginAndFetchData = async () => {
       if (loginCheckDone.current) return
