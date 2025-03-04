@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import config from "../config/config";
 import { useAuth } from "../context/AuthContext";
 import styles from './Login.module.css';
 
@@ -32,7 +31,7 @@ function Login() {
     }
 
     try {
-      const res = await axiosInstance.post(`${config.apiUrl}/api/user/login`, loginInput);
+      const res = await axiosInstance.post(`/api/user/login`, loginInput);
       if (res.status === 200) {
         login(res.data);
         navigate('/');
@@ -40,7 +39,7 @@ function Login() {
     } catch (error) {
       console.log();
       // 서버에서 전달받은 에러 메시지가 있다면 그것을 사용, 없다면 기본 메시지 사용
-      setError((error.response?.data?.message || "로그인에 실패했습니다") + " (" + error.response.status + ")");
+      setError((error.response?.data?.error || "로그인에 실패했습니다") + " (" + error.response?.status + ")");
       // 입력 필드 초기화
       setLoginInput({
         username: "",
