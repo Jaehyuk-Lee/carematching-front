@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from '../context/AuthContext';
 import defaultProfile from '../logo.svg'; // 임시 프로필 이미지
 import styles from './MyPage.module.css';
+import CaregiverEdit from '../caregiver/caregiverEdit';
+import CaregiverInfo from '../caregiver/caregiverInfo';
 import EditProfile from './myPage/EditProfile';
 import MyPosts from './myPage/MyPosts';
 import Swal from 'sweetalert2';
@@ -11,6 +13,27 @@ import Swal from 'sweetalert2';
 function MyPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [isCaregiverRegistered, setIsCaregiverRegistered] = useState(false);
+
+  const checkCaregiverStatus = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get("/api/caregivers/check");
+      if (response.status === 200) {
+        setIsCaregiverRegistered(response.data);
+      } else {
+        setIsCaregiverRegistered(false);
+      }
+    } catch (error) {
+      console.error('Caregiver 등록 여부 확인 실패:', error);
+      setIsCaregiverRegistered(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user?.username) {
+      checkCaregiverStatus();
+    }
+  }, [user?.username, checkCaregiverStatus]);
 
   async function handleDeleteUser() {
     const result = await Swal.fire({
@@ -86,6 +109,21 @@ function MyPage() {
           >
             내 정보 수정
           </button>
+          {isCaregiverRegistered ? (
+            <button
+              className={`${styles.actionButton} ${styles.orange}`}
+              onClick={() => navigate('/mypage/caregiver-info')}
+            >
+              요양사 정보 보기
+            </button>
+          ) : (
+            <button
+              className={`${styles.actionButton} ${styles.orange}`}
+              onClick={() => navigate('/mypage/edit-caregiver')}
+            >
+              요양사 등록
+            </button>
+          )}
           <button
             className={`${styles.actionButton} ${styles.gray} ${styles.deleteUser}`}
             onClick={handleDeleteUser}
@@ -97,6 +135,13 @@ function MyPage() {
           <Routes>
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="my-posts" element={<MyPosts />} />
+            <Route path="edit-caregiver" element={
+              <CaregiverEdit
+                isRegistered={isCaregiverRegistered}
+                onSuccess={checkCaregiverStatus}
+              />
+            } />
+            <Route path="caregiver-info" element={<CaregiverInfo />} />
           </Routes>
         </div>
       </div>

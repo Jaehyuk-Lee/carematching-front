@@ -6,6 +6,8 @@ import Home from './pages/Home';
 import Login from './user/Login';
 import Signup from './user/Signup';
 import MyPage from './user/MyPage';
+import CaregiverListPage from './caregiver/caregiverList';
+import CaregiverDetailPage from './caregiver/caregiverDetail';
 import Cert from './admin/Cert';
 import AppProvider from './context/AppProvider';
 import LoadingSpinner from './components/LoadingSpinner';
@@ -31,7 +33,9 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<Signup />} />
-              <Route path="/myPage/*" element={<MyPage />} />
+              <Route path="/mypage/*" element={<MyPage />} />
+              <Route path="/caregiver" element={<CaregiverListPage />} />
+              <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
               <Route path="/admin/cert" element={<Cert />} />
               <Route path="/community" element={<Community />} />
               <Route path="/create-post" element={<CreatePost />} />
