@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { Stomp } from "@stomp/stompjs";
@@ -18,16 +18,10 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     setRoomInfo(currentRoom || { name: `채팅방 #${roomId}` });
   }, [roomId, chatRooms]);
 
-  const connectWebSocket = useCallback(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
-    stompClient = Stomp.over(socket);
-    stompClient.connect({}, onConnected, onError);
-  }, [onConnected]);
-
-  const onConnected = () => {
+  const onConnected = useCallback(() => {
     console.log("✅ WebSocket 연결 성공");
     stompClient.subscribe(`/topic/chat/${roomId}`, onMessageReceived);
-  };
+  }, [roomId]);
 
   const onError = (err) => {
     console.error("❌ WebSocket 연결 실패:", err);
@@ -70,6 +64,12 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     }
   };
 
+  const connectWebSocket = useCallback(() => {
+    const socket = new SockJS("http://localhost:8080/ws");
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, onConnected, onError);
+  }, [onConnected]);
+
   useEffect(() => {
     if (roomId) {
       fetchMessages(roomId);
@@ -101,7 +101,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
 
       <div className="chat-input-container">
         <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="메시지를 입력하세요..." className="chat-input"/>
-        <button onClick={sendMessage} disabled={!newMessage.trim()}className="chat-send-button">전송</button>
+        <button onClick={sendMessage} disabled={!newMessage.trim()} className="chat-send-button">전송</button>
       </div>
     </div>
   );
