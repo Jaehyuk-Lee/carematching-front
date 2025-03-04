@@ -1,7 +1,5 @@
-"use client"
-
 import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import axiosInstance from "../api/axiosInstance"
 import styles from "./CreatePost.module.css"
@@ -10,7 +8,6 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
 export default function CreatePost() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { user } = useAuth()
   const [category, setCategory] = useState("전체")
   const [isAnonymous, setIsAnonymous] = useState(false)
