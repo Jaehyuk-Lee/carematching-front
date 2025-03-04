@@ -37,7 +37,7 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
   }, [isRegistered]);
 
   const formatSalary = (salary) => {
-    return salary / 10000;
+    return salary ? salary / 10000 : 0;
   };
 
   const handleWorkDaysChange = (index) => {
