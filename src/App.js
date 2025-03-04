@@ -10,8 +10,8 @@ import Cert from './admin/Cert';
 import { AuthProvider } from './context/AuthContext';
 import styles from './App.module.css';
 import Community from './community/Community';
-import CreatePost from "./community/CreatePost";
-import PostDetail from "./community/PostDetail";
+import CreatePost from "./community/CreatePost"
+import PostDetail from "./community/PostDetail"
 import UpdatePost from "./community/UpdatePost"
 
 function App() {

@@ -1,3 +1,5 @@
+"use client"
+
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { ArrowLeft, Heart, MessageCircle, Eye, Trash2 } from "lucide-react"
