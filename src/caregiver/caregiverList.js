@@ -28,10 +28,21 @@ function CaregiverList() {
       .join("");
   };
 
+  const formatSalary = (salary) => {
+    return salary ? salary / 10000 : 0;
+  };
+
+  const parseSalarySearchTerm = (input) => {
+    const numericValue = input.replace(/[^0-9]/g, ""); // 숫자만 추출
+    return numericValue ? parseInt(numericValue, 10) : null; // 숫자로 변환
+  };
+
+  const parsedSalarySearch = parseSalarySearchTerm(searchTerm);
+
   // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
     const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "");
-
+    const formattedSalary = formatSalary(caregiver.salary); // "만원" 단위 변환
     const search = searchTerm.toLowerCase();
 
     switch (searchField) {
@@ -44,14 +55,14 @@ function CaregiverList() {
       case "근무 요일":
         return workDaysKorean.includes(search);
       case "월급":
-        return String(caregiver.salary ?? "").includes(search);
+        return parsedSalarySearch !== null ? formattedSalary === parsedSalarySearch : false;
       default: // "전체" 검색
         return (
           (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
           (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
           (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
           workDaysKorean.includes(search) ||
-          String(caregiver.salary ?? "").includes(search) ||
+          (parsedSalarySearch !== null ? formattedSalary === parsedSalarySearch : false) ||
           (caregiver.status?.toLowerCase() ?? "").includes(search)
         );
     }
@@ -100,7 +111,7 @@ function CaregiverList() {
                 <p className={styles.cardText}>지역 | {caregiver.loc}</p>
                 <p className={styles.cardText}>전문 분야 | {caregiver.servNeeded}</p>
                 <p className={styles.cardText}>근무 요일 | {convertBinaryToDays(caregiver.workDays)}</p>
-                <p className={styles.cardText}>월급 | {caregiver.salary}만원</p>
+                <p className={styles.cardText}>월급 | {formatSalary(caregiver.salary)}만원</p>
                 <p className={styles.cardText}>{caregiver.status}</p>
               </div>
             </Link>

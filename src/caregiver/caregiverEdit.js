@@ -24,10 +24,7 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
       try {
         const response = await axiosInstance.get("/api/caregivers/user");
         if (response.status === 200) {
-          setFormData({
-            ...response.data,
-            salary: response.data.salary ? response.data.salary / 10000 : "",
-          });
+          setFormData(response.data);
         }
       } catch (error) {
         console.error("Caregiver 데이터를 불러오는 중 오류 발생:", error);
@@ -39,6 +36,10 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
     }
   }, [isRegistered]);
 
+  const formatSalary = (salary) => {
+    return salary / 10000;
+  };
+
   const handleWorkDaysChange = (index) => {
     const workDaysArray = formData.workDays.split(""); // 현재 이진 문자열을 배열로 변환
     workDaysArray[index] = workDaysArray[index] === "1" ? "0" : "1"; // 선택 상태 변경
@@ -47,14 +48,7 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "salary") {
-      if (!isNaN(value) && value >= 0) {
-        setFormData({ ...formData, [name]: value });
-      }
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -98,7 +92,7 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
             <input
               type="number"
               name="salary"
-              value={formData.salary}
+              value={formatSalary(formData.salary)}
               onChange={handleChange}
               required
               className={styles.salaryInput} // 스타일 적용
