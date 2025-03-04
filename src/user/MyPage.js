@@ -94,7 +94,7 @@ function MyPage() {
           {isCaregiverRegistered ? (
             <button
               className={`${styles.actionButton} ${styles.orange}`}
-              onClick={() => navigate('/mypage/caregiver-info')} // ✅ 요양사 정보 보기 페이지로 이동
+              onClick={() => navigate('/mypage/caregiver-info')}
             >
               요양사 정보 보기
             </button>

@@ -24,7 +24,10 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
       try {
         const response = await axiosInstance.get("/api/caregivers/user");
         if (response.status === 200) {
-          setFormData(response.data);
+          setFormData({
+            ...response.data,
+            salary: response.data.salary ? response.data.salary / 10000 : "",
+          });
         }
       } catch (error) {
         console.error("Caregiver 데이터를 불러오는 중 오류 발생:", error);
@@ -44,26 +47,35 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    if (name === "salary") {
+      if (!isNaN(value) && value >= 0) {
+        setFormData({ ...formData, [name]: value });
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
+
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      const updatedFormData = {
+        ...formData,
+        salary: formData.salary * 10000, // 입력된 값 * 10,000을 적용하여 DB에 저장
+      };
       const endpoint = "/api/caregivers/build";
-        const response = await axiosInstance.post(endpoint, formData);
+        const response = await axiosInstance.post(endpoint, updatedFormData);
         if (response.status === 201) {
             alert(`요양사 ${isRegistered ? "수정" : "등록"}이 완료되었습니다!`);
-            navigate("/caregiver/info");
+            navigate("/mypage/caregiver-info");
         }
     } catch (error) {
       console.error(isRegistered ? "요양사 업데이트 실패:" : "요양사 등록 실패:", error);
       alert(isRegistered ? "요양사 정보 수정 중 오류가 발생했습니다." : "요양사 등록 중 오류가 발생했습니다.");
     }
   };
-
-  if (!formData) return <div>로딩 중...</div>;
 
   return (
     <div className={styles.editCaregiverPage}>
