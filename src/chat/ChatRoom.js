@@ -11,7 +11,6 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const { user } = useAuth();
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
-  const messagesEndRef = useRef(null);
   const [roomInfo, setRoomInfo] = useState(null);
 
   useEffect(() => {
@@ -23,7 +22,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     const socket = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
-  }, []);
+  }, [onConnected]);
 
   const onConnected = () => {
     console.log("✅ WebSocket 연결 성공");
