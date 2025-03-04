@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from './EditProfile.module.css';
 import axiosInstance from "../../api/axiosInstance";
+import Swal from 'sweetalert2';
 
 function EditProfile() {
   const [profileInput, setProfileInput] = useState({
@@ -19,7 +20,11 @@ function EditProfile() {
   const onSubmit = async (e) => {
     e.preventDefault();
     if (profileInput.newPassword !== profileInput.confirmPassword) {
-      alert("새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다.");
+      Swal.fire({
+        icon: 'warning',
+        title: '비밀번호 불일치',
+        text: "새 비밀번호와 새 비밀번호 확인이 일치하지 않습니다."
+      });
       return;
     }
 
@@ -30,10 +35,18 @@ function EditProfile() {
         throw new Error(response.data?.message || "프로필 업데이트에 실패했습니다.");
       }
 
-      alert("프로필이 성공적으로 업데이트되었습니다.");
+      Swal.fire({
+        icon: 'success',
+        title: '프로필 업데이트',
+        text: "프로필이 성공적으로 업데이트되었습니다."
+      });
     } catch (error) {
       console.error("프로필 업데이트 오류:", error);
-      alert(error.response.data || "프로필 업데이트 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: 'error',
+        title: '업데이트 오류',
+        text: error.response?.data || "프로필 업데이트 중 오류가 발생했습니다."
+      });
     }
   };
 
