@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { ArrowLeft, Heart, MessageCircle, Eye, Trash2 } from "lucide-react"
 import styles from "./PostDetail.module.css"
 import axiosInstance from "../api/axiosInstance"
+import Swal from 'sweetalert2'
 
 export default function PostDetail() {
   const navigate = useNavigate()
@@ -130,7 +131,12 @@ export default function PostDetail() {
   const handleSubmitComment = async (e) => {
     e.preventDefault()
     if (!comment.trim()) {
-      alert("댓글 내용을 입력해주세요.")
+      Swal.fire({
+        title: '입력 오류',
+        text: '댓글 내용을 입력해주세요.',
+        icon: 'warning',
+        confirmButtonText: '확인'
+      })
       return
     }
     try {
@@ -146,22 +152,53 @@ export default function PostDetail() {
       setComments((prevComments) => [newComment, ...prevComments])
       setComment("")
       setIsAnonymous(false)
-      // alert("댓글이 등록되었습니다.")
+      await Swal.fire({
+        title: '성공!',
+        text: '댓글이 등록되었습니다.',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+      })
     } catch (error) {
       console.error("Failed to submit comment:", error)
-      alert("댓글 등록에 실패했습니다. 다시 시도해 주세요.")
+      Swal.fire({
+        title: '오류',
+        text: '댓글 등록에 실패했습니다. 다시 시도해 주세요.',
+        icon: 'error',
+        confirmButtonText: '확인'
+      })
     }
   }
 
   const handleDeleteComment = async (commentId) => {
-    if (window.confirm("정말로 이 댓글을 삭제하시겠습니까?")) {
+    const result = await Swal.fire({
+      title: '댓글 삭제',
+      text: '정말로 이 댓글을 삭제하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소'
+    })
+
+    if (result.isConfirmed) {
       try {
         await axiosInstance.post(`/api/community/comment/delete?commentId=${commentId}`)
         setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId))
-        alert("댓글이 삭제되었습니다.")
+        await Swal.fire({
+          title: '성공!',
+          text: '댓글이 삭제되었습니다.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        })
       } catch (error) {
         console.error("Failed to delete comment:", error)
-        alert("댓글 삭제에 실패했습니다. 다시 시도해 주세요.")
+        Swal.fire({
+          title: '오류',
+          text: '댓글 삭제에 실패했습니다. 다시 시도해 주세요.',
+          icon: 'error',
+          confirmButtonText: '확인'
+        })
       }
     }
   }
@@ -169,7 +206,12 @@ export default function PostDetail() {
   const handleLike = async () => {
     if (!post || !post.id) {
       console.error("Post ID is missing")
-      alert("게시글 정보가 올바르지 않습니다. 페이지를 새로고침 해주세요.")
+      Swal.fire({
+        title: '오류',
+        text: '게시글 정보가 올바르지 않습니다. 페이지를 새로고침 해주세요.',
+        icon: 'error',
+        confirmButtonText: '확인'
+      })
       return
     }
 
@@ -180,7 +222,6 @@ export default function PostDetail() {
       }
 
       const response = await axiosInstance.post("/api/community/like", requestData)
-
       const { data } = response
 
       let success = false
@@ -204,14 +245,30 @@ export default function PostDetail() {
           ...prevPost,
           likeCount: newLikeCount,
         }))
-        // alert(newLikedState ? "좋아요가 완료되었습니다." : "좋아요가 취소되었습니다.")
+        await Swal.fire({
+          title: '성공!',
+          text: newLikedState ? '좋아요가 완료되었습니다.' : '좋아요가 취소되었습니다.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        })
       } else {
         console.error("Server indicated failure:", data)
-        alert(serverMessage)
+        Swal.fire({
+          title: '오류',
+          text: serverMessage,
+          icon: 'error',
+          confirmButtonText: '확인'
+        })
       }
     } catch (error) {
       console.error("Failed to like post:", error)
-      alert("좋아요 처리 중 오류가 발생했습니다. 다시 시도해 주세요.")
+      Swal.fire({
+        title: '오류',
+        text: '좋아요 처리 중 오류가 발생했습니다. 다시 시도해 주세요.',
+        icon: 'error',
+        confirmButtonText: '확인'
+      })
     }
   }
 
@@ -220,14 +277,34 @@ export default function PostDetail() {
   }
 
   const handleDelete = async () => {
-    if (window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) {
+    const result = await Swal.fire({
+      title: '게시글 삭제',
+      text: '정말로 이 게시글을 삭제하시겠습니까?',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '삭제',
+      cancelButtonText: '취소'
+    })
+
+    if (result.isConfirmed) {
       try {
         await axiosInstance.post(`/api/community/posts/${id}/delete`)
-        alert("게시글이 삭제되었습니다.")
+        await Swal.fire({
+          title: '성공!',
+          text: '게시글이 삭제되었습니다.',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        })
         navigate("/community")
       } catch (error) {
         console.error("Failed to delete post:", error)
-        alert("게시글 삭제에 실패했습니다. 다시 시도해 주세요.")
+        Swal.fire({
+          title: '오류',
+          text: '게시글 삭제에 실패했습니다. 다시 시도해 주세요.',
+          icon: 'error',
+          confirmButtonText: '확인'
+        })
       }
     }
   }
