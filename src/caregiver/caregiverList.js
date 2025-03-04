@@ -29,20 +29,13 @@ function CaregiverList() {
   };
 
   const formatSalary = (salary) => {
-    return salary ? salary / 10000 : 0;
+    return salary / 10000; // 정수 변환 후 문자열로 변환
   };
-
-  const parseSalarySearchTerm = (input) => {
-    const numericValue = input.replace(/[^0-9]/g, ""); // 숫자만 추출
-    return numericValue ? parseInt(numericValue, 10) : null; // 숫자로 변환
-  };
-
-  const parsedSalarySearch = parseSalarySearchTerm(searchTerm);
 
   // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
     const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "");
-    const formattedSalary = formatSalary(caregiver.salary); // "만원" 단위 변환
+    const formattedSalary = formatSalary(caregiver.salary);
     const search = searchTerm.toLowerCase();
 
     switch (searchField) {
@@ -53,16 +46,15 @@ function CaregiverList() {
       case "전문 분야":
         return (caregiver.servNeeded?.toLowerCase() ?? "").includes(search);
       case "근무 요일":
-        return workDaysKorean.includes(search);
-      case "월급":
-        return parsedSalarySearch !== null ? formattedSalary === parsedSalarySearch : false;
-      default: // "전체" 검색
+        case "월급":
+          return String(formattedSalary ?? "").includes(search);
+        default: // "전체" 검색
         return (
           (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
           (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
           (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
           workDaysKorean.includes(search) ||
-          (parsedSalarySearch !== null ? formattedSalary === parsedSalarySearch : false) ||
+          String(formattedSalary ?? "").includes(search) ||
           (caregiver.status?.toLowerCase() ?? "").includes(search)
         );
     }
@@ -71,8 +63,6 @@ function CaregiverList() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>요양사 목록</h1>
-
-      {/* 검색바와 검색 필드 선택 추가 */}
       <div className={styles.searchBar}>
         <select
           value={searchField}
