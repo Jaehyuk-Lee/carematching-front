@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from "react"; // ✅ useState 추가
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -14,8 +14,12 @@ import Community from './community/Community';
 import CreatePost from "./community/CreatePost"
 import PostDetail from "./community/PostDetail"
 import UpdatePost from "./community/UpdatePost"
+import ChatSidebar from "./chat/ChatSidebar";
+import CreateRoomPage from "./chat/CreateRoomPage";
+
 
 function App() {
+  const [isChatOpen, setIsChatOpen] = useState(false);
   return (
     <AppProvider>
       <Router>
@@ -33,7 +37,11 @@ function App() {
               <Route path="/create-post" element={<CreatePost />} />
               <Route path="/community/posts/:id" element={<PostDetail />} />
               <Route path="/community/posts/:id/update" element={<UpdatePost />} />
+              <Route path="/create-room" element={<CreateRoomPage />} />
+              <Route path="/chat-rooms" element={<Home />} />
             </Routes>
+            {/* 채팅 사이드바 (기본적으로 닫혀 있음) */}
+            <ChatSidebar isChatOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
           </main>
           <Footer />
         </div>
