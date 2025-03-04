@@ -188,8 +188,13 @@
 .postItem {
   display: flex;
   flex-direction: column;
-  padding: 20px 0;
+  padding: 20px 10px;
   border-bottom: 1px solid #eaeaea;
+  cursor: pointer;
+}
+
+.postItem:hover {
+  background-color: #f8f9fa;
 }
 
 .postContent {
@@ -276,8 +281,6 @@
 
 .postStats {
   display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .postStat {
@@ -287,6 +290,21 @@
   font-size: 13px;
 }
 
+.viewCount,
+.likeCount,
+.commentCount {
+  display: flex;
+  align-items: center;
+  color: #666;
+  font-size: 14px;
+}
+
+.viewCount svg,
+.likeCount svg,
+.commentCount svg {
+  margin-right: 3px;
+}
+
 .viewCount::before,
 .likeCount::before,
 .commentCount::before {
@@ -294,65 +312,18 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  margin-right: 4px;
+  margin-right: 2px;
   vertical-align: middle;
 }
 
-.viewCount::before {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M12 5.25C7 5.25 2.73 8.36 1 12.75c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17.25c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
-}
-
-.commentCount::before {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M20 3H4c-0.6 0-1 0.4-1 1v12c0 0.6 0.4 1 1 1h3v4l4-4h9c0.6 0 1-0.4 1-1V4c0-0.6-0.4-1-1-1z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
-}
-
-.likeCount::before {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23999999'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
-}
-
-@media (max-width: 768px) {
-  .contentWrapper {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    border-right: none;
-    border-bottom: 1px solid #eaeaea;
-  }
-
-  .profileStats {
-    max-width: 300px;
-    margin: 0 auto 20px;
-  }
-
-  .writeButton {
-    max-width: 300px;
-    margin: 0 auto;
-  }
-
-  .postContent {
-    flex-direction: column;
-  }
-
-  .postTextContent {
-    margin-right: 0;
-    margin-bottom: 15px;
-  }
-
-  .postImageContainer {
-    width: 100%;
-    height: auto;
-    aspect-ratio: 16 / 9;
-  }
-}
-
 .myPostItem {
-  padding: 20px;
+  padding: 20px 10px;
   border-bottom: 1px solid #eaeaea;
+  cursor: pointer;
+}
+
+.myPostItem:hover {
+  background-color: #f8f9fa;
 }
 
 .myPostContent {
@@ -416,46 +387,6 @@
   background-color: #999;
 }
 
-.postStats {
-  display: flex;
-  gap: 12px;
-}
-
-.viewCount,
-.likeCount,
-.commentCount {
-  display: flex;
-  align-items: center;
-  color: #666;
-  font-size: 14px;
-}
-
-.viewCount::before,
-.likeCount::before,
-.commentCount::before {
-  content: "";
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
-.viewCount::before {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23666666'%3E%3Cpath d='M12 5.25C7 5.25 2.73 8.36 1 12.75c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17.25c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
-}
-
-.commentCount::before {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='%23666666'%3E%3Cpath d='M20 3H4c-0.6 0-1 0.4-1 1v12c0 0.6 0.4 1 1 1h3v4l4-4h9c0.6 0 1-0.4 1-1V4c0-0.6-0.4-1-1-1z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
-}
-
-.likeCount::before {
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666666'%3E%3Cpath d='M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z'/%3E%3C/svg%3E")
-    center / contain no-repeat;
-}
-
 .postCategory {
   display: flex;
   align-items: center;
@@ -497,8 +428,13 @@
 }
 
 .commentItem {
-  padding: 20px;
+  padding: 20px 10px;
   border-bottom: 1px solid #eaeaea;
+  cursor: pointer;
+}
+
+.commentItem:hover {
+  background-color: #f8f9fa;
 }
 
 .commentPostTitle {
@@ -529,6 +465,55 @@
 @media (max-width: 768px) {
   .commentContent {
     margin-bottom: 20px;
+  }
+}
+
+.postItem,
+.myPostItem,
+.commentItem {
+  cursor: pointer;
+}
+
+.postItem:hover,
+.myPostItem:hover,
+.commentItem:hover {
+  background-color: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  .profileStats {
+    max-width: 300px;
+    margin: 0 auto 20px;
+  }
+
+  .writeButton {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+
+  .postContent {
+    flex-direction: column;
+  }
+
+  .postTextContent {
+    margin-right: 0;
+    margin-bottom: 15px;
+  }
+
+  .postImageContainer {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
   }
 }
 

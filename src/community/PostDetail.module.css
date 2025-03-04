@@ -1,0 +1,412 @@
+.container {
+  max-width: 768px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  padding: 1rem 0;
+  border-bottom: 1px solid #eaeaea;
+  z-index: 10;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #000;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.article {
+  padding: 1.5rem 0;
+}
+
+.categoryDateWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.category {
+  display: inline-block;
+  font-size: 0.875rem;
+  color: #5d5d5d;
+  background-color: #f0f0f0;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 0;
+}
+
+.uploadDate {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.postTitle {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.authorInfo {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.authorProfile {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.authorImage {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.authorMeta {
+  display: flex;
+  flex-direction: column;
+}
+
+.authorName {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.authorRole {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.postMeta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.editButton,
+.deleteButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 15px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.editButton {
+  background-color: #ff7f50;
+  color: white;
+}
+
+.deleteButton {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.uploadDate {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.postContent {
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.postText {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+.postImage {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.postImage img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.postStats {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-top: 1px solid #eaeaea;
+  border-bottom: 5px solid #eaeaea;
+}
+
+.likeButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  color: #666;
+  transition: color 0.2s ease-in-out;
+}
+
+.likeButton span {
+  font-size: 0.875rem;
+}
+
+.likeButton.liked {
+  color: #ff7f50;
+}
+
+.statsInfo {
+  display: flex;
+  gap: 1rem;
+}
+
+.statItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.comments {
+  padding: 0.75rem 0;
+  position: relative;
+}
+
+.commentSectionTitle {
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+  color: #666;
+  margin-left: -42rem;
+}
+
+.commentForm {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 1px solid #eaeaea;
+  border-radius: 0.75rem;
+  background-color: white;
+}
+
+.anonymousCheck {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.anonymousCheck input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid #eaeaea;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.commentInput {
+  flex: 1;
+  padding: 0;
+  border: none;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.commentInput::placeholder {
+  color: #999;
+}
+
+.commentSubmit {
+  padding: 0.5rem 1rem;
+  background-color: #ff7f50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.commentList {
+  display: flex;
+  flex-direction: column;
+}
+
+.commentItem {
+  padding: 1rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.commentList > .commentItem:last-child {
+  border-bottom: none;
+}
+
+.commentHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.commentAuthor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.commentAuthorImage {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.commentAuthorInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.commentAuthorName {
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.commentAuthorRole {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.commentActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.commentActions .editButton,
+.commentActions .deleteButton {
+  padding: 0.375rem 0.75rem;
+  border: none;
+  border-radius: 20px;
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.commentActions .editButton {
+  background-color: #ff7f50;
+  color: white;
+}
+
+.commentActions .deleteButton {
+  background-color: #e9ecef;
+  color: #000;
+}
+
+.commentText {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.commentTime {
+  font-size: 0.75rem;
+  color: #666;
+}
+
+.commentContent {
+  margin-left: 2.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.deleteCommentButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  padding: 0.25rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.deleteCommentButton:hover {
+  background-color: #f0f0f0;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 0 0.5rem;
+  }
+
+  .authorInfo {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .postMeta {
+    align-items: flex-start;
+  }
+
+  .commentForm {
+    flex-direction: column;
+  }
+
+  .commentSubmit {
+    width: 100%;
+  }
+}
+
+.loading,
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  color: #ff0000;
+}
+
+.divider {
+  height: 1px;
+  background-color: #eaeaea;
+  margin: 1.5rem 0;
+}
+
