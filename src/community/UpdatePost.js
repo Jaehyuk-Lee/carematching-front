@@ -1,33 +1,51 @@
 import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import axiosInstance from "../api/axiosInstance"
-import styles from "./CreatePost.module.css"
+import styles from "./UpdatePost.module.css"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
-export default function CreatePost() {
+const truncateFilename = (filename, maxLength = 40) => {
+  if (filename.length <= maxLength) return filename
+  const extension = filename.split(".").pop()
+  const nameWithoutExtension = filename.slice(0, filename.lastIndexOf("."))
+  const truncatedName = nameWithoutExtension.slice(0, maxLength - 3 - extension.length)
+  return `${truncatedName}...${extension}`
+}
+
+export default function UpdatePost() {
   const navigate = useNavigate()
-  const location = useLocation()
+  const { id } = useParams()
   const { user } = useAuth()
   const [category, setCategory] = useState("전체")
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [image, setImage] = useState(null)
+  const [currentImage, setCurrentImage] = useState("")
   const [showNotification, setShowNotification] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    const handlePopState = () => {
-      navigate("/community", { replace: true })
+    const fetchPost = async () => {
+      try {
+        const response = await axiosInstance.get(`/api/community/posts/${id}/update`)
+        const { category, isAnonymous, title, content, image } = response.data
+        setCategory(category)
+        setIsAnonymous(isAnonymous)
+        setTitle(title)
+        setContent(content)
+        setCurrentImage(image)
+        setIsLoading(false)
+      } catch (error) {
+        console.error("Failed to fetch post:", error)
+        navigate("/community")
+      }
     }
 
-    window.addEventListener("popstate", handlePopState)
-
-    return () => {
-      window.removeEventListener("popstate", handlePopState)
-    }
-  }, [navigate])
+    fetchPost()
+  }, [id, navigate])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -47,20 +65,20 @@ export default function CreatePost() {
         formData.append("imageFile", image)
       }
 
-      const response = await axiosInstance.post("/api/community/add", formData, {
+      const response = await axiosInstance.post(`/api/community/posts/${id}/update`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
 
-      console.log("Post created successfully:", response.data)
+      console.log("Post updated successfully:", response.data)
       setShowNotification(true)
       setTimeout(() => {
         setShowNotification(false)
-        navigate("/community", { replace: true })
+        navigate(`/community/posts/${id}`, { replace: true })
       }, 1000)
     } catch (error) {
-      console.error("Failed to create post:", error)
+      console.error("Failed to update post:", error)
     }
   }
 
@@ -76,14 +94,26 @@ export default function CreatePost() {
     }
   }
 
-  const handleCancel = () => {
-    navigate(location.state?.from || "/community", { replace: true })
+  useEffect(() => {
+    const handlePopState = () => {
+      navigate(`/community/posts/${id}`, { replace: true })
+    }
+
+    window.addEventListener("popstate", handlePopState)
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState)
+    }
+  }, [id, navigate])
+
+  if (isLoading) {
+    return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>
   }
 
   return (
     <div className={styles.container}>
-      {showNotification && <div className={styles.notification}>게시글 등록이 완료되었습니다.</div>}
-      <h1 className={styles.title}>게시글 작성</h1>
+      {showNotification && <div className={styles.notification}>게시글 수정이 완료되었습니다.</div>}
+      <h1 className={styles.title}>게시글 수정</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formHeader}>
           <div className={styles.formGroup}>
@@ -157,15 +187,23 @@ export default function CreatePost() {
             <label htmlFor="image-upload" className={styles.uploadButton}>
               업로드
             </label>
-            {image && <span className={styles.fileName}>{image.name}</span>}
+            {image ? (
+              <span className={styles.fileName}>{truncateFilename(image.name)}</span>
+            ) : currentImage ? (
+              <span className={styles.fileName}>{truncateFilename(currentImage.split("/").pop())}</span>
+            ) : null}
           </div>
         </div>
 
         <div className={styles.buttonGroup}>
           <button type="submit" className={styles.submitButton}>
-            게시
+            수정
           </button>
-          <button type="button" onClick={handleCancel} className={styles.cancelButton}>
+          <button
+            type="button"
+            onClick={() => navigate(`/community/posts/${id}`, { replace: true })}
+            className={styles.cancelButton}
+          >
             취소
           </button>
         </div>
