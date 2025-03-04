@@ -6,8 +6,6 @@ import styles from "./caregiverInfo.module.css";
 const CaregiverInfo = () => {
   const navigate = useNavigate();
   const [caregiver, setCaregiver] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCaregiverData = async () => {
@@ -18,21 +16,16 @@ const CaregiverInfo = () => {
         }
       } catch (error) {
         console.error("요양사 정보를 불러오는 중 오류 발생:", error);
-        setError(error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchCaregiverData();
   }, []);
 
-  if (loading) return <div className={styles.message}>로딩중...</div>;
-  if (error) return <div className={styles.message}>에러: {error.message}</div>;
   if (!caregiver) return <div className={styles.message}>등록된 요양사 정보가 없습니다.</div>;
 
   const formatSalary = (salary) => {
-    return salary ? `${salary / 10000}만원` : "정보 없음";
+    return salary ? salary / 10000 : 0;
   };
 
   // 근무 요일을 이진 문자열에서 한글 요일로 변환
@@ -49,7 +42,7 @@ const CaregiverInfo = () => {
       <h2 className={styles.title}>요양사 정보</h2>
       <div className={styles.infoBox}>
         <p><strong>이름:</strong> {caregiver.realName}</p>
-        <p><strong>희망 월급:</strong> {formatSalary(caregiver.salary)}</p>
+        <p><strong>희망 월급:</strong> {formatSalary(caregiver.salary)}만원</p>
         <p><strong>전문 분야:</strong> {caregiver.servNeeded}</p>
         <p><strong>거주 지역:</strong> {caregiver.loc}</p>
         <p><strong>고용 형태:</strong> {caregiver.employmentType === "CONTRACT" ? "계약직" : "정규직"}</p>
