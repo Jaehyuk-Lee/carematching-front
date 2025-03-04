@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
-import config from "../config/config";
 import styles from './Signup.module.css';
+import Swal from 'sweetalert2';
 
 function Signup() {
   const navigate = useNavigate();
@@ -23,13 +23,18 @@ function Signup() {
     setError("");
 
     try {
-      const res = await axiosInstance.post(`${config.apiUrl}/api/user/signup`, signupInput);
+      const res = await axiosInstance.post(`/api/user/signup`, signupInput);
       if (res.status === 200) {
-        alert("회원가입이 완료되었습니다. 로그인해주세요.");
+        Swal.fire({
+          icon: 'success',
+          title: '회원가입 완료',
+          text: '회원가입이 완료되었습니다. 로그인해주세요.'
+        });
         navigate('/login');
       }
     } catch (error) {
-      setError(error.response?.data?.message || "회원가입 중 오류가 발생했습니다.");
+      console.log(error);
+      setError(error.response?.data?.error || "회원가입 중 오류가 발생했습니다.");
     }
   };
 
@@ -40,7 +45,7 @@ function Signup() {
         {error && <p className={styles.errorMessage}>{error}</p>}
         <form onSubmit={onSignup}>
           <div className={styles.inputGroup}>
-            <label>아이디</label>
+            <label>아이디 (필수)</label>
             <input
               type="text"
               name="username"
@@ -51,7 +56,7 @@ function Signup() {
             />
           </div>
           <div className={styles.inputGroup}>
-            <label>비밀번호</label>
+            <label>비밀번호 (필수)</label>
             <input
               type="password"
               name="password"
@@ -62,7 +67,7 @@ function Signup() {
             />
           </div>
           <div className={styles.inputGroup}>
-            <label>비밀번호 확인</label>
+            <label>비밀번호 확인 (필수)</label>
             <input
               type="password"
               name="confirmPassword"
@@ -73,7 +78,7 @@ function Signup() {
             />
           </div>
           <div className={styles.inputGroup}>
-            <label>닉네임</label>
+            <label>닉네임 (필수)</label>
             <input
               type="text"
               name="nickname"

@@ -3,14 +3,26 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import logo from '../logo.svg';
 import styles from './Header.module.css';
+import Swal from 'sweetalert2';
 
 function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    logout();
-    navigate('/');
+    Swal.fire({
+      title: '로그아웃',
+      text: "정말 로그아웃 하시겠습니까?",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        navigate('/');
+      }
+    });
   };
 
   return (
@@ -32,7 +44,7 @@ function Header() {
           {user ? (
             <div className={styles.userMenu}>
               <span className={styles.username}>{user.username}</span>
-              <Link to="/mypage">마이페이지</Link>
+              <Link to="/myPage">마이페이지</Link>
               <button onClick={handleLogout} className={styles.logoutButton}>로그아웃</button>
             </div>
           ) : (

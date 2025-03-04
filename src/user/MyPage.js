@@ -1,42 +1,55 @@
 import React from 'react';
 import { useNavigate, Routes, Route } from 'react-router-dom';
+import axiosInstance from "../api/axiosInstance";
 import { useAuth } from '../context/AuthContext';
 import defaultProfile from '../logo.svg'; // 임시 프로필 이미지
 import styles from './MyPage.module.css';
-import config from '../config/config';
-import EditProfile from './EditProfile';
-import MyPosts from './MyPosts';
+import EditProfile from './myPage/EditProfile';
+import MyPosts from './myPage/MyPosts';
+import Swal from 'sweetalert2';
 
 function MyPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   async function handleDeleteUser() {
-    if (window.confirm('정말로 탈퇴하시겠습니까?\n\n작성한 게시글과 댓글, 좋아요 등의 모든 데이터가 삭제됩니다.')) {
-      try {
-        const response = await fetch(`${config.apiUrl}/api/user/delete`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json'
-          }
-        });
+    const result = await Swal.fire({
+      title: '정말로 탈퇴하시겠습니까?',
+      text: "작성한 게시글과 댓글, 좋아요 등의 모든 데이터가 삭제됩니다.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: '네',
+      cancelButtonText: '아니요'
+    });
 
-        if (!response.ok) {
+    if (result.isConfirmed) {
+      try {
+        const res = await axiosInstance.post(`/api/user/delete`);
+        if (res.status !== 200) {
           throw new Error('회원 탈퇴 실패');
         }
 
         // 로그아웃 처리 및 로컬 스토리지 클리어
         logout();
+        Swal.fire({
+          icon: 'success',
+          title: '탈퇴 완료',
+          text: '회원 탈퇴가 완료되었습니다.'
+        });
         navigate('/');
       } catch (error) {
         console.error('회원 탈퇴 중 오류 발생:', error);
+        Swal.fire({
+          icon: 'error',
+          title: '오류',
+          text: '회원 탈퇴 중 오류가 발생했습니다.'
+        });
       }
     }
   }
 
   return (
-    <div className={styles.mypageContainer}>
+    <div className={styles.myPageContainer}>
       <div className={styles.profileSection}>
         <div className={styles.profileImageContainer}>
           <img src={defaultProfile} alt="프로필" className={styles.profileImage} />
@@ -61,7 +74,7 @@ function MyPage() {
         <div className={styles.actionButtons}>
           <button
             className={`${styles.actionButton} ${styles.gray}`}
-            onClick={() => navigate('/mypage/my-posts')}
+            onClick={() => navigate('/myPage/my-posts')}
           >
             작성글
           </button>
@@ -69,7 +82,7 @@ function MyPage() {
           <button className={`${styles.actionButton} ${styles.gray}`}>좋아요</button>
           <button
             className={`${styles.actionButton} ${styles.orange}`}
-            onClick={() => navigate('/mypage/edit-profile')}
+            onClick={() => navigate('/myPage/edit-profile')}
           >
             내 정보 수정
           </button>
