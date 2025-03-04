@@ -3,10 +3,8 @@ import { Link } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import styles from './caregiverList.module.css';
 
-export default function CaregiverListPage() {
+function CaregiverList() {
   const [caregivers, setCaregivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
   const [searchField, setSearchField] = useState("전체"); // 검색 필드 상태
 
@@ -15,12 +13,9 @@ export default function CaregiverListPage() {
       .get("/api/caregivers")
       .then((response) => {
         setCaregivers(response.data);
-        setLoading(false);
       })
       .catch((err) => {
         console.error("요양사 데이터를 가져오는 중 에러 발생:", err);
-        setError(err);
-        setLoading(false);
       });
   }, []);
 
@@ -61,9 +56,6 @@ export default function CaregiverListPage() {
         );
     }
   });
-
-  if (loading) return <div className={styles.message}>로딩중...</div>;
-  if (error) return <div className={styles.message}>에러: {error.message}</div>;
 
   return (
     <div className={styles.container}>
@@ -118,3 +110,5 @@ export default function CaregiverListPage() {
     </div>
   );
 }
+
+export default CaregiverList;

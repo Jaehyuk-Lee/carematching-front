@@ -2,23 +2,18 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 
-export default function CaregiverDetailPage() {
+function CaregiverDetail() {
   const { id } = useParams();
   const [caregiver, setCaregiver] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     axiosInstance
       .get(`/api/caregivers/${id}`)
       .then((response) => {
         setCaregiver(response.data);
-        setLoading(false);
       })
       .catch((err) => {
         console.error("데이터 로드 에러:", err);
-        setError(err);
-        setLoading(false);
       });
   }, [id]);
 
@@ -30,8 +25,6 @@ export default function CaregiverDetailPage() {
       .join("");
   };
 
-  if (loading) return <div>로딩중...</div>;
-  if (error) return <div>에러: {error.message}</div>;
   if (!caregiver) return <div>데이터가 없습니다.</div>;
 
   return (
@@ -69,3 +62,5 @@ export default function CaregiverDetailPage() {
     </div>
   );
 }
+
+export default CaregiverDetail;

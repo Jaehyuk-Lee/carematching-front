@@ -6,8 +6,6 @@ import styles from "./caregiverInfo.module.css";
 const CaregiverInfo = () => {
   const navigate = useNavigate();
   const [caregiver, setCaregiver] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchCaregiverData = async () => {
@@ -18,17 +16,12 @@ const CaregiverInfo = () => {
         }
       } catch (error) {
         console.error("요양사 정보를 불러오는 중 오류 발생:", error);
-        setError(error);
-      } finally {
-        setLoading(false);
       }
     };
 
     fetchCaregiverData();
   }, []);
 
-  if (loading) return <div className={styles.message}>로딩중...</div>;
-  if (error) return <div className={styles.message}>에러: {error.message}</div>;
   if (!caregiver) return <div className={styles.message}>등록된 요양사 정보가 없습니다.</div>;
 
   const formatSalary = (salary) => {
