@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, Routes, Route } from "react-router-dom"
 import { ArrowLeft, Heart, MessageCircle, Eye, Trash2 } from "lucide-react"
 import styles from "./PostDetail.module.css"
 import axiosInstance from "../api/axiosInstance"
+import UpdatePost from "./UpdatePost"
 import Swal from 'sweetalert2'
 
-export default function PostDetail() {
+// 게시글 상세 컴포넌트
+function PostDetailContent() {
   const navigate = useNavigate()
   const { id } = useParams()
   const [post, setPost] = useState(null)
@@ -131,7 +133,7 @@ export default function PostDetail() {
   const handleSubmitComment = async (e) => {
     e.preventDefault()
     if (!comment.trim()) {
-      Swal.fire({
+      await Swal.fire({
         title: '입력 오류',
         text: '댓글 내용을 입력해주세요.',
         icon: 'warning',
@@ -161,7 +163,7 @@ export default function PostDetail() {
       })
     } catch (error) {
       console.error("Failed to submit comment:", error)
-      Swal.fire({
+      await Swal.fire({
         title: '오류',
         text: '댓글 등록에 실패했습니다. 다시 시도해 주세요.',
         icon: 'error',
@@ -193,7 +195,7 @@ export default function PostDetail() {
         })
       } catch (error) {
         console.error("Failed to delete comment:", error)
-        Swal.fire({
+        await Swal.fire({
           title: '오류',
           text: '댓글 삭제에 실패했습니다. 다시 시도해 주세요.',
           icon: 'error',
@@ -206,7 +208,7 @@ export default function PostDetail() {
   const handleLike = async () => {
     if (!post || !post.id) {
       console.error("Post ID is missing")
-      Swal.fire({
+      await Swal.fire({
         title: '오류',
         text: '게시글 정보가 올바르지 않습니다. 페이지를 새로고침 해주세요.',
         icon: 'error',
@@ -254,7 +256,7 @@ export default function PostDetail() {
         })
       } else {
         console.error("Server indicated failure:", data)
-        Swal.fire({
+        await Swal.fire({
           title: '오류',
           text: serverMessage,
           icon: 'error',
@@ -263,7 +265,7 @@ export default function PostDetail() {
       }
     } catch (error) {
       console.error("Failed to like post:", error)
-      Swal.fire({
+      await Swal.fire({
         title: '오류',
         text: '좋아요 처리 중 오류가 발생했습니다. 다시 시도해 주세요.',
         icon: 'error',
@@ -299,7 +301,7 @@ export default function PostDetail() {
         navigate("/community")
       } catch (error) {
         console.error("Failed to delete post:", error)
-        Swal.fire({
+        await Swal.fire({
           title: '오류',
           text: '게시글 삭제에 실패했습니다. 다시 시도해 주세요.',
           icon: 'error',
@@ -431,6 +433,16 @@ export default function PostDetail() {
         </div>
       </section>
     </div>
+  )
+}
+
+// 전체 라우트 구성
+export default function PostDetail() {
+  return (
+    <Routes>
+      <Route path="/" element={<PostDetailContent />} />
+      <Route path="/update" element={<UpdatePost />} />
+    </Routes>
   )
 }
 
