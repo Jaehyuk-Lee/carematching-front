@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import styles from './caregiverEdit.module.css';
 import axiosInstance from "../api/axiosInstance";
+import { useNavigate } from "react-router-dom";
 
 const CaregiverEdit = ({ isRegistered, onSuccess }) => {
+  const navigate = useNavigate();
+  const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"];
+
   const [formData, setFormData] = useState({
     realName: "",
     salary: "",
@@ -11,11 +15,9 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
     employmentType: "CONTRACT",
     workForm: "COMMUTE",
     workTime: "MORNING",
-    workDays: "",
+    workDays: "0000000",
     status: "OPEN",
   });
-
-  const [workDaysInput, setWorkDaysInput] = useState("");
 
   useEffect(() => {
     const fetchCaregiverData = async () => {
@@ -23,7 +25,6 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
         const response = await axiosInstance.get("/api/caregivers/user");
         if (response.status === 200) {
           setFormData(response.data);
-          setWorkDaysInput(convertBinaryToDays(response.data.workDays));
         }
       } catch (error) {
         console.error("Caregiver 데이터를 불러오는 중 오류 발생:", error);
@@ -35,34 +36,15 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
     }
   }, [isRegistered]);
 
-  const convertDaysToBinary = (daysString) => {
-    if (!daysString) return "";
-    const days = ["월", "화", "수", "목", "금", "토", "일"];
-    return days.map((day) => (daysString.includes(day) ? "1" : "0")).join("");
-  };
-
-  const convertBinaryToDays = (binaryString) => {
-    const days = ["월", "화", "수", "목", "금", "토", "일"];
-    return binaryString
-        .split("")
-        .map((bit, index) => (bit === "1" ? days[index] : ""))
-        .join("");
+  const handleWorkDaysChange = (index) => {
+    const workDaysArray = formData.workDays.split(""); // 현재 이진 문자열을 배열로 변환
+    workDaysArray[index] = workDaysArray[index] === "1" ? "0" : "1"; // 선택 상태 변경
+    setFormData({ ...formData, workDays: workDaysArray.join("") }); // 다시 이진 문자열로 저장
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "workDays") {
-      setWorkDaysInput(value);
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-  };
-
-  const handleWorkDaysBlur = () => {
-    setFormData({
-      ...formData,
-      workDays: convertDaysToBinary(workDaysInput),
-    });
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -70,12 +52,10 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
 
     try {
       const endpoint = "/api/caregivers/build";
-        const method = "post";
-        const response = await axiosInstance[method](endpoint, formData);
+        const response = await axiosInstance.post(endpoint, formData);
         if (response.status === 201) {
             alert(`요양사 ${isRegistered ? "수정" : "등록"}이 완료되었습니다!`);
-            onSuccess();
-            window.location.reload();
+            navigate("/caregiver/info");
         }
     } catch (error) {
       console.error(isRegistered ? "요양사 업데이트 실패:" : "요양사 등록 실패:", error);
@@ -102,14 +82,17 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
         </div>
         <div className={styles.inputGroup}>
           <label>희망 월급</label>
-          <input
-            type="number"
-            id="salary"
-            name="salary"
-            value={formData.salary}
-            onChange={handleChange}
-            required
-          />
+          <div className={styles.salaryInputContainer}>
+            <input
+              type="number"
+              name="salary"
+              value={formData.salary}
+              onChange={handleChange}
+              required
+              className={styles.salaryInput} // 스타일 적용
+            />
+            <span className={styles.salaryUnit}>만원</span> {/* "만원"이 옆에 붙음 */}
+          </div>
         </div>
         <div className={styles.inputGroup}>
           <label>전문 분야</label>
@@ -158,17 +141,19 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
           </select>
         </div>
         <div className={styles.inputGroup}>
-          <label>근무 요일 (예: 월화수)</label>
-          <input
-            type="text"
-            id="workDays"
-            name="workDays"
-            value={workDaysInput}
-            onChange={handleChange}
-            onBlur={handleWorkDaysBlur}
-            placeholder="월화수"
-            required
-          />
+          <label>근무 요일</label>
+          <div className={styles.checkboxRow}>
+            {daysOfWeek.map((day, index) => (
+              <div key={index} className={styles.checkboxItem}>
+                <span>{day}</span>
+                <input
+                  type="checkbox"
+                  checked={formData.workDays[index] === "1"} // 현재 이진 값에 따라 체크 여부 설정
+                  onChange={() => handleWorkDaysChange(index)} // 체크 시 상태 업데이트
+                />
+              </div>
+            ))}
+          </div>
         </div>
         <div className={styles.inputGroup}>
           <label>근무 시간</label>

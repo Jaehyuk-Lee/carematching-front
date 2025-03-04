@@ -1,22 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
 import styles from './caregiverList.module.css';
 
 export default function CaregiverListPage() {
   const [caregivers, setCaregivers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [searchTerm, setSearchTerm] = useState(""); // 🔍 검색어 상태
-  const [searchField, setSearchField] = useState("전체"); // 🔍 검색 필드 상태
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
+  const [searchField, setSearchField] = useState("전체"); // 검색 필드 상태
 
   useEffect(() => {
-    fetch("/api/caregivers")
-      .then((res) => {
-        if (!res.ok) throw new Error("네트워크 응답이 올바르지 않습니다.");
-        return res.json();
-      })
-      .then((data) => {
-        setCaregivers(data);
+    axiosInstance
+      .get("/api/caregivers")
+      .then((response) => {
+        setCaregivers(response.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -27,7 +25,7 @@ export default function CaregiverListPage() {
   }, []);
 
   // 근무 요일을 이진 문자열에서 한글 요일 문자열로 변환
-  const binaryToKoreanDays = (binaryStr) => {
+  const convertBinaryToDays = (binaryStr) => {
     const days = ["월", "화", "수", "목", "금", "토", "일"];
     return binaryStr
       .split("")
@@ -37,7 +35,7 @@ export default function CaregiverListPage() {
 
   // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
-    const workDaysKorean = binaryToKoreanDays(caregiver.workDays ?? "");
+    const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "");
 
     const search = searchTerm.toLowerCase();
 
@@ -50,7 +48,7 @@ export default function CaregiverListPage() {
         return (caregiver.servNeeded?.toLowerCase() ?? "").includes(search);
       case "근무 요일":
         return workDaysKorean.includes(search);
-      case "봉급":
+      case "월급":
         return String(caregiver.salary ?? "").includes(search);
       default: // "전체" 검색
         return (
@@ -83,7 +81,7 @@ export default function CaregiverListPage() {
           <option value="지역">지역</option>
           <option value="전문 분야">전문 분야</option>
           <option value="근무 요일">근무 요일</option>
-          <option value="봉급">봉급</option>
+          <option value="월급">월급</option>
         </select>
 
         <input
@@ -109,8 +107,8 @@ export default function CaregiverListPage() {
                 <h3 className={styles.cardTitle}>{caregiver.realName}</h3>
                 <p className={styles.cardText}>지역 | {caregiver.loc}</p>
                 <p className={styles.cardText}>전문 분야 | {caregiver.servNeeded}</p>
-                <p className={styles.cardText}>근무 요일 | {binaryToKoreanDays(caregiver.workDays)}</p>
-                <p className={styles.cardText}>봉급 | {caregiver.salary}</p>
+                <p className={styles.cardText}>근무 요일 | {convertBinaryToDays(caregiver.workDays)}</p>
+                <p className={styles.cardText}>월급 | {caregiver.salary}만원</p>
                 <p className={styles.cardText}>{caregiver.status}</p>
               </div>
             </Link>

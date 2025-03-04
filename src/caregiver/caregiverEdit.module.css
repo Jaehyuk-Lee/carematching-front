@@ -80,3 +80,41 @@ h2 {
 .submitButton:hover {
   background-color: #e06b3c;
 }
+
+.checkboxRow {
+  display: flex;
+  justify-content: space-between; /* 균등 정렬 */
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap; /* 작은 화면에서 줄 바꿈 가능 */
+  margin-top: 8px;
+}
+
+.checkboxItem {
+  display: flex;
+  flex-direction: column; /* 요일(텍스트) 위, 체크박스 아래 */
+  align-items: center;
+  font-size: 16px;
+}
+
+.salaryInputContainer {
+  display: flex;
+  align-items: center; /* 입력 필드와 '만원'을 수평 정렬 */
+  gap: 10px; /* 입력 필드와 '만원' 사이 간격 조정 */
+  width: 100%;
+}
+
+.salaryInput {
+  width: 90% !important; /*  입력 필드 크기 조정 */
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  /*text-align: right; /* 숫자가 오른쪽 정렬되도록 설정 */
+}
+
+.salaryUnit {
+  font-size: 14px;
+  color: #555;
+  white-space: nowrap; /* '만원'이 줄 바꿈되지 않도록 설정 */
+}

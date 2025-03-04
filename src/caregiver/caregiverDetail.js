@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
 
 export default function CaregiverDetailPage() {
   const { id } = useParams();
@@ -8,15 +9,10 @@ export default function CaregiverDetailPage() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch(`/api/caregivers/${id}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("네트워크 응답이 올바르지 않습니다.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        setCaregiver(data);
+    axiosInstance
+      .get(`/api/caregivers/${id}`)
+      .then((response) => {
+        setCaregiver(response.data);
         setLoading(false);
       })
       .catch((err) => {
@@ -25,6 +21,14 @@ export default function CaregiverDetailPage() {
         setLoading(false);
       });
   }, [id]);
+
+  const convertBinaryToDays = (binaryString) => {
+    const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"];
+    return binaryString
+      .split("")
+      .map((bit, index) => (bit === "1" ? daysOfWeek[index] : ""))
+      .join("");
+  };
 
   if (loading) return <div>로딩중...</div>;
   if (error) return <div>에러: {error.message}</div>;
@@ -37,7 +41,7 @@ export default function CaregiverDetailPage() {
         <p style={{ marginBottom: "0.5rem" }}>이름: {caregiver.realName}</p>
         <p style={{ marginBottom: "0.5rem" }}>주소: {caregiver.loc}</p>
         <p style={{ marginBottom: "0.5rem" }}>전문 분야: {caregiver.servNeeded}</p>
-        <p style={{ marginBottom: "0.5rem" }}>근무 요일: {caregiver.workDays}</p>
+        <p style={{ marginBottom: "0.5rem" }}>근무 요일: {convertBinaryToDays(caregiver.workDays)}</p>
         <p style={{ marginBottom: "0.5rem" }}>근무 시간:{" "}
           {caregiver.workTime === "MORNING"
             ? "오전"
@@ -60,7 +64,7 @@ export default function CaregiverDetailPage() {
             ? "정규직"
             : caregiver.employmentType}
         </p>
-        <p style={{ marginBottom: "0.5rem" }}>급여: {caregiver.salary}</p>
+        <p style={{ marginBottom: "0.5rem" }}>월급: {caregiver.salary}만원</p>
       </div>
     </div>
   );

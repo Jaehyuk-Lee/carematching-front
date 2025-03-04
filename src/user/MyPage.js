@@ -4,9 +4,8 @@ import axiosInstance from "../api/axiosInstance";
 import { useAuth } from '../context/AuthContext';
 import defaultProfile from '../logo.svg'; // 임시 프로필 이미지
 import styles from './MyPage.module.css';
-import config from '../config/config';
 import CaregiverEdit from '../caregiver/caregiverEdit';
-import axiosInstance from '../api/axiosInstance';
+import CaregiverInfo from '../caregiver/caregiverInfo';
 import EditProfile from './myPage/EditProfile';
 import MyPosts from './myPage/MyPosts';
 
@@ -92,12 +91,21 @@ function MyPage() {
           >
             내 정보 수정
           </button>
-          <button
-            className={`${styles.actionButton} ${styles.orange}`}
-            onClick={() => navigate('/mypage/edit-caregiver')}
-          >
-            {isCaregiverRegistered ? '요양사 정보 수정' : '요양사 등록'}
-          </button>
+          {isCaregiverRegistered ? (
+            <button
+              className={`${styles.actionButton} ${styles.orange}`}
+              onClick={() => navigate('/mypage/caregiver-info')} // ✅ 요양사 정보 보기 페이지로 이동
+            >
+              요양사 정보 보기
+            </button>
+          ) : (
+            <button
+              className={`${styles.actionButton} ${styles.orange}`}
+              onClick={() => navigate('/mypage/edit-caregiver')}
+            >
+              요양사 등록
+            </button>
+          )}
           <button
             className={`${styles.actionButton} ${styles.gray} ${styles.deleteUser}`}
             onClick={handleDeleteUser}
@@ -115,6 +123,7 @@ function MyPage() {
                 onSuccess={checkCaregiverStatus}
               />
             } />
+            <Route path="caregiver-info" element={<CaregiverInfo />} />
           </Routes>
         </div>
       </div>
