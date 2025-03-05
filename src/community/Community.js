@@ -34,6 +34,7 @@ function CommunityContent() {
       if (observer.current) observer.current.disconnect()
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore && !loading && !isLoadingRef.current) {
+          console.log("Reached end of list, loading more posts")
           setPage((prevPage) => prevPage + 1)
         }
       })
@@ -72,11 +73,13 @@ function CommunityContent() {
   const fetchPosts = useCallback(async () => {
     if (loading || !hasMore || isLoadingRef.current) return
     if (page > 0 && loadedPages.has(page)) {
+      console.log(`Page ${page} already loaded, skipping`)
       return
     }
 
     setLoading(true)
     isLoadingRef.current = true
+    console.log(`Fetching posts for page ${page}`)
 
     try {
       let endpoint = "/api/community/posts"
@@ -106,6 +109,7 @@ function CommunityContent() {
 
       const response = await axiosInstance.get(endpoint, { params })
       const { content, last } = response.data
+      console.log(`Received ${content?.length || 0} posts, last page: ${last}`)
 
       if (content && content.length > 0) {
         setPosts((prevPosts) => {
