@@ -1,0 +1,58 @@
+.notFoundContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 80vh;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.title {
+  font-size: 8rem;
+  font-weight: 700;
+  color: #F44336;
+  margin: 0;
+  line-height: 1;
+}
+
+.subtitle {
+  font-size: 2rem;
+  margin: 10px 0 20px;
+  color: #333;
+}
+
+.description {
+  font-size: 1.1rem;
+  color: #666;
+  max-width: 500px;
+  margin-bottom: 30px;
+}
+
+.homeButton {
+  background-color: #2196F3;
+  color: white;
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.homeButton:hover {
+  background-color: #1976D2;
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 6rem;
+  }
+
+  .subtitle {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
+}
