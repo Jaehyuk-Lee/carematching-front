@@ -138,7 +138,6 @@ function MyPage() {
             <Route path="edit-caregiver" element={
               <CaregiverEdit
                 isRegistered={isCaregiverRegistered}
-                onSuccess={checkCaregiverStatus}
               />
             } />
             <Route path="caregiver-info" element={<CaregiverInfo />} />
