@@ -72,7 +72,6 @@ export default function UpdatePost() {
         },
       })
 
-      console.log("Post updated successfully:", response.data)
       await Swal.fire({
         title: '성공!',
         text: '게시글 수정이 완료되었습니다.',
