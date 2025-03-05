@@ -37,7 +37,6 @@ function App() {
               <Route path="/caregiver" element={<CaregiverListPage />} />
               <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
               <Route path="/admin/cert" element={<Cert />} />
-
               <Route path="/community" element={<Community />} />
               <Route path="/create-post" element={<CreatePost />} />
               <Route path="/community/posts/:id" element={<PostDetail />} />

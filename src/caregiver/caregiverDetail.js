@@ -26,7 +26,6 @@ function CaregiverDetail() {
 
   const convertBinaryToDays = (binaryString) => {
     const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"]
-    const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"]
     return binaryString
       .split("")
       .map((bit, index) => (bit === "1" ? daysOfWeek[index] : ""))

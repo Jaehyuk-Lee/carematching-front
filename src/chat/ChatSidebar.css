@@ -64,7 +64,6 @@
 /* 채팅 사이드바 */
 .chat-sidebar {
   position: fixed;
-  top: 0;
   right: 0;
   bottom: 0;
   width: 100%;
@@ -75,6 +74,8 @@
   transform: translateX(100%);
   transition: transform 0.3s ease-in-out;
   display: flex;
+  top: 70px;
+  max-height: calc(100vh - 70px);
   flex-direction: column;
   border-left: 1px solid #e5e7eb;
 }
@@ -181,7 +182,7 @@
   min-width: 0;
 }
 
-.chat-room-header {
+.chat-side-header {
   display: flex;
   justify-content: space-between; /* 요소들을 양쪽 끝으로 정렬 */
   align-items: center;

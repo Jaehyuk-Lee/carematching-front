@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react"; // 첫 번째 import만 유지
+import React, { useEffect, useState, useCallback } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { Stomp } from "@stomp/stompjs";
@@ -82,6 +82,12 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     }
   }, [newMessage, roomId, user.username]);
 
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      sendMessage();
+    }
+  };
+
   useEffect(() => {
     if (roomId) {
       fetchMessages(roomId);
@@ -97,9 +103,10 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     <div className="chat-room-container">
       <div className="chat-room-header">
         <button className="chat-back-button" onClick={onBack}>←</button>
-        <h2 className="chat-room-title">{roomInfo?.name}</h2>
+        <h1 className="chat-room-title">{roomInfo?.name}</h1>
         <button className="chat-close-button" onClick={onClose}>×</button>
       </div>
+      <button className="chat-action-button">이 케어코디님으로 결정하기</button>
 
       <div className="chat-messages">
         {messages.map((msg, index) => (
@@ -112,7 +119,14 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       </div>
 
       <div className="chat-input-container">
-        <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} placeholder="메시지를 입력하세요..." className="chat-input"/>
+        <input
+          type="text"
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="메시지를 입력하세요..."
+          className="chat-input"
+          onKeyDown={handleKeyDown}  // 엔터 키를 감지하여 메시지 전송
+        />
         <button onClick={sendMessage} disabled={!newMessage.trim()} className="chat-send-button">전송</button>
       </div>
     </div>

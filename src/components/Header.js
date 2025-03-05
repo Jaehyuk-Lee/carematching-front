@@ -1,53 +1,101 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import logo from '../logo.svg';
-import styles from './Header.module.css';
-import Swal from 'sweetalert2';
-import ChatSidebar from '../chat/ChatSidebar';
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { Search, Bell, MessageSquare } from 'lucide-react'
+import styles from "./Header.module.css";
+import Swal from "sweetalert2";
+import ChatSidebar from "../chat/ChatSidebar";
+import axiosInstance from "../api/axiosInstance";
 
 function Header() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [unreadMessages, setUnreadMessages] = useState(0);
+
+  useEffect(() => {
+    if (user) {
+      axiosInstance
+        .get(`/api/chat/unread-count?userId=${user.id}`)
+        .then((response) => setUnreadMessages(response.data.unreadCount))
+        .catch((err) => console.error("채팅 알림 로드 오류:", err));
+    }
+  }, [user]);
 
   const handleLogout = () => {
     Swal.fire({
-      title: '로그아웃',
+      title: "로그아웃",
       text: "정말 로그아웃 하시겠습니까?",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonText: '네',
-      cancelButtonText: '아니요'
+      confirmButtonText: "네",
+      cancelButtonText: "아니요",
     }).then((result) => {
       if (result.isConfirmed) {
         logout();
-        navigate('/');
+        navigate("/");
       }
     });
+  };
+
+  const handleChatClick = () => {
+    setIsChatOpen((prev) => !prev);
+    if (isChatOpen) setUnreadMessages(0);
   };
 
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerContent}>
-          <Link to="/" className={styles.logo}>
-            <img src={logo} alt="케어매칭" />
-          </Link>
+          {/* 로고 */}
+            <Link to="/" className={styles.logo}>
+              <img src="/reallogo.png" alt="케어매칭" />
+              케어매칭
+            </Link>
+          {/* 메인 네비게이션 */}
           <nav className={styles.mainNav}>
             <ul>
-              <li><Link to="/caregiver">요양사 찾기</Link></li>
-              <li><Link to="/hospital">요양병원 찾기</Link></li>
-              <li><Link to="/community">커뮤니티</Link></li>
-              <li><Link to="/education">고객센터</Link></li>
+              <li>
+                <Link to="/caregiver">요양사 찾기</Link>
+              </li>
+              <li>
+                <Link to="/hospital">요양병원 찾기</Link>
+              </li>
+              <li>
+                <Link to="/community">커뮤니티</Link>
+              </li>
+              <li>
+                <Link to="/education">고객센터</Link>
+              </li>
             </ul>
           </nav>
+
+          {/* 액션 버튼 (검색, 알림) */}
+          <div className={styles.actionButtons}>
+            <button className={styles.iconButton}>
+              <Bell size={18} />
+            </button>
+
+            {/* 채팅 버튼 */}
+            {user && (
+              <div className={styles.chatContainer} onClick={handleChatClick}>
+                <MessageSquare size={18} />
+                {unreadMessages > 0 && (
+                  <span className={styles.chatBadge}>{unreadMessages}</span>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* 로그인/회원가입 영역 */}
           <div className={styles.authNav}>
             {user ? (
               <div className={styles.userMenu}>
                 <span className={styles.username}>{user.username}</span>
                 <Link to="/myPage">마이페이지</Link>
-                <button onClick={handleLogout} className={styles.logoutButton}>로그아웃</button>
+                <button onClick={handleLogout} className={styles.logoutButton}>
+                  로그아웃
+                </button>
               </div>
             ) : (
               <div className={styles.guestMenu}>
@@ -56,16 +104,11 @@ function Header() {
               </div>
             )}
           </div>
-
-          {/* 🔹 채팅 아이콘 (💬) 클릭 시 ChatSidebar 열기 */}
-          {user && (
-            <span className={styles.chatIcon} onClick={() => setIsChatOpen(true)}>💬</span>
-          )}
         </div>
       </header>
 
-      {/* 🔹 채팅 사이드바 (💬 클릭 시 열림) */}
-      {isChatOpen && <ChatSidebar onClose={() => setIsChatOpen(false)} />}
+      {/* 채팅 사이드바 */}
+      <ChatSidebar isChatOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </>
   );
 }

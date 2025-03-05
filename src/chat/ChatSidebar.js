@@ -4,8 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import ChatRoom from "./ChatRoom";
 import "./ChatSidebar.css";
 
-const ChatSidebar = () => {
-  const [isChatOpen, setIsChatOpen] = useState(false);
+const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose를 props로 받음
   const [activeChatId, setActiveChatId] = useState(null);
   const [chatRooms, setChatRooms] = useState([]);
   const { user } = useAuth();
@@ -23,7 +22,7 @@ const ChatSidebar = () => {
       const enhancedRooms = response.data.map((room) => ({
         ...room,
         name: room.otherUsername, // 상대방 username
-        lastMessage: room.lastMessage, // 👈 마지막 메시지 추가
+        lastMessage: room.lastMessage,
         lastMessageDate: room.lastMessageDate,
         unread: 0,
         avatar: "/placeholder.svg",
@@ -36,20 +35,8 @@ const ChatSidebar = () => {
     }
   };
 
-
-  const handleChatButtonClick = () => {
-    setIsChatOpen(true);
-    setActiveChatId(null);
-  };
-
-  const handleCloseSidebar = () => {
-    setIsChatOpen(false);
-    setActiveChatId(null);
-  };
-
   const handleChatRoomClick = (roomId) => {
     setActiveChatId(roomId);
-    // ✅ 여기서 URL을 변경하지 않음 (navigate() 제거)
   };
 
   const handleBackToList = () => {
@@ -57,20 +44,14 @@ const ChatSidebar = () => {
   };
 
   return (
-
     <>
-      {/* 채팅 버튼 */}
-      <div className="chat-button-container">
-        <button onClick={handleChatButtonClick} className="chat-button">💬 채팅하기</button>
-      </div>
-
       {/* 채팅 사이드바 */}
       <div className={`chat-sidebar ${isChatOpen ? "open" : ""}`}>
         {!activeChatId ? (
           <div className="chat-sidebar-container">
             <div className="chat-sidebar-header">
               <h2 className="chat-sidebar-title">채팅</h2>
-              <button className="chat-close-button" onClick={handleCloseSidebar}>×</button>
+              <button className="chat-close-button" onClick={onClose}>×</button>
             </div>
             <div className="chat-rooms-list">
               {chatRooms.length > 0 ? (
@@ -81,9 +62,9 @@ const ChatSidebar = () => {
                       {room.unread > 0 && <span className="chat-room-unread">{room.unread}</span>}
                     </div>
                     <div className="chat-room-info">
-                      <div className="chat-room-header">
+                      <div className="chat-side-header">
                         <h3 className="chat-room-name">{room.name}</h3>
-                        <span className="chat-room-time">{room.lastMessageDate || ""}</span> {/* ✅ 오른쪽 정렬 */}
+                        <span className="chat-room-time">{room.lastMessageDate || ""}</span>
                       </div>
                       <p className="chat-room-last-message">{room.lastMessage}</p>
                     </div>
@@ -95,12 +76,12 @@ const ChatSidebar = () => {
             </div>
           </div>
         ) : (
-          <ChatRoom roomId={activeChatId} onBack={handleBackToList} onClose={handleCloseSidebar} chatRooms={chatRooms} />
+          <ChatRoom roomId={activeChatId} onBack={handleBackToList} onClose={onClose} chatRooms={chatRooms} />
         )}
       </div>
 
       {/* 배경 오버레이 */}
-      {isChatOpen && <div className="chat-overlay" onClick={handleCloseSidebar} />}
+      {isChatOpen && <div className="chat-overlay" onClick={onClose} />}
     </>
   );
 };
