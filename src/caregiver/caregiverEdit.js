@@ -4,7 +4,7 @@ import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 
-const CaregiverEdit = ({ isRegistered, onSuccess }) => {
+const CaregiverEdit = ({ isRegistered }) => {
   const navigate = useNavigate();
   const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"];
 
