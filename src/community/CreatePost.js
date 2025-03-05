@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import axiosInstance from "../api/axiosInstance"
 import styles from "./CreatePost.module.css"
@@ -9,14 +9,12 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
 export default function CreatePost() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { user } = useAuth()
   const [category, setCategory] = useState("전체")
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [image, setImage] = useState(null)
-  const [showNotification] = useState(false)
 
   useEffect(() => {
     const handlePopState = () => {
@@ -55,7 +53,7 @@ export default function CreatePost() {
       })
 
       console.log("Post created successfully:", response.data)
-      await Swal.fire({
+      Swal.fire({
         title: '성공!',
         text: '게시글이 등록되었습니다.',
         icon: 'success',
@@ -92,12 +90,11 @@ export default function CreatePost() {
   }
 
   const handleCancel = () => {
-    navigate(location.state?.from || "/community", { replace: true })
+    navigate("/community", { replace: true })
   }
 
   return (
     <div className={styles.container}>
-      {showNotification && <div className={styles.notification}>게시글 등록이 완료되었습니다.</div>}
       <h1 className={styles.title}>게시글 작성</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formHeader}>
