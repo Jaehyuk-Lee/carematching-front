@@ -13,12 +13,12 @@ function CaregiverDetail() {
     axiosInstance
       .get(`/api/caregivers/${id}`)
       .then((response) => {
-        setCaregiver(response.data)
+        setCaregiver(response.data);
       })
       .catch((err) => {
-        console.error("데이터 로드 에러:", err)
-      })
-  }, [id])
+        console.error("데이터 로드 에러:", err);
+      });
+  }, [id]);
 
   const convertBinaryToDays = (binaryString) => {
     const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"]

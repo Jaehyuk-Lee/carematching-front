@@ -1,11 +1,13 @@
 import { useState, useEffect, useCallback, useRef } from "react"
-import { useNavigate, useParams } from "react-router-dom"
+import { useNavigate, useParams, Routes, Route } from "react-router-dom"
 import { ArrowLeft, Heart, MessageCircle, Eye, Trash2 } from "lucide-react"
 import styles from "./PostDetail.module.css"
 import axiosInstance from "../api/axiosInstance"
+import UpdatePost from "./UpdatePost"
 import Swal from 'sweetalert2'
 
-export default function PostDetail() {
+// 게시글 상세 컴포넌트
+function PostDetailContent() {
   const navigate = useNavigate()
   const { id } = useParams()
   const [post, setPost] = useState(null)
@@ -152,7 +154,7 @@ export default function PostDetail() {
       setComments((prevComments) => [newComment, ...prevComments])
       setComment("")
       setIsAnonymous(false)
-      await Swal.fire({
+      Swal.fire({
         title: '성공!',
         text: '댓글이 등록되었습니다.',
         icon: 'success',
@@ -184,7 +186,7 @@ export default function PostDetail() {
       try {
         await axiosInstance.post(`/api/community/comment/delete?commentId=${commentId}`)
         setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId))
-        await Swal.fire({
+        Swal.fire({
           title: '성공!',
           text: '댓글이 삭제되었습니다.',
           icon: 'success',
@@ -245,7 +247,7 @@ export default function PostDetail() {
           ...prevPost,
           likeCount: newLikeCount,
         }))
-        await Swal.fire({
+        Swal.fire({
           title: '성공!',
           text: newLikedState ? '좋아요가 완료되었습니다.' : '좋아요가 취소되었습니다.',
           icon: 'success',
@@ -289,7 +291,7 @@ export default function PostDetail() {
     if (result.isConfirmed) {
       try {
         await axiosInstance.post(`/api/community/posts/${id}/delete`)
-        await Swal.fire({
+        Swal.fire({
           title: '성공!',
           text: '게시글이 삭제되었습니다.',
           icon: 'success',
@@ -431,6 +433,16 @@ export default function PostDetail() {
         </div>
       </section>
     </div>
+  )
+}
+
+// 전체 라우트 구성
+export default function PostDetail() {
+  return (
+    <Routes>
+      <Route path="/" element={<PostDetailContent />} />
+      <Route path="/update" element={<UpdatePost />} />
+    </Routes>
   )
 }
 

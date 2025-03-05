@@ -1,22 +1,20 @@
 import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import axiosInstance from "../api/axiosInstance"
 import styles from "./CreatePost.module.css"
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
 export default function CreatePost() {
   const navigate = useNavigate()
-  const location = useLocation()
   const { user } = useAuth()
   const [category, setCategory] = useState("전체")
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [image, setImage] = useState(null)
-  const [showNotification] = useState(false)
 
   useEffect(() => {
     const handlePopState = () => {
@@ -48,28 +46,28 @@ export default function CreatePost() {
         formData.append("imageFile", image)
       }
 
+      // eslint-disable-next-line no-unused-vars
       const response = await axiosInstance.post("/api/community/add", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       })
 
-      console.log("Post created successfully:", response.data)
       await Swal.fire({
-        title: '성공!',
-        text: '게시글이 등록되었습니다.',
-        icon: 'success',
+        title: "성공!",
+        text: "게시글이 등록되었습니다.",
+        icon: "success",
         timer: 1500,
-        showConfirmButton: false
+        showConfirmButton: false,
       })
       navigate("/community", { replace: true })
     } catch (error) {
       console.error("Failed to create post:", error)
       Swal.fire({
-        title: '오류',
-        text: '게시글 등록에 실패했습니다.',
-        icon: 'error',
-        confirmButtonText: '확인'
+        title: "오류",
+        text: "게시글 등록에 실패했습니다.",
+        icon: "error",
+        confirmButtonText: "확인",
       })
     }
   }
@@ -79,10 +77,10 @@ export default function CreatePost() {
     if (file) {
       if (file.size > MAX_FILE_SIZE) {
         Swal.fire({
-          title: '파일 크기 초과',
-          text: '최대 10MB 크기의 이미지만 업로드할 수 있습니다.',
-          icon: 'warning',
-          confirmButtonText: '확인'
+          title: "파일 크기 초과",
+          text: "최대 10MB 크기의 이미지만 업로드할 수 있습니다.",
+          icon: "warning",
+          confirmButtonText: "확인",
         })
         e.target.value = null // 파일 선택 초기화
       } else {
@@ -92,12 +90,11 @@ export default function CreatePost() {
   }
 
   const handleCancel = () => {
-    navigate(location.state?.from || "/community", { replace: true })
+    navigate("/community", { replace: true })
   }
 
   return (
     <div className={styles.container}>
-      {showNotification && <div className={styles.notification}>게시글 등록이 완료되었습니다.</div>}
       <h1 className={styles.title}>게시글 작성</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formHeader}>

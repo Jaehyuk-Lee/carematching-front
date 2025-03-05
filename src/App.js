@@ -13,9 +13,6 @@ import AppProvider from './context/AppProvider';
 import LoadingSpinner from './components/LoadingSpinner';
 import styles from './App.module.css';
 import Community from './community/Community';
-import CreatePost from "./community/CreatePost"
-import PostDetail from "./community/PostDetail"
-import UpdatePost from "./community/UpdatePost"
 
 function App() {
   return (
@@ -33,10 +30,7 @@ function App() {
               <Route path="/caregiver" element={<CaregiverListPage />} />
               <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
               <Route path="/admin/cert" element={<Cert />} />
-              <Route path="/community" element={<Community />} />
-              <Route path="/create-post" element={<CreatePost />} />
-              <Route path="/community/posts/:id" element={<PostDetail />} />
-              <Route path="/community/posts/:id/update" element={<UpdatePost />} />
+              <Route path="/community/*" element={<Community />} />
             </Routes>
           </main>
           <Footer />
