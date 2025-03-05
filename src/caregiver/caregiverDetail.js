@@ -1,13 +1,17 @@
 import { useState, useEffect } from "react"
-import { useParams } from "react-router-dom"
-import axiosInstance from "../api/axiosInstance"
+import { useParams, useNavigate } from "react-router-dom";
+import axiosInstance from "../api/axiosInstance";
 import styles from "./caregiverDetail.module.css"
+import { useAuth } from "../context/AuthContext";
 import { MapPin, Award, Clock, Calendar, Briefcase, DollarSign, Star } from "lucide-react"
 
 function CaregiverDetail() {
   const { id } = useParams()
   const [caregiver, setCaregiver] = useState(null)
   const [activeTab, setActiveTab] = useState("info")
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
 
   useEffect(() => {
     axiosInstance
@@ -32,6 +36,33 @@ function CaregiverDetail() {
   const formatSalary = (salary) => {
     return salary ? salary / 10000 : 0
   }
+  const handleMatchClick = async () => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      console.log("📦 [REQUEST] 방 생성 요청:", {
+        requesterUserId: Number(user.id),
+        caregiverId: Number(id),
+      });
+
+      const response = await axiosInstance.post("/api/rooms", {
+        requesterUserId: Number(user.id),
+        caregiverId: Number(id),
+      });
+
+      console.log("🚀 [SUCCESS] 방 생성 성공:", response.data);
+
+      if (response.data.roomId) {
+        navigate(`/rooms/${response.data.roomId}`);
+      }
+    } catch (error) {
+      console.error("❌ [ERROR] 방 생성 중 오류:", error.response?.data || error.message);
+      alert("방 생성 중 오류가 발생했습니다.");
+    }
+  };
 
   return (
     <div className={styles.container}>
@@ -60,7 +91,9 @@ function CaregiverDetail() {
         </div>
 
         <div className={styles.actions}>
-          <button className={styles.contactButton}>채팅 시작하기</button>
+        <button className={styles.contactButton} onClick={handleMatchClick}>
+            채팅 시작하기
+          </button>
         </div>
       </div>
 

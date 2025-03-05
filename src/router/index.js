@@ -11,8 +11,11 @@ import Success from '../payment/Success';
 import Fail from '../payment/Fail';
 import Cert from '../admin/Cert';
 import Community from '../community/Community';
+import CreatePost from '../community/CreatePost';
+import PostDetail from '../community/PostDetail';
+import UpdatePost from '../community/UpdatePost';
+import CreateRoomPage from '../chat/CreateRoomPage';
 import NotFound from '../components/NotFound';
-
 /**
  * 애플리케이션의 모든 라우트를 정의하는 컴포넌트
  * @returns {JSX.Element} 라우팅 구성이 포함된 Routes 컴포넌트
@@ -44,6 +47,12 @@ function AppRouter() {
 
       {/* 커뮤니티 */}
       <Route path="/community/*" element={<Community />} />
+      <Route path="/create-post" element={<CreatePost />} />
+      <Route path="/community/posts/:id" element={<PostDetail />} />
+      <Route path="/community/posts/:id/update" element={<UpdatePost />} />
+
+      {/* 채팅 */}
+      <Route path="/create-room" element={<CreateRoomPage />} />
 
       {/* 404 - 찾을 수 없는 페이지 */}
       <Route path="*" element={<NotFound />} />
