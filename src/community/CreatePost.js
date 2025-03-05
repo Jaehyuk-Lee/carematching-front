@@ -15,7 +15,6 @@ export default function CreatePost() {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [image, setImage] = useState(null)
-  const [showNotification, setShowNotification] = useState(false)
 
   useEffect(() => {
     const handlePopState = () => {
@@ -54,7 +53,7 @@ export default function CreatePost() {
       })
 
       console.log("Post created successfully:", response.data)
-      await Swal.fire({
+      Swal.fire({
         title: '성공!',
         text: '게시글이 등록되었습니다.',
         icon: 'success',
@@ -96,7 +95,6 @@ export default function CreatePost() {
 
   return (
     <div className={styles.container}>
-      {showNotification && <div className={styles.notification}>게시글 등록이 완료되었습니다.</div>}
       <h1 className={styles.title}>게시글 작성</h1>
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formHeader}>

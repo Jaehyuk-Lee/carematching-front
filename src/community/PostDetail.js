@@ -133,7 +133,7 @@ function PostDetailContent() {
   const handleSubmitComment = async (e) => {
     e.preventDefault()
     if (!comment.trim()) {
-      await Swal.fire({
+      Swal.fire({
         title: '입력 오류',
         text: '댓글 내용을 입력해주세요.',
         icon: 'warning',
@@ -154,7 +154,7 @@ function PostDetailContent() {
       setComments((prevComments) => [newComment, ...prevComments])
       setComment("")
       setIsAnonymous(false)
-      await Swal.fire({
+      Swal.fire({
         title: '성공!',
         text: '댓글이 등록되었습니다.',
         icon: 'success',
@@ -163,7 +163,7 @@ function PostDetailContent() {
       })
     } catch (error) {
       console.error("Failed to submit comment:", error)
-      await Swal.fire({
+      Swal.fire({
         title: '오류',
         text: '댓글 등록에 실패했습니다. 다시 시도해 주세요.',
         icon: 'error',
@@ -186,7 +186,7 @@ function PostDetailContent() {
       try {
         await axiosInstance.post(`/api/community/comment/delete?commentId=${commentId}`)
         setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId))
-        await Swal.fire({
+        Swal.fire({
           title: '성공!',
           text: '댓글이 삭제되었습니다.',
           icon: 'success',
@@ -195,7 +195,7 @@ function PostDetailContent() {
         })
       } catch (error) {
         console.error("Failed to delete comment:", error)
-        await Swal.fire({
+        Swal.fire({
           title: '오류',
           text: '댓글 삭제에 실패했습니다. 다시 시도해 주세요.',
           icon: 'error',
@@ -208,7 +208,7 @@ function PostDetailContent() {
   const handleLike = async () => {
     if (!post || !post.id) {
       console.error("Post ID is missing")
-      await Swal.fire({
+      Swal.fire({
         title: '오류',
         text: '게시글 정보가 올바르지 않습니다. 페이지를 새로고침 해주세요.',
         icon: 'error',
@@ -247,7 +247,7 @@ function PostDetailContent() {
           ...prevPost,
           likeCount: newLikeCount,
         }))
-        await Swal.fire({
+        Swal.fire({
           title: '성공!',
           text: newLikedState ? '좋아요가 완료되었습니다.' : '좋아요가 취소되었습니다.',
           icon: 'success',
@@ -256,7 +256,7 @@ function PostDetailContent() {
         })
       } else {
         console.error("Server indicated failure:", data)
-        await Swal.fire({
+        Swal.fire({
           title: '오류',
           text: serverMessage,
           icon: 'error',
@@ -265,7 +265,7 @@ function PostDetailContent() {
       }
     } catch (error) {
       console.error("Failed to like post:", error)
-      await Swal.fire({
+      Swal.fire({
         title: '오류',
         text: '좋아요 처리 중 오류가 발생했습니다. 다시 시도해 주세요.',
         icon: 'error',
@@ -291,7 +291,7 @@ function PostDetailContent() {
     if (result.isConfirmed) {
       try {
         await axiosInstance.post(`/api/community/posts/${id}/delete`)
-        await Swal.fire({
+        Swal.fire({
           title: '성공!',
           text: '게시글이 삭제되었습니다.',
           icon: 'success',
@@ -301,7 +301,7 @@ function PostDetailContent() {
         navigate("/community")
       } catch (error) {
         console.error("Failed to delete post:", error)
-        await Swal.fire({
+        Swal.fire({
           title: '오류',
           text: '게시글 삭제에 실패했습니다. 다시 시도해 주세요.',
           icon: 'error',
