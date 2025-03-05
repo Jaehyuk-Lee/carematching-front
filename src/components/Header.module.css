@@ -1,74 +1,175 @@
 .header {
-  background: white;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .headerContent {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 15px 20px;
+  height: 70px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  gap: 8px;
+  color: #ff8450;
+  font-family: "Poppins", sans-serif;
+  font-weight: bold;
+  text-decoration: none;
 }
 
 .logo img {
-  height: 40px;
+  height: 32px;
+}
+
+/* ✅ 기존 fixed 제거 */
+.mainNav {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1; /* ✅ 자동 크기 조정 */
+  width: auto;
 }
 
 .mainNav ul {
   display: flex;
-  gap: 2rem;
+  gap: 25px;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.mainNav a {
-  text-decoration: none;
+.mainNav li a {
+  font-size: 0.95rem;
   color: #333;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.2s;
 }
 
+.mainNav li a:hover {
+  color: #ff7a38;
+}
+
+/* ✅ `margin-left: auto;` 제거 */
+.actionButtons {
+  display: flex;
+  gap: 15px;
+  margin-right: 20px;
+}
+
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  display: flex;
+  margin-top: 5px;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  transition: color 0.2s;
+}
+
+.iconButton:hover {
+  color: #ff7a38;
+}
+
+.chatContainer {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  color: #666;
+  margin-top: 5px;
+  transition: color 0.2s;
+  z-index: 5;
+}
+
+.chatContainer:hover {
+  color: #ff7a38;
+}
+
+/* ✅ `authNav` 클릭 가능하도록 설정 */
 .authNav {
   display: flex;
   align-items: center;
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
 }
 
 .userMenu {
   display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.guestMenu {
-  display: flex;
-  gap: 16px;
+  gap: 15px;
 }
 
 .username {
   font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.userMenu a,
+.guestMenu a {
+  font-size: 0.9rem;
   color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.userMenu a:hover,
+.guestMenu a:hover {
+  color: #ff7a38;
 }
 
 .logoutButton {
   background: none;
   border: none;
-  color: #666;
   cursor: pointer;
-  padding: 4px 8px;
-  font-size: 14px;
+  font-size: 0.9rem;
+  color: #333;
+  padding: 0;
+  transition: color 0.2s;
 }
 
 .logoutButton:hover {
-  color: #ff6b6b;
+  color: #ff7a38;
 }
 
-.authNav a {
-  text-decoration: none;
-  color: #666;
-  font-size: 14px;
+.guestMenu {
+  display: flex;
+  gap: 15px;
 }
 
-.authNav a:hover {
-  color: #ff6b6b;
+@media (max-width: 768px) {
+  .headerContent {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 10px 15px;
+  }
+
+  .mainNav {
+    order: 3;
+    margin-left: 0;
+    margin-top: 10px;
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .mainNav ul {
+    width: max-content;
+  }
 }
