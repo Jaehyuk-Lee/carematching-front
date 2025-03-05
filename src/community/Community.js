@@ -1,11 +1,15 @@
 import { useState, useCallback, useRef, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
+import { useNavigate, useLocation, Routes, Route } from "react-router-dom"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useAuth } from "../context/AuthContext"
 import { Eye, Heart, MessageCircle } from "lucide-react"
+import CreatePost from "./CreatePost"
+import PostDetail from "./PostDetail"
+import Swal from 'sweetalert2'
 
-export default function Community() {
+// 커뮤니티 메인 콘텐츠 컴포넌트
+function CommunityContent() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -20,8 +24,8 @@ export default function Community() {
   const [isSearching, setIsSearching] = useState(false)
   const initialLoadDone = useRef(false)
   const loginCheckDone = useRef(false)
-  const isLoadingRef = useRef(false) // 추가된 부분
-  const loadedPages = useRef(new Set()).current // 추가된 부분
+  const isLoadingRef = useRef(false)
+  const loadedPages = useRef(new Set()).current
 
   const observer = useRef()
   const lastPostElementRef = useCallback(
@@ -30,6 +34,7 @@ export default function Community() {
       if (observer.current) observer.current.disconnect()
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore && !loading && !isLoadingRef.current) {
+          console.log("Reached end of list, loading more posts")
           setPage((prevPage) => prevPage + 1)
         }
       })
@@ -68,11 +73,13 @@ export default function Community() {
   const fetchPosts = useCallback(async () => {
     if (loading || !hasMore || isLoadingRef.current) return
     if (page > 0 && loadedPages.has(page)) {
+      console.log(`Page ${page} already loaded, skipping`)
       return
     }
 
     setLoading(true)
     isLoadingRef.current = true
+    console.log(`Fetching posts for page ${page}`)
 
     try {
       let endpoint = "/api/community/posts"
@@ -102,6 +109,7 @@ export default function Community() {
 
       const response = await axiosInstance.get(endpoint, { params })
       const { content, last } = response.data
+      console.log(`Received ${content?.length || 0} posts, last page: ${last}`)
 
       if (content && content.length > 0) {
         setPosts((prevPosts) => {
@@ -148,10 +156,9 @@ export default function Community() {
   // Load more posts when page changes
   useEffect(() => {
     if (initialLoadDone.current && page > 0 && hasMore && !loading && !isLoadingRef.current) {
-      // 수정된 부분
       fetchPosts()
     }
-  }, [page, fetchPosts, hasMore, loading]) // 수정된 부분
+  }, [page, fetchPosts, hasMore, loading])
 
   // Check login and fetch user info
   useEffect(() => {
@@ -159,8 +166,18 @@ export default function Community() {
       if (loginCheckDone.current) return
 
       if (!user) {
-        alert("로그인이 필요합니다.")
-        navigate("/login", { state: { from: location.pathname } })
+        await Swal.fire({
+          title: '로그인 필요',
+          text: '로그인이 필요한 서비스입니다.',
+          icon: 'warning',
+          confirmButtonText: '로그인하기',
+          showCancelButton: true,
+          cancelButtonText: '취소'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            navigate("/login", { state: { from: location.pathname } })
+          }
+        })
       } else {
         try {
           const response = await axiosInstance.get("/api/community/user-info")
@@ -362,7 +379,7 @@ export default function Community() {
   }
 
   const handleCreatePost = () => {
-    navigate("/create-post", { state: { from: location.pathname } })
+    navigate("/community/create-post")
   }
 
   return (
@@ -450,6 +467,17 @@ export default function Community() {
         </div>
       </div>
     </div>
+  )
+}
+
+// 전체 라우트 구성 컴포넌트
+export default function Community() {
+  return (
+    <Routes>
+      <Route path="/" element={<CommunityContent />} />
+      <Route path="/posts/:id/*" element={<PostDetail />} />
+      <Route path="/create-post" element={<CreatePost />} />
+    </Routes>
   )
 }
 
