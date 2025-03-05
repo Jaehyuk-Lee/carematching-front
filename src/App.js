@@ -37,12 +37,14 @@ function App() {
               <Route path="/caregiver" element={<CaregiverListPage />} />
               <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
               <Route path="/admin/cert" element={<Cert />} />
+
               <Route path="/community" element={<Community />} />
               <Route path="/create-post" element={<CreatePost />} />
               <Route path="/community/posts/:id" element={<PostDetail />} />
               <Route path="/community/posts/:id/update" element={<UpdatePost />} />
               <Route path="/create-room" element={<CreateRoomPage />} />
               <Route path="/chat-rooms" element={<Home />} />
+              <Route path="/community/*" element={<Community />} />
             </Routes>
             {/* 채팅 사이드바 (기본적으로 닫혀 있음) */}
             <ChatSidebar isChatOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
