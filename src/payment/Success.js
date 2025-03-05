@@ -22,12 +22,8 @@ function SuccessPage() {
       {/* 주문 정보 */}
       <div className={styles.infoSection}>
         <div className={styles.infoRow}>
-          <span className={styles.infoLabel}>결제번호</span>
-          <span className={styles.infoValue}>imp_{searchParams.get("paymentId") || "578506020494"}</span>
-        </div>
-        <div className={styles.infoRow}>
           <span className={styles.infoLabel}>주문번호</span>
-          <span className={styles.infoValue}>mid_{searchParams.get("orderId") || "1612510500867"}</span>
+          <span className={styles.infoValue}>{searchParams.get("orderId")}</span>
         </div>
         <div className={styles.infoRow}>
           <span className={styles.infoLabel}>결제 금액</span>

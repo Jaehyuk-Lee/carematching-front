@@ -4,12 +4,14 @@ import { nanoid } from "nanoid";
 import styles from './Checkout.module.css';
 import { useSearchParams } from 'react-router-dom';
 import axiosInstance from "../api/axiosInstance";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function Checkout() {
+  const navigate = useNavigate();
   const [widgets, setWidgets] = useState(null);
-  const [originalPrice, setOriginalPrice] = useState(1000000); // 원래 가격
-  const [price, setPrice] = useState(originalPrice); // 할인 적용된 가격
-  const [isDiscounted, setIsDiscounted] = useState(false); // 할인 적용 여부
+  const [price, setPrice] = useState(0); // 실제 결제 가격
+  // const [isDiscounted, setIsDiscounted] = useState(false); // 할인 적용 여부
   const [paymentMethodWidget, setPaymentMethodWidget] = useState(null);
 
   const [searchParams] = useSearchParams();
@@ -17,6 +19,30 @@ function Checkout() {
   const [paymentInfo, setPaymentInfo] = useState(null);
 
   const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm"; // 테스트 키
+
+  useEffect(() => {
+    if (paymentId) {
+      // 결제 ID로 결제 정보 조회
+      axiosInstance.get(`/api/transactions/${paymentId}`)
+        .then(response => {
+          setPaymentInfo(response.data);
+          setPrice(response.data.price);
+        })
+        .catch(async (error) => {
+          console.error('결제 정보 조회 중 오류 발생:', error);
+          const result = await Swal.fire({
+            icon: 'error',
+            title: '결제 정보 조회 중 오류 발생',
+            text: error?.response?.data?.message,
+            confirmButtonText: '확인'
+          });
+
+          if (result.isConfirmed) {
+            navigate('/');
+          }
+        });
+    }
+  }, [paymentId, navigate]);
 
   useEffect(() => {
     async function fetchPaymentWidgets() {
@@ -30,20 +56,7 @@ function Checkout() {
     }
 
     fetchPaymentWidgets();
-  }, [clientKey]);
-
-  useEffect(() => {
-    if (paymentId) {
-      // 결제 ID로 결제 정보 조회
-      axiosInstance.get(`/api/payment/info/${paymentId}`)
-        .then(response => {
-          setPaymentInfo(response.data);
-        })
-        .catch(error => {
-          console.error('결제 정보 조회 중 오류 발생:', error);
-        });
-    }
-  }, [paymentId]);
+  }, [paymentInfo]);
 
   useEffect(() => {
     async function renderPaymentWidgets() {
@@ -87,11 +100,11 @@ function Checkout() {
              */
             await widgets.requestPayment({
               orderId: nanoid(),
-              orderName: "토스 티셔츠 외 2건",
+              orderName: paymentInfo.caregiverName,
               successUrl: window.location.origin + "/payment/success",
               failUrl: window.location.origin + "/payment/fail",
               customerEmail: "customer123@gmail.com",
-              customerName: "김토스",
+              customerName: paymentInfo.userName,
               customerMobilePhone: "01012341234",
             });
           } catch (err) {
@@ -110,17 +123,23 @@ function Checkout() {
         setPaymentMethodWidget(null);
       }
     };
-  }, [widgets, paymentMethodWidget, price]);
+  }, [widgets, paymentMethodWidget, price, paymentId, paymentInfo]);
 
   // 할인 적용 처리 함수
-  const handleDiscountChange = (event) => {
-    const applyDiscount = event.target.checked;
-    setIsDiscounted(applyDiscount);
-    setPrice(applyDiscount ? Math.round(originalPrice * 0.9) : originalPrice);
-  };
+  // const handleDiscountChange = (event) => {
+  //   const applyDiscount = event.target.checked;
+  //   setIsDiscounted(applyDiscount);
+  //   setPrice(applyDiscount ? Math.round(paymentInfo.price * 0.9) : paymentInfo.price);
+  // };
 
-  if (searchParams.get('test') === '1') setPaymentInfo({ amount: 1000000, productName: '토스 티셔츠 외 2건' });
-  if (!paymentInfo) return <div>결제 정보를 찾을 수 없습니다.</div>;
+  if (!paymentInfo) return (
+    <div className={styles.loadingContainer}>
+      <div className={styles.loadingSpinner}></div>
+      <p className={styles.loadingText}>결제 정보를 불러오는 중입니다</p>
+      <p className={styles.loadingSubText}>잠시만 기다려 주세요</p>
+      <p className={styles.loadingHint}>1분 이상 소요되는 경우 새로고침을 시도해주세요</p>
+    </div>
+  );
 
   return (
     <div className={styles.checkoutContainer}>
@@ -130,15 +149,15 @@ function Checkout() {
       <div className={styles.priceSection}>
         <h3 className={styles.priceTitle}>결제 금액:</h3>
         <div className={styles.priceContainer}>
-          {isDiscounted && (
-            <span className={styles.originalPrice}>{originalPrice.toLocaleString()}원</span>
-          )}
+          {/* {isDiscounted && paymentInfo && (
+            <span className={styles.originalPrice}>{paymentInfo.price.toLocaleString()}원</span>
+          )} */}
           <h2 className={styles.priceAmount}>{price.toLocaleString()}원</h2>
         </div>
       </div>
 
       {/* 할인 쿠폰 섹션 */}
-      <div className={styles.discountSection}>
+      {/* <div className={styles.discountSection}>
         <label className={styles.discountLabel}>
           <input
             type="checkbox"
@@ -148,7 +167,7 @@ function Checkout() {
           />
           <span className={styles.discountText}>첫 결제 10% 할인 쿠폰 적용</span>
         </label>
-      </div>
+      </div> */}
 
       {/* 결제 수단 선택 (API에서 자동 생성) */}
       <div id="payment-method" />
