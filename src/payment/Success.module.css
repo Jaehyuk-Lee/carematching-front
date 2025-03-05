@@ -1,0 +1,83 @@
+/* 결제 완료 페이지 스타일 */
+.successContainer {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 80vh;
+  justify-content: center;
+}
+
+.checkIcon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #6cc04a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.checkIcon svg {
+  width: 60px;
+  height: 60px;
+  color: white;
+}
+
+.successTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  color: #333;
+}
+
+.infoSection {
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ffe0b2; /* 연한 주황색 테두리 */
+}
+
+.infoLabel {
+  color: #8d6e63; /* 브라운 계열 */
+  font-size: 1rem;
+}
+
+.infoValue {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #4e342e; /* 진한 브라운 */
+}
+
+.homeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  background-color: white;
+  border: 1px solid #f08707; /* 주황색과 동일한 테두리 */
+  border-radius: 2rem;
+  color: #f08707; /* 주황색과 동일한 텍스트 색상 */
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.homeButton:hover {
+  background-color: #fff3e0; /* 매우 연한 주황색 배경 */
+}
+
+.backIcon {
+  margin-right: 0.5rem;
+}

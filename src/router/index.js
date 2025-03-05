@@ -6,6 +6,9 @@ import Signup from '../user/Signup';
 import MyPage from '../user/MyPage';
 import CaregiverListPage from '../caregiver/caregiverList';
 import CaregiverDetailPage from '../caregiver/caregiverDetail';
+import Checkout from '../payment/Checkout';
+import Success from '../payment/Success';
+import Fail from '../payment/Fail';
 import Cert from '../admin/Cert';
 import Community from '../community/Community';
 import CreatePost from '../community/CreatePost';
@@ -33,6 +36,11 @@ function AppRouter() {
       {/* 케어기버 */}
       <Route path="/caregiver" element={<CaregiverListPage />} />
       <Route path="/caregiver/:id" element={<CaregiverDetailPage />} />
+
+      {/* 결제 */}
+      <Route path="/payment" element={<Checkout />} />
+      <Route path="/payment/success" element={<Success />} />
+      <Route path="/payment/fail" element={<Fail />} />
 
       {/* 관리자 */}
       <Route path="/admin/cert" element={<Cert />} />
