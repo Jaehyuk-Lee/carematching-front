@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Search, Bell, MessageSquare } from 'lucide-react'
+import { Bell, MessageSquare } from 'lucide-react'
 import styles from "./Header.module.css";
 import Swal from "sweetalert2";
 import ChatSidebar from "../chat/ChatSidebar";

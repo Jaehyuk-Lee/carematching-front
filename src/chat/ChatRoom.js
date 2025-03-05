@@ -14,6 +14,12 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const [newMessage, setNewMessage] = useState("");
   const [roomInfo, setRoomInfo] = useState(null);
 
+  const onMessageReceived = useCallback((payload) => {
+    const message = JSON.parse(payload.body);
+    console.log("📨 [RECEIVED] 메시지:", message);
+    setMessages((prevMessages) => [...prevMessages, message]);
+  }, []);
+
   useEffect(() => {
     const currentRoom = chatRooms.find((room) => room.roomId === roomId);
     setRoomInfo(currentRoom || { name: `채팅방 #${roomId}` });
@@ -23,7 +29,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const onConnected = useCallback(() => {
     console.log("✅ WebSocket 연결 성공");
     stompClient.subscribe(`/topic/chat/${roomId}`, onMessageReceived);
-  }, [roomId]);
+  }, [roomId, onMessageReceived]);
 
   const onError = useCallback((err) => {
     console.error("❌ WebSocket 연결 실패:", err);
@@ -38,7 +44,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     const socket = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
-  }, [onConnected]);
+  }, [onConnected, onError]);
 
   const disconnectWebSocket = useCallback(() => {
     if (stompClient) {
@@ -47,13 +53,6 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       });
     }
   }, []);
-
-  const onMessageReceived = useCallback((payload) => {
-    const message = JSON.parse(payload.body);
-    console.log("📨 [RECEIVED] 메시지:", message);
-    setMessages((prevMessages) => [...prevMessages, message]);
-  }, []);
-
   const fetchMessages = useCallback(async (roomId) => {
     try {
       const response = await axiosInstance.get(`/api/messages/${roomId}`);
