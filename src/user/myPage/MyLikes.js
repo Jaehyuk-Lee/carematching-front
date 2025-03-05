@@ -3,10 +3,10 @@
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../../api/axiosInstance"
-import styles from "./MyPosts.module.css"
+import styles from "./MyLikes.module.css"
 import { Eye, Heart, MessageCircle } from "lucide-react"
 
-function MyPosts() {
+function MyLikes() {
   const navigate = useNavigate()
   const [posts, setPosts] = useState([])
   const [page, setPage] = useState(0)
@@ -20,7 +20,7 @@ function MyPosts() {
   const isLoadingRef = useRef(false)
   const loadedPages = useRef(new Set()).current
 
-  // 마지막 포스트 요소에 대한 참조 콜백 - Community.js 방식으로 개선
+  // 마지막 포스트 요소에 대한 참조 콜백
   const lastPostElementRef = useCallback(
     (node) => {
       if (loading || !hasMore || isLoadingRef.current) return
@@ -41,8 +41,8 @@ function MyPosts() {
     [loading, hasMore],
   )
 
-  // 게시글 데이터 가져오기 - Community.js 방식으로 개선
-  const fetchPosts = useCallback(async () => {
+  // 좋아요한 게시글 데이터 가져오기
+  const fetchLikedPosts = useCallback(async () => {
     if (loading || !hasMore || isLoadingRef.current) return
     if (page > 0 && loadedPages.has(page)) {
       return
@@ -52,7 +52,7 @@ function MyPosts() {
     isLoadingRef.current = true
 
     try {
-      const response = await axiosInstance.get("/api/community/my-posts", {
+      const response = await axiosInstance.get("/api/community/my-likes", {
         params: {
           page: page,
           size: 10,
@@ -79,8 +79,8 @@ function MyPosts() {
       setHasMore(!response.data.last)
       setError(null)
     } catch (err) {
-      console.error("게시글을 불러오는 중 오류가 발생했습니다:", err)
-      setError("게시글을 불러오는 중 오류가 발생했습니다.")
+      console.error("좋아요한 게시글을 불러오는 중 오류가 발생했습니다:", err)
+      setError("좋아요한 게시글을 불러오는 중 오류가 발생했습니다.")
       setHasMore(false) // 에러 발생 시 hasMore를 false로 설정
     } finally {
       setLoading(false)
@@ -91,17 +91,17 @@ function MyPosts() {
   // 초기 로드 또는 게시글이 비어있을 때
   useEffect(() => {
     if (!initialLoadDone.current || (posts.length === 0 && hasMore)) {
-      fetchPosts()
+      fetchLikedPosts()
       initialLoadDone.current = true
     }
-  }, [fetchPosts, hasMore, posts.length])
+  }, [fetchLikedPosts, hasMore, posts.length])
 
   // 페이지가 변경될 때 추가 데이터 로드
   useEffect(() => {
     if (initialLoadDone.current && page > 0 && hasMore && !loading && !isLoadingRef.current) {
-      fetchPosts()
+      fetchLikedPosts()
     }
-  }, [page, fetchPosts, hasMore, loading])
+  }, [page, fetchLikedPosts, hasMore, loading])
 
   // 컴포넌트가 언마운트될 때 observer 정리
   useEffect(() => {
@@ -118,10 +118,10 @@ function MyPosts() {
   }
 
   return (
-    <div className={styles.myPostsPage}>
-      <h2>작성글 목록</h2>
+    <div className={styles.myLikesPage}>
+      <h2>좋아요한 게시글</h2>
 
-      {posts.length === 0 && !loading && !error && <div className={styles.emptyState}>작성한 게시글이 없습니다.</div>}
+      {posts.length === 0 && !loading && !error && <div className={styles.emptyState}>좋아요한 게시글이 없습니다.</div>}
 
       {error && <div className={styles.errorMessage}>{error}</div>}
 
@@ -129,21 +129,21 @@ function MyPosts() {
         {posts.map((post, index) => (
           <div
             key={post.id}
-            className={styles.myPostItem}
+            className={styles.postItem}
             ref={index === posts.length - 1 ? lastPostElementRef : null}
             onClick={() => handlePostClick(post.id)}
           >
-            <div className={styles.myPostContent}>
-              <div className={styles.myPostTextContent}>
+            <div className={styles.postContent}>
+              <div className={styles.postTextContent}>
                 <h3 className={styles.postTitle}>{post.title}</h3>
                 <p className={styles.postText}>{post.content}</p>
               </div>
               {post.image && (
-                <div className={styles.myPostImageContainer}>
+                <div className={styles.postImageContainer}>
                   <img
                     src={post.image || "/placeholder.svg"}
                     alt="게시물 이미지"
-                    className={styles.myPostImage}
+                    className={styles.postImage}
                     onError={(e) => {
                       e.target.onerror = null
                       e.target.style.display = "none"
@@ -152,9 +152,10 @@ function MyPosts() {
                 </div>
               )}
             </div>
-            <div className={styles.myPostFooter}>
-              <div className={styles.postInfo}>
-                <span className={styles.categoryTab}>{post.category || "전체"}</span>
+            <div className={styles.postFooter}>
+              <div className={styles.authorInfo}>
+                <img src={post.profileImage || "/placeholder.svg"} alt="" className={styles.authorImage} />
+                <span className={styles.authorName}>{post.nickname}</span>
                 <span className={styles.postTime}>{post.relativeTime}</span>
               </div>
               <div className={styles.postStats}>
@@ -183,5 +184,5 @@ function MyPosts() {
   )
 }
 
-export default MyPosts
+export default MyLikes
 

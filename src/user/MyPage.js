@@ -8,6 +8,8 @@ import CaregiverEdit from "../caregiver/caregiverEdit"
 import CaregiverInfo from "../caregiver/caregiverInfo"
 import EditProfile from "./myPage/EditProfile"
 import MyPosts from "./myPage/MyPosts"
+import MyComments from "./myPage/MyComments"
+import MyLikes from "./myPage/MyLikes"
 import Swal from "sweetalert2"
 
 function MyPage() {
@@ -207,8 +209,12 @@ function MyPage() {
           <button className={`${styles.actionButton} ${styles.gray}`} onClick={() => navigate("/myPage/my-posts")}>
             작성글
           </button>
-          <button className={`${styles.actionButton} ${styles.gray}`}>댓글</button>
-          <button className={`${styles.actionButton} ${styles.gray}`}>좋아요</button>
+          <button className={`${styles.actionButton} ${styles.gray}`} onClick={() => navigate("/myPage/my-comments")}>
+            댓글
+          </button>
+          <button className={`${styles.actionButton} ${styles.gray}`} onClick={() => navigate("/myPage/my-likes")}>
+            좋아요
+          </button>
           <button
             className={`${styles.actionButton} ${styles.orange}`}
             onClick={() => navigate("/myPage/edit-profile")}
@@ -238,10 +244,9 @@ function MyPage() {
           <Routes>
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="my-posts" element={<MyPosts />} />
-            <Route
-              path="edit-caregiver"
-              element={<CaregiverEdit isRegistered={isCaregiverRegistered} onSuccess={checkCaregiverStatus} />}
-            />
+            <Route path="my-comments" element={<MyComments />} />
+            <Route path="my-likes" element={<MyLikes />} />
+            <Route path="edit-caregiver" element={<CaregiverEdit isRegistered={isCaregiverRegistered} />} />
             <Route path="caregiver-info" element={<CaregiverInfo />} />
           </Routes>
         </div>
