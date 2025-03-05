@@ -52,7 +52,6 @@ export default function CreatePost() {
         },
       })
 
-      console.log("Post created successfully:", response.data)
       Swal.fire({
         title: '성공!',
         text: '게시글이 등록되었습니다.',
