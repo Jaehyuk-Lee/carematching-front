@@ -3,10 +3,8 @@ import { Link } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import styles from './caregiverList.module.css';
 
-export default function CaregiverListPage() {
+function CaregiverList() {
   const [caregivers, setCaregivers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
   const [searchField, setSearchField] = useState("전체"); // 검색 필드 상태
 
@@ -15,12 +13,9 @@ export default function CaregiverListPage() {
       .get("/api/caregivers")
       .then((response) => {
         setCaregivers(response.data);
-        setLoading(false);
       })
       .catch((err) => {
         console.error("요양사 데이터를 가져오는 중 에러 발생:", err);
-        setError(err);
-        setLoading(false);
       });
   }, []);
 
@@ -33,10 +28,14 @@ export default function CaregiverListPage() {
       .join("");
   };
 
+  const formatSalary = (salary) => {
+    return salary / 10000; // 정수 변환 후 문자열로 변환
+  };
+
   // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
     const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "");
-
+    const formattedSalary = formatSalary(caregiver.salary);
     const search = searchTerm.toLowerCase();
 
     switch (searchField) {
@@ -47,29 +46,23 @@ export default function CaregiverListPage() {
       case "전문 분야":
         return (caregiver.servNeeded?.toLowerCase() ?? "").includes(search);
       case "근무 요일":
-        return workDaysKorean.includes(search);
-      case "월급":
-        return String(caregiver.salary ?? "").includes(search);
-      default: // "전체" 검색
+        case "월급":
+          return String(formattedSalary ?? "").includes(search);
+        default: // "전체" 검색
         return (
           (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
           (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
           (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
           workDaysKorean.includes(search) ||
-          String(caregiver.salary ?? "").includes(search) ||
+          String(formattedSalary ?? "").includes(search) ||
           (caregiver.status?.toLowerCase() ?? "").includes(search)
         );
     }
   });
 
-  if (loading) return <div className={styles.message}>로딩중...</div>;
-  if (error) return <div className={styles.message}>에러: {error.message}</div>;
-
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>요양사 목록</h1>
-
-      {/* 검색바와 검색 필드 선택 추가 */}
       <div className={styles.searchBar}>
         <select
           value={searchField}
@@ -108,7 +101,7 @@ export default function CaregiverListPage() {
                 <p className={styles.cardText}>지역 | {caregiver.loc}</p>
                 <p className={styles.cardText}>전문 분야 | {caregiver.servNeeded}</p>
                 <p className={styles.cardText}>근무 요일 | {convertBinaryToDays(caregiver.workDays)}</p>
-                <p className={styles.cardText}>월급 | {caregiver.salary}만원</p>
+                <p className={styles.cardText}>월급 | {formatSalary(caregiver.salary)}만원</p>
                 <p className={styles.cardText}>{caregiver.status}</p>
               </div>
             </Link>
@@ -118,3 +111,5 @@ export default function CaregiverListPage() {
     </div>
   );
 }
+
+export default CaregiverList;
