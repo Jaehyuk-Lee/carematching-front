@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react"; // 첫 번째 import만 유지
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { Stomp } from "@stomp/stompjs";
@@ -38,7 +38,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     const socket = new SockJS("http://localhost:8080/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
-  }, [onConnected, onError]); // ✅ 의존성 배열에 onConnected, onError 추가
+  }, [onConnected]);
 
   const disconnectWebSocket = useCallback(() => {
     if (stompClient) {
@@ -80,7 +80,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       stompClient.send("/app/chat/send", {}, JSON.stringify(messageRequest));
       setNewMessage("");
     }
-  }, [roomId, newMessage, user.username]);
+  }, [newMessage, roomId, user.username]);
 
   useEffect(() => {
     if (roomId) {
