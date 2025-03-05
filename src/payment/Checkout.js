@@ -2,13 +2,19 @@ import { useEffect, useState } from "react";
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
 import { nanoid } from "nanoid";
 import styles from './Checkout.module.css';
+import { useSearchParams } from 'react-router-dom';
+import axiosInstance from "../api/axiosInstance";
 
 function Checkout() {
   const [widgets, setWidgets] = useState(null);
-  const [originalPrice] = useState(1000000); // 원래 가격
+  const [originalPrice, setOriginalPrice] = useState(1000000); // 원래 가격
   const [price, setPrice] = useState(originalPrice); // 할인 적용된 가격
   const [isDiscounted, setIsDiscounted] = useState(false); // 할인 적용 여부
   const [paymentMethodWidget, setPaymentMethodWidget] = useState(null);
+
+  const [searchParams] = useSearchParams();
+  const paymentId = searchParams.get('id');
+  const [paymentInfo, setPaymentInfo] = useState(null);
 
   const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm"; // 테스트 키
 
@@ -25,6 +31,19 @@ function Checkout() {
 
     fetchPaymentWidgets();
   }, [clientKey]);
+
+  useEffect(() => {
+    if (paymentId) {
+      // 결제 ID로 결제 정보 조회
+      axiosInstance.get(`/api/payment/info/${paymentId}`)
+        .then(response => {
+          setPaymentInfo(response.data);
+        })
+        .catch(error => {
+          console.error('결제 정보 조회 중 오류 발생:', error);
+        });
+    }
+  }, [paymentId]);
 
   useEffect(() => {
     async function renderPaymentWidgets() {
@@ -99,6 +118,9 @@ function Checkout() {
     setIsDiscounted(applyDiscount);
     setPrice(applyDiscount ? Math.round(originalPrice * 0.9) : originalPrice);
   };
+
+  if (searchParams.get('test') === '1') setPaymentInfo({ amount: 1000000, productName: '토스 티셔츠 외 2건' });
+  if (!paymentInfo) return <div>결제 정보를 찾을 수 없습니다.</div>;
 
   return (
     <div className={styles.checkoutContainer}>
