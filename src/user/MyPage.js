@@ -244,11 +244,9 @@ function MyPage() {
           <Routes>
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="my-posts" element={<MyPosts />} />
-            <Route path="edit-caregiver" element={
-              <CaregiverEdit
-                isRegistered={isCaregiverRegistered}
-              />
-            } />
+            <Route path="my-comments" element={<MyComments />} />
+            <Route path="my-likes" element={<MyLikes />} />
+            <Route path="edit-caregiver" element={<CaregiverEdit isRegistered={isCaregiverRegistered} />} />
             <Route path="caregiver-info" element={<CaregiverInfo />} />
           </Routes>
         </div>
