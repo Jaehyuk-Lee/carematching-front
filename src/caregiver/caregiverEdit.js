@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import styles from './caregiverEdit.module.css';
 import axiosInstance from "../api/axiosInstance";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 const CaregiverEdit = ({ isRegistered, onSuccess }) => {
   const navigate = useNavigate();
@@ -24,9 +25,10 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
       try {
         const response = await axiosInstance.get("/api/caregivers/user");
         if (response.status === 200) {
+          const data = response.data;
           setFormData({
-            ...response.data,
-            salary: response.data.salary ? response.data.salary / 10000 : "",
+            ...data,
+            salary: data.salary ? Math.floor(data.salary / 10000) : "" // DB에서 가져온 값을 만 단위로 변환
           });
         }
       } catch (error) {
@@ -47,14 +49,7 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "salary") {
-      if (!isNaN(value) && value >= 0) {
-        setFormData({ ...formData, [name]: value });
-      }
-    } else {
-      setFormData({ ...formData, [name]: value });
-    }
-
+    setFormData({ ...formData, [name]: value });
   };
 
   const handleSubmit = async (e) => {
@@ -63,17 +58,25 @@ const CaregiverEdit = ({ isRegistered, onSuccess }) => {
     try {
       const updatedFormData = {
         ...formData,
-        salary: formData.salary * 10000, // 입력된 값 * 10,000을 적용하여 DB에 저장
+        salary: Number(formData.salary) * 10000, // 입력된 값 * 10,000을 적용하여 DB에 저장
       };
       const endpoint = "/api/caregivers/build";
-        const response = await axiosInstance.post(endpoint, updatedFormData);
-        if (response.status === 201) {
-            alert(`요양사 ${isRegistered ? "수정" : "등록"}이 완료되었습니다!`);
-            navigate("/mypage/caregiver-info");
-        }
+      const response = await axiosInstance.post(endpoint, updatedFormData);
+      if (response.status === 201) {
+        Swal.fire({
+          icon: 'success',
+          title: `${isRegistered ? "수정" : "등록"} 완료`,
+          text: `요양사 ${isRegistered ? "수정" : "등록"}이 완료되었습니다!`
+        });
+        navigate("/mypage/caregiver-info");
+      }
     } catch (error) {
       console.error(isRegistered ? "요양사 업데이트 실패:" : "요양사 등록 실패:", error);
-      alert(isRegistered ? "요양사 정보 수정 중 오류가 발생했습니다." : "요양사 등록 중 오류가 발생했습니다.");
+      Swal.fire({
+        icon: 'error',
+        title: '오류 발생',
+        text: `요양사 정보 ${isRegistered ? "수정" : "등록" } 중 오류가 발생했습니다.`
+      });
     }
   };
 
