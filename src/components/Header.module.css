@@ -72,3 +72,15 @@
 .authNav a:hover {
   color: #ff6b6b;
 }
+
+.chatIcon {
+  font-size: 1.8rem;
+  cursor: pointer;
+  margin-left: 15px;
+  padding: 10px;
+  transition: color 0.3s ease;
+}
+
+.chatIcon:hover {
+  color: #007bff;
+}
