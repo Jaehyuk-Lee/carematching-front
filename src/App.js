@@ -42,7 +42,6 @@ function App() {
               <Route path="/community/posts/:id" element={<PostDetail />} />
               <Route path="/community/posts/:id/update" element={<UpdatePost />} />
               <Route path="/create-room" element={<CreateRoomPage />} />
-              <Route path="/chat-rooms" element={<Home />} />
               <Route path="/community/*" element={<Community />} />
             </Routes>
             {/* 채팅 사이드바 (기본적으로 닫혀 있음) */}
