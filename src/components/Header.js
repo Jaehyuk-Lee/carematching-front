@@ -1,26 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import { Bell, MessageSquare } from 'lucide-react'
-import styles from "./Header.module.css";
-import Swal from "sweetalert2";
-import ChatSidebar from "../chat/ChatSidebar";
-import axiosInstance from "../api/axiosInstance";
+"use client"
+
+import { useState, useEffect } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
+import { Bell, MessageSquare } from "lucide-react"
+import styles from "./Header.module.css"
+import Swal from "sweetalert2"
+import ChatSidebar from "../chat/ChatSidebar"
+import axiosInstance from "../api/axiosInstance"
 
 function Header() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [isChatOpen, setIsChatOpen] = useState(false);
-  const [unreadMessages, setUnreadMessages] = useState(0);
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [isChatOpen, setIsChatOpen] = useState(false)
+  const [unreadMessages, setUnreadMessages] = useState(0)
 
   useEffect(() => {
     if (user) {
       axiosInstance
         .get(`/api/chat/unread-count?userId=${user.id}`)
         .then((response) => setUnreadMessages(response.data.unreadCount))
-        .catch((err) => console.error("채팅 알림 로드 오류:", err));
+        .catch((err) => console.error("채팅 알림 로드 오류:", err))
     }
-  }, [user]);
+  }, [user])
 
   const handleLogout = () => {
     Swal.fire({
@@ -32,26 +34,26 @@ function Header() {
       cancelButtonText: "아니요",
     }).then((result) => {
       if (result.isConfirmed) {
-        logout();
-        navigate("/");
+        logout()
+        navigate("/")
       }
-    });
-  };
+    })
+  }
 
   const handleChatClick = () => {
-    setIsChatOpen((prev) => !prev);
-    if (isChatOpen) setUnreadMessages(0);
-  };
+    setIsChatOpen((prev) => !prev)
+    if (isChatOpen) setUnreadMessages(0)
+  }
 
   return (
     <>
       <header className={styles.header}>
         <div className={styles.headerContent}>
           {/* 로고 */}
-            <Link to="/" className={styles.logo}>
-              <img src="/reallogo.png" alt="케어매칭" />
-              케어매칭
-            </Link>
+          <Link to="/" className={styles.logo}>
+            <img src="/reallogo.png" alt="케어매칭" />
+            케어매칭
+          </Link>
           {/* 메인 네비게이션 */}
           <nav className={styles.mainNav}>
             <ul>
@@ -65,7 +67,9 @@ function Header() {
                 <Link to="/community">커뮤니티</Link>
               </li>
               <li>
-                <Link to="/education">고객센터</Link>
+                <a href="https://pf.kakao.com/_MGmGn/chat" target="_blank" rel="noopener noreferrer">
+                  고객센터
+                </a>
               </li>
             </ul>
           </nav>
@@ -80,9 +84,7 @@ function Header() {
             {user && (
               <div className={styles.chatContainer} onClick={handleChatClick}>
                 <MessageSquare size={18} />
-                {unreadMessages > 0 && (
-                  <span className={styles.chatBadge}>{unreadMessages}</span>
-                )}
+                {unreadMessages > 0 && <span className={styles.chatBadge}>{unreadMessages}</span>}
               </div>
             )}
           </div>
@@ -110,7 +112,8 @@ function Header() {
       {/* 채팅 사이드바 */}
       <ChatSidebar isChatOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </>
-  );
+  )
 }
 
-export default Header;
+export default Header
+
