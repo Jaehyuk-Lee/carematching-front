@@ -1,9 +1,8 @@
 .myPostsPage {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
+  width: 100%;
+  padding: 0;
+  background-color: transparent;
+  border-radius: 0;
 }
 
 h2 {
@@ -13,35 +12,193 @@ h2 {
   color: #333;
 }
 
-.postCard {
-  background-color: #fff;
+.postList {
+  display: flex;
+  flex-direction: column;
+}
+
+.myPostItem {
+  padding: 20px 10px;
+  border-bottom: 1px solid #eaeaea;
+  cursor: pointer;
+  background-color: #ffffff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
-  padding: 15px;
+}
+
+.myPostItem:hover {
+  background-color: #f8f9fa;
+}
+
+.myPostContent {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 16px;
+}
+
+.myPostTextContent {
+  flex: 1;
+  overflow: hidden;
+}
+
+.postTitle {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 8px 0;
+  color: #333;
+}
+
+.postText {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.myPostImageContainer {
+  width: 100px;
+  height: 100px;
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.myPostImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.myPostFooter {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.postTitle {
-  font-size: 18px;
-  font-weight: bold;
-  color: #333;
+.postInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.categoryTab {
+  font-size: 14px;
+  color: #666;
+}
+
+.postTime {
+  font-size: 13px;
+  color: #999;
+  position: relative;
+  padding-left: 8px;
+}
+
+.postTime::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 12px;
+  width: 1px;
+  background-color: #999;
 }
 
 .postStats {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  gap: 15px;
 }
 
-.postStat {
+.viewCount,
+.likeCount,
+.commentCount {
   display: flex;
   align-items: center;
   color: #666;
+  font-size: 14px;
 }
 
-.postStatIcon {
-  margin-right: 5px;
+.viewCount svg,
+.likeCount svg,
+.commentCount svg {
+  margin-right: 3px;
 }
+
+.loadingIndicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  color: #666;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 127, 80, 0.3);
+  border-radius: 50%;
+  border-top-color: #ff7f50;
+  animation: spin 1s ease-in-out infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.emptyState {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 20px;
+  color: #d32f2f;
+  background-color: #ffebee;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.endMessage {
+  text-align: center;
+  padding: 15px;
+  color: #666;
+  margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+  .myPostContent {
+    flex-direction: column;
+  }
+
+  .myPostImageContainer {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+  }
+
+  .myPostFooter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .postStats {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+
