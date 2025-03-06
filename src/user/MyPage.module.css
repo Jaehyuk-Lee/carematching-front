@@ -19,12 +19,68 @@
   overflow: hidden;
   margin-bottom: 20px;
   background-color: #f5f5f5;
+  position: relative;
+}
+
+.profileImageClickable {
+  cursor: pointer;
 }
 
 .profileImage {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.editOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  color: white;
+  font-size: 14px;
+}
+
+.profileImageClickable:hover .editOverlay {
+  opacity: 1;
+}
+
+.uploadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 127, 80, 0.3);
+  border-radius: 50%;
+  border-top-color: #ff7f50;
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.fileInput {
+  display: none;
 }
 
 .profileName {
@@ -100,7 +156,7 @@
 }
 
 .deleteUser {
-  margin-top: auto;  /* 버튼을 맨 아래로 밀어냄 */
+  margin-top: auto; /* 버튼을 맨 아래로 밀어냄 */
 }
 
 .contentSection {
@@ -110,3 +166,22 @@
   border-radius: 8px;
   padding: 20px;
 }
+
+.loadingIndicator {
+  margin-top: 10px;
+  color: #666;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  .contentWrapper {
+    flex-direction: column;
+  }
+
+  .actionButtons {
+    flex: none;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+}
+
