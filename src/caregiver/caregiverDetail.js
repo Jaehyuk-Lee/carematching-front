@@ -14,6 +14,7 @@ function CaregiverDetail() {
       .get(`/api/caregivers/${id}`)
       .then((response) => {
         setCaregiver(response.data);
+        console.log(response.data.experienceList);
       })
       .catch((err) => {
         console.error("데이터 로드 에러:", err);
@@ -219,29 +220,24 @@ function CaregiverDetail() {
 
         {activeTab === "experience" && (
           <div className={styles.experienceSection}>
-            <div className={styles.experienceItem}>
-              <h3>노인 요양 시설 근무</h3>
-              <p className={styles.experienceDetail}>
-                <span className={styles.experienceTag}>물리 치료</span>
-                <span className={styles.experienceTag}>건강 보조</span>
-              </p>
-              <p className={styles.experienceLocation}>
-                <MapPin size={14} />
-                행복 요양원
-              </p>
-            </div>
-            <div className={styles.experienceItem}>
-              <h3>요양 병원 근무</h3>
-              <p className={styles.experienceDetail}>
-                <span className={styles.experienceTag}>재활 치료</span>
-                <span className={styles.experienceTag}>휠체어 이동 보조</span>
-                <span className={styles.experienceTag}>간병 지원</span>
-              </p>
-              <p className={styles.experienceLocation}>
-                <MapPin size={14} />
-                서울 요양 병원
-              </p>
-            </div>
+            {caregiver?.experienceList && caregiver.experienceList.length > 0 ? (
+              caregiver.experienceList.map((experience, index) => (
+                <div key={index} className={styles.experienceItem}>
+                  <h3>{experience.title}</h3>
+                  <p className={styles.experienceDetail}>
+                    {experience.summary.split(",").map((sum, idx) => (
+                      <span key={idx} className={styles.experienceTag}>{sum}</span>
+                    ))}
+                  </p>
+                  <p className={styles.experienceLocation}>
+                    <MapPin size={14} />
+                    {experience.location}
+                  </p>
+                </div>
+              ))
+            ) : (
+              <p>등록된 경력이 없습니다.</p>
+            )}
           </div>
         )}
       </div>

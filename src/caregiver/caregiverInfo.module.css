@@ -60,3 +60,44 @@ strong {
 .editButton:hover {
   background-color: #e06b3c;
 }
+
+.experienceSection {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.experienceTitle {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.experienceList {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.experienceItem {
+  background-color: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px;
+}
+
+.experienceHeader {
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.experienceNumber {
+  font-weight: 600;
+  color: #ff7f50;
+}
+
+.experienceContent p {
+  margin: 8px 0;
+}
