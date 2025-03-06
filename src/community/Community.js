@@ -3,10 +3,10 @@ import { useNavigate, useLocation, Routes, Route } from "react-router-dom"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useAuth } from "../context/AuthContext"
-import { Eye, Heart, MessageCircle } from 'lucide-react'
+import { Eye, Heart, MessageCircle } from "lucide-react"
 import CreatePost from "./CreatePost"
 import PostDetail from "./PostDetail"
-import Swal from 'sweetalert2'
+import Swal from "sweetalert2"
 
 // 커뮤니티 메인 콘텐츠 컴포넌트
 function CommunityContent() {
@@ -34,7 +34,6 @@ function CommunityContent() {
       if (observer.current) observer.current.disconnect()
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore && !loading && !isLoadingRef.current) {
-          console.log("Reached end of list, loading more posts")
           setPage((prevPage) => prevPage + 1)
         }
       })
@@ -47,7 +46,7 @@ function CommunityContent() {
     if (!user) return ["자유게시판"]
     const tabs = ["자유게시판"]
     if (user.role === "ROLE_USER_CAREGIVER" || user.role === "ROLE_ADMIN") {
-      tabs.push("요양사")
+      tabs.push("요양사게시판")
     }
     tabs.push("내 활동")
     return tabs
@@ -56,14 +55,14 @@ function CommunityContent() {
   const subTabs = {
     "내 활동": ["작성글", "댓글", "좋아요"],
     자유게시판: ["전체", "인기글"],
-    요양사: ["전체", "인기글"],
+    요양사게시판: ["전체", "인기글"],
   }
 
   const getAccessParam = useCallback((tab) => {
     switch (tab) {
       case "자유게시판":
         return "ALL"
-      case "요양사":
+      case "요양사게시판":
         return "CAREGIVER"
       default:
         return "ALL"
@@ -73,13 +72,11 @@ function CommunityContent() {
   const fetchPosts = useCallback(async () => {
     if (loading || !hasMore || isLoadingRef.current) return
     if (page > 0 && loadedPages.has(page)) {
-      console.log(`Page ${page} already loaded, skipping`)
       return
     }
 
     setLoading(true)
     isLoadingRef.current = true
-    console.log(`Fetching posts for page ${page}`)
 
     try {
       let endpoint = "/api/community/posts"
@@ -109,7 +106,6 @@ function CommunityContent() {
 
       const response = await axiosInstance.get(endpoint, { params })
       const { content, last } = response.data
-      console.log(`Received ${content?.length || 0} posts, last page: ${last}`)
 
       if (content && content.length > 0) {
         setPosts((prevPosts) => {
@@ -167,12 +163,12 @@ function CommunityContent() {
 
       if (!user) {
         await Swal.fire({
-          title: '로그인 필요',
-          text: '로그인이 필요한 서비스입니다.',
-          icon: 'warning',
-          confirmButtonText: '로그인하기',
+          title: "로그인 필요",
+          text: "로그인이 필요한 서비스입니다.",
+          icon: "warning",
+          confirmButtonText: "로그인하기",
           showCancelButton: true,
-          cancelButtonText: '취소'
+          cancelButtonText: "취소",
         }).then((result) => {
           if (result.isConfirmed) {
             navigate("/login", { state: { from: location.pathname } })
@@ -252,7 +248,8 @@ function CommunityContent() {
 
   const isSearchBarVisible = () => {
     return (
-      (activeMainTab === "자유게시판" && activeSubTab === "전체") || (activeMainTab === "요양사" && activeSubTab === "전체")
+      (activeMainTab === "자유게시판" && activeSubTab === "전체") ||
+      (activeMainTab === "요양사게시판" && activeSubTab === "전체")
     )
   }
 
@@ -480,3 +477,4 @@ export default function Community() {
     </Routes>
   )
 }
+
