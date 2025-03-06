@@ -14,7 +14,6 @@ function CaregiverDetail() {
       .get(`/api/caregivers/${id}`)
       .then((response) => {
         setCaregiver(response.data);
-        console.log(response.data.experienceList);
       })
       .catch((err) => {
         console.error("데이터 로드 에러:", err);

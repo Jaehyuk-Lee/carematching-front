@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import styles from "./caregiverEdit.module.css"
-import axiosInstance from "../api/axiosInstance"
-import { useNavigate } from "react-router-dom"
-import Swal from "sweetalert2"
-import { Plus, X } from "lucide-react"
+import { useEffect, useState } from "react";
+import styles from "./caregiverEdit.module.css";
+import axiosInstance from "../api/axiosInstance";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
+import { Plus, X } from "lucide-react";
 
 const CaregiverEdit = ({ isRegistered }) => {
   const navigate = useNavigate()
