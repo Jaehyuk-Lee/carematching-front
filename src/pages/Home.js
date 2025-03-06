@@ -116,6 +116,16 @@ const Home = () => {
 
           <div className={styles.step}>
             <div className={styles.stepNumber}>4</div>
+            <h3 className={styles.stepTitle}>서비스 결제</h3>
+            <p className={styles.stepDescription}>
+              안전 거래 시스템을 통해 결제를 진행합니다
+            </p>
+          </div>
+
+          <div className={styles.stepArrow}>→</div>
+
+          <div className={styles.step}>
+            <div className={styles.stepNumber}>5</div>
             <h3 className={styles.stepTitle}>서비스 시작</h3>
             <p className={styles.stepDescription}>
               매칭 성공 후 케어 서비스를 시작합니다
