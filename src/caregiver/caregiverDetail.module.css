@@ -511,3 +511,484 @@
   }
 }
 
+.caregiverDetailContainer {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.backButtonContainer {
+  margin-bottom: 1.5rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  font-size: 0.9rem;
+}
+
+.backButton:hover {
+  background-color: #f5f5f5;
+}
+
+.profileSection {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.imageAndActions {
+  flex-shrink: 0;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profileImageContainer {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.profileImage {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.statusBadge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.statusBadge[data-status="available"] {
+  background-color: #e3f2fd;
+  color: #1976d2;
+}
+
+.statusBadge[data-status="unavailable"] {
+  background-color: #ffebee;
+  color: #e53935;
+}
+
+.actionsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+}
+
+.actionButton:hover {
+  background-color: #f5f5f5;
+}
+
+.favoriteActive {
+  color: #e53935;
+  border-color: #e53935;
+}
+
+.profileInfo {
+  flex: 1;
+}
+
+.nameAndRating {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.caregiverName {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #ffa000;
+  font-weight: 600;
+}
+
+.ratingIcon {
+  color: #ffa000;
+  fill: #ffa000;
+}
+
+.specialization {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.detailsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
+}
+
+.detailItem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1rem;
+  color: #555;
+}
+
+.detailIcon {
+  color: #777;
+}
+
+.salaryContainer {
+  display: flex;
+  align-items: baseline;
+  margin-top: 1.5rem;
+}
+
+.salaryLabel {
+  font-size: 0.9rem;
+  color: #777;
+  margin-right: 0.8rem;
+}
+
+.salaryAmount {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1976d2;
+}
+
+.salaryPeriod {
+  font-size: 0.9rem;
+  color: #777;
+  margin-left: 0.4rem;
+}
+
+.detailSections {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.detailSection {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.sectionContent {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.6;
+}
+
+.certificationsList, .servicesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.certificationItem, .serviceItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.checkIcon {
+  color: #4caf50;
+}
+
+.contactSection {
+  margin-top: 2rem;
+  text-align: center;
+}
+
+.contactButton {
+  padding: 1rem 2.5rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.contactButton:hover {
+  background-color: #1565c0;
+}
+
+.contactInfo {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contactMethod {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.contactIcon {
+  color: #1976d2;
+  background-color: #e3f2fd;
+  padding: 0.6rem;
+  border-radius: 50%;
+}
+
+.contactTitle {
+  font-size: 0.9rem;
+  color: #777;
+  margin: 0 0 0.3rem 0;
+}
+
+.contactDetail {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.contactDisclaimer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #777;
+  background-color: #f5f5f5;
+  padding: 0.8rem;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.loginPromptOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.loginPrompt {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.loginPrompt h3 {
+  margin-top: 0;
+  margin-bottom: 0.8rem;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.loginPrompt p {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.promptButtons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.cancelButton {
+  padding: 0.7rem 1.5rem;
+  background-color: #f5f5f5;
+  color: #666;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.loginButton {
+  padding: 0.7rem 1.5rem;
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.errorContainer {
+  text-align: center;
+  padding: 3rem;
+}
+
+.errorMessage {
+  font-size: 1.1rem;
+  color: #e53935;
+  margin-bottom: 1.5rem;
+}
+
+/* 모바일 반응형 스타일 */
+@media (max-width: 768px) {
+  .caregiverDetailContainer {
+    padding: 1rem;
+  }
+
+  .profileSection {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .imageAndActions {
+    width: 100%;
+  }
+
+  .profileImage {
+    height: auto;
+    aspect-ratio: 16/9;
+  }
+
+  .caregiverName {
+    font-size: 1.5rem;
+  }
+
+  .specialization {
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+  }
+
+  .actionsContainer {
+    flex-direction: row;
+  }
+
+  .actionButton {
+    flex: 1;
+    font-size: 0.85rem;
+  }
+
+  .detailItem {
+    font-size: 0.95rem;
+  }
+
+  .salaryAmount {
+    font-size: 1.3rem;
+  }
+
+  .detailSection {
+    padding: 1.2rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+  }
+
+  .certificationsList, .servicesList {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 0.8rem;
+  }
+
+  .certificationItem, .serviceItem {
+    font-size: 0.9rem;
+  }
+
+  .contactMethod {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .contactIcon {
+    padding: 0.5rem;
+  }
+}
+
+/* 작은 모바일 화면 */
+@media (max-width: 480px) {
+  .caregiverName {
+    font-size: 1.3rem;
+  }
+
+  .specialization {
+    font-size: 0.9rem;
+  }
+
+  .actionsContainer {
+    flex-direction: column;
+  }
+
+  .detailSection {
+    padding: 1rem;
+  }
+
+  .sectionTitle {
+    font-size: 1.1rem;
+  }
+
+  .certificationsList, .servicesList {
+    grid-template-columns: 1fr;
+  }
+
+  .contactButton {
+    width: 100%;
+    padding: 0.8rem;
+  }
+
+  .loginPrompt {
+    padding: 1.2rem;
+  }
+}
+

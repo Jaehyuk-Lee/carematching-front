@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Bell, MessageSquare } from 'lucide-react';
+import { Bell, MessageSquare, Menu, X, User, LogOut } from 'lucide-react';
 import styles from "./Header.module.css";
 import Swal from "sweetalert2";
 import ChatSidebar from "../chat/ChatSidebar";
@@ -12,6 +12,7 @@ function Header() {
   const navigate = useNavigate();
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [unreadMessages, setUnreadMessages] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -34,6 +35,7 @@ function Header() {
       if (result.isConfirmed) {
         logout();
         navigate("/");
+        setMobileMenuOpen(false);
       }
     });
   };
@@ -43,33 +45,76 @@ function Header() {
     if (isChatOpen) setUnreadMessages(0);
   };
 
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setMobileMenuOpen(false);
+  };
+
   return (
     <>
       <header className={styles.header}>
-        <div className={styles.headerContent}>
-          {/* 로고 */}
-          <Link to="/" className={styles.logo}>
-            <img src="/reallogo.png" alt="케어매칭" />
-            케어매칭
-          </Link>
-          {/* 메인 네비게이션 */}
-          <nav className={styles.mainNav}>
-            <ul>
-              <li>
-                <Link to="/caregiver">요양사 찾기</Link>
+        <div className={styles.container}>
+          <div className={styles.logoContainer}>
+            <Link to="/" className={styles.logo} onClick={closeMobileMenu}>
+              케어매칭
+            </Link>
+
+            <button
+              className={styles.mobileMenuButton}
+              onClick={toggleMobileMenu}
+              aria-label={mobileMenuOpen ? "메뉴 닫기" : "메뉴 열기"}
+            >
+              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
+
+          <nav className={`${styles.nav} ${mobileMenuOpen ? styles.mobileMenuActive : ''}`}>
+            <ul className={styles.navList}>
+              <li className={styles.navItem}>
+                <Link to="/caregiver" className={styles.navLink} onClick={closeMobileMenu}>
+                  케어기버 찾기
+                </Link>
               </li>
-              <li>
-                <Link to="/hospital">요양병원 찾기</Link>
+              <li className={styles.navItem}>
+                <Link to="/community" className={styles.navLink} onClick={closeMobileMenu}>
+                  커뮤니티
+                </Link>
               </li>
-              <li>
-                <Link to="/community">커뮤니티</Link>
-              </li>
-              <li>
-                <a href="https://pf.kakao.com/_MGmGn/chat" target="_blank" rel="noopener noreferrer">
-                  고객센터
-                </a>
-              </li>
+              {user && user.role === 'ROLE_ADMIN' && (
+                <li className={styles.navItem}>
+                  <Link to="/admin/cert" className={styles.navLink} onClick={closeMobileMenu}>
+                    관리자
+                  </Link>
+                </li>
+              )}
             </ul>
+
+            <div className={styles.authContainer}>
+              {user ? (
+                <>
+                  <Link to="/mypage" className={styles.userButton} onClick={closeMobileMenu}>
+                    <User size={20} />
+                    <span className={styles.userName}>{user.username}</span>
+                  </Link>
+                  <button className={styles.logoutButton} onClick={handleLogout}>
+                    <LogOut size={20} />
+                    <span className={styles.logoutText}>로그아웃</span>
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link to="/login" className={styles.authButton} onClick={closeMobileMenu}>
+                    로그인
+                  </Link>
+                  <Link to="/signup" className={styles.authButton} onClick={closeMobileMenu}>
+                    회원가입
+                  </Link>
+                </>
+              )}
+            </div>
           </nav>
 
           {/* 액션 버튼 (검색, 알림) */}
@@ -83,24 +128,6 @@ function Header() {
               <div className={styles.chatContainer} onClick={handleChatClick}>
                 <MessageSquare size={18} />
                 {unreadMessages > 0 && <span className={styles.chatBadge}>{unreadMessages}</span>}
-              </div>
-            )}
-          </div>
-
-          {/* 로그인/회원가입 영역 */}
-          <div className={styles.authNav}>
-            {user ? (
-              <div className={styles.userMenu}>
-                <span className={styles.username}>{user.username}</span>
-                <Link to="/myPage">마이페이지</Link>
-                <button onClick={handleLogout} className={styles.logoutButton}>
-                  로그아웃
-                </button>
-              </div>
-            ) : (
-              <div className={styles.guestMenu}>
-                <Link to="/login">로그인</Link>
-                <Link to="/signup">회원가입</Link>
               </div>
             )}
           </div>

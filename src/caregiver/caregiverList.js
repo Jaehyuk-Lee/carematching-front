@@ -2,114 +2,267 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import styles from './caregiverList.module.css';
+import { MapPin, Clock, Briefcase, Search, Users, Filter } from 'lucide-react';
 
-function CaregiverList() {
+function CaregiverListPage() {
   const [caregivers, setCaregivers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
-  const [searchField, setSearchField] = useState("전체"); // 검색 필드 상태
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState({
+    location: '',
+    workType: '',
+    preferredTime: '',
+    contractType: ''
+  });
+  const [showFilters, setShowFilters] = useState(false);
 
   useEffect(() => {
-    axiosInstance
-      .get("/api/caregivers")
-      .then((response) => {
+    const fetchCaregivers = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get("/api/caregivers");
         setCaregivers(response.data);
-      })
-      .catch((err) => {
-        console.error("요양사 데이터를 가져오는 중 에러 발생:", err);
-      });
+        setError(null);
+      } catch (err) {
+        setError("케어기버 목록을 불러오는 중 오류가 발생했습니다.");
+        console.error("Error fetching caregivers:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCaregivers();
   }, []);
 
-  // 근무 요일을 이진 문자열에서 한글 요일 문자열로 변환
-  const convertBinaryToDays = (binaryStr) => {
-    const days = ["월", "화", "수", "목", "금", "토", "일"];
-    return binaryStr
-      .split("")
-      .map((bit, index) => (bit === "1" ? days[index] : ""))
-      .join("");
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
   };
 
-  const formatSalary = (salary) => {
-    return salary / 10000; // 정수 변환 후 문자열로 변환
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters({
+      ...filters,
+      [name]: value
+    });
   };
 
-  // 검색어에 맞게 요양사 목록을 필터링
-  const filteredCaregivers = caregivers.filter((caregiver) => {
-    const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "");
-    const formattedSalary = formatSalary(caregiver.salary);
-    const search = searchTerm.toLowerCase();
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
 
-    switch (searchField) {
-      case "이름":
-        return (caregiver.realName?.toLowerCase() ?? "").includes(search);
-      case "지역":
-        return (caregiver.loc?.toLowerCase() ?? "").includes(search);
-      case "전문 분야":
-        return (caregiver.servNeeded?.toLowerCase() ?? "").includes(search);
-      case "근무 요일":
-        case "월급":
-          return String(formattedSalary ?? "").includes(search);
-        default: // "전체" 검색
-        return (
-          (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
-          (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
-          (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
-          workDaysKorean.includes(search) ||
-          String(formattedSalary ?? "").includes(search) ||
-          (caregiver.status?.toLowerCase() ?? "").includes(search)
-        );
-    }
+  const filteredCaregivers = caregivers.filter(caregiver => {
+    // 검색어 필터링
+    const matchesSearch = caregiver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          caregiver.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          caregiver.location.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // 필터 적용
+    const matchesLocation = !filters.location || caregiver.location.includes(filters.location);
+    const matchesWorkType = !filters.workType || caregiver.workType === filters.workType;
+    const matchesPreferredTime = !filters.preferredTime || caregiver.preferredTime === filters.preferredTime;
+    const matchesContractType = !filters.contractType || caregiver.contractType === filters.contractType;
+
+    return matchesSearch && matchesLocation && matchesWorkType && matchesPreferredTime && matchesContractType;
   });
 
-  return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>요양사 목록</h1>
-      <div className={styles.searchBar}>
-        <select
-          value={searchField}
-          onChange={(e) => setSearchField(e.target.value)}
-          className={styles.searchSelect}
-        >
-          <option value="전체">전체</option>
-          <option value="이름">이름</option>
-          <option value="지역">지역</option>
-          <option value="전문 분야">전문 분야</option>
-          <option value="근무 요일">근무 요일</option>
-          <option value="월급">월급</option>
-        </select>
+  // 근무 유형 한글화
+  const workTypeLabel = {
+    'RESIDENT': '입주',
+    'COMMUTE': '출퇴근'
+  };
 
-        <input
-          type="text"
-          placeholder="검색어를 입력하세요..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={styles.searchInput}
-        />
+  // 선호 시간대 한글화
+  const preferredTimeLabel = {
+    'MORNING': '오전',
+    'AFTERNOON': '오후',
+    'EVENING': '저녁'
+  };
+
+  // 계약 유형 한글화
+  const contractTypeLabel = {
+    'CONTRACT': '정규직',
+    'TEMPORARY': '임시직'
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p>케어기버 목록을 불러오는 중입니다...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <p className={styles.errorMessage}>{error}</p>
+        <button
+          className={styles.retryButton}
+          onClick={() => window.location.reload()}
+        >
+          다시 시도
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.caregiverListContainer}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>케어기버 찾기</h1>
+        <p className={styles.subtitle}>당신에게 맞는 케어기버를 찾아보세요</p>
       </div>
 
-      <div className={styles.cardGrid}>
-        {filteredCaregivers.length === 0 ? (
-          <div className={styles.noResults}>검색 결과가 없습니다.</div>
-        ) : (
-          filteredCaregivers.map((caregiver) => (
-            <Link
-              key={caregiver.id}
-              to={`/caregiver/${caregiver.id}`}
-              className={styles.cardLink}
+      <div className={styles.searchAndFilterContainer}>
+        <div className={styles.searchContainer}>
+          <Search className={styles.searchIcon} size={18} />
+          <input
+            type="text"
+            placeholder="이름, 지역, 전문분야로 검색"
+            value={searchTerm}
+            onChange={handleSearchChange}
+            className={styles.searchInput}
+          />
+        </div>
+
+        <button
+          className={styles.filterToggleButton}
+          onClick={toggleFilters}
+          aria-expanded={showFilters}
+        >
+          <Filter size={18} />
+          <span>필터</span>
+        </button>
+      </div>
+
+      {showFilters && (
+        <div className={styles.filtersContainer}>
+          <div className={styles.filterItem}>
+            <label htmlFor="location" className={styles.filterLabel}>지역</label>
+            <select
+              id="location"
+              name="location"
+              value={filters.location}
+              onChange={handleFilterChange}
+              className={styles.filterSelect}
             >
-              <div className={styles.card}>
-                <h3 className={styles.cardTitle}>{caregiver.realName}</h3>
-                <p className={styles.cardText}>지역 | {caregiver.loc}</p>
-                <p className={styles.cardText}>전문 분야 | {caregiver.servNeeded}</p>
-                <p className={styles.cardText}>근무 요일 | {convertBinaryToDays(caregiver.workDays)}</p>
-                <p className={styles.cardText}>월급 | {formatSalary(caregiver.salary)}만원</p>
-                <p className={styles.cardText}>{caregiver.status}</p>
+              <option value="">전체 지역</option>
+              <option value="서울">서울</option>
+              <option value="경기">경기</option>
+              <option value="인천">인천</option>
+            </select>
+          </div>
+
+          <div className={styles.filterItem}>
+            <label htmlFor="workType" className={styles.filterLabel}>근무 형태</label>
+            <select
+              id="workType"
+              name="workType"
+              value={filters.workType}
+              onChange={handleFilterChange}
+              className={styles.filterSelect}
+            >
+              <option value="">전체</option>
+              <option value="RESIDENT">입주</option>
+              <option value="COMMUTE">출퇴근</option>
+            </select>
+          </div>
+
+          <div className={styles.filterItem}>
+            <label htmlFor="preferredTime" className={styles.filterLabel}>선호 시간대</label>
+            <select
+              id="preferredTime"
+              name="preferredTime"
+              value={filters.preferredTime}
+              onChange={handleFilterChange}
+              className={styles.filterSelect}
+            >
+              <option value="">전체</option>
+              <option value="MORNING">오전</option>
+              <option value="AFTERNOON">오후</option>
+              <option value="EVENING">저녁</option>
+            </select>
+          </div>
+
+          <div className={styles.filterItem}>
+            <label htmlFor="contractType" className={styles.filterLabel}>계약 형태</label>
+            <select
+              id="contractType"
+              name="contractType"
+              value={filters.contractType}
+              onChange={handleFilterChange}
+              className={styles.filterSelect}
+            >
+              <option value="">전체</option>
+              <option value="CONTRACT">정규직</option>
+              <option value="TEMPORARY">임시직</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      <div className={styles.resultCount}>
+        <Users size={16} />
+        <span>{filteredCaregivers.length}명의 케어기버</span>
+      </div>
+
+      <div className={styles.caregiverGrid}>
+        {filteredCaregivers.length > 0 ? (
+          filteredCaregivers.map(caregiver => (
+            <Link to={`/caregiver/${caregiver.id}`} key={caregiver.id} className={styles.caregiverCard}>
+              <div className={styles.caregiverImageContainer}>
+                <img
+                  src={caregiver.profileImage || "/default-avatar.png"}
+                  alt={`${caregiver.name} 프로필`}
+                  className={styles.caregiverImage}
+                />
+                <div className={styles.statusBadge}
+                  data-status={caregiver.status === 'OPEN' ? 'available' : 'unavailable'}>
+                  {caregiver.status === 'OPEN' ? '모집중' : '모집완료'}
+                </div>
+              </div>
+
+              <div className={styles.caregiverInfo}>
+                <h2 className={styles.caregiverName}>{caregiver.name}</h2>
+                <p className={styles.caregiverSpecialization}>{caregiver.specialization}</p>
+
+                <div className={styles.detailsContainer}>
+                  <div className={styles.detailItem}>
+                    <MapPin size={16} className={styles.detailIcon} />
+                    <span>{caregiver.location}</span>
+                  </div>
+
+                  <div className={styles.detailItem}>
+                    <Briefcase size={16} className={styles.detailIcon} />
+                    <span>{workTypeLabel[caregiver.workType]}</span>
+                  </div>
+
+                  <div className={styles.detailItem}>
+                    <Clock size={16} className={styles.detailIcon} />
+                    <span>{preferredTimeLabel[caregiver.preferredTime]}</span>
+                  </div>
+                </div>
+
+                <div className={styles.pricingContainer}>
+                  <div className={styles.salary}>
+                    <span className={styles.salaryLabel}>기본 급여</span>
+                    <span className={styles.salaryAmount}>{caregiver.salary.toLocaleString()}원</span>
+                  </div>
+                </div>
               </div>
             </Link>
           ))
+        ) : (
+          <div className={styles.noResults}>
+            <p>검색 결과가 없습니다.</p>
+            <p>다른 검색어나 필터 조건을 시도해보세요.</p>
+          </div>
         )}
       </div>
     </div>
   );
 }
 
-export default CaregiverList;
+export default CaregiverListPage;
