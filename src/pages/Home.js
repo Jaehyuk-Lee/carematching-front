@@ -62,7 +62,7 @@ const CalendarIcon = () => (
 );
 
 function Home() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('caregivers');
 

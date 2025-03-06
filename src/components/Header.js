@@ -57,7 +57,7 @@ function Header() {
                 src={user?.role === "ROLE_ADMIN" ? "/admin.png" : "/reallogo.png"}
                 alt="케어매칭"
               />
-              케어매치
+              케어매칭
             </Link>
 
           {/* 메인 네비게이션 */}
