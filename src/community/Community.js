@@ -415,7 +415,7 @@ function CommunityContent() {
             <div className={styles.profileName}>{userInfo?.nickname || "로딩 중..."}</div>
             <div className={styles.profileStats}>
               <div className={styles.statItem} onClick={() => handleStatClick("posts")}>
-                <div className={styles.statLabel}>게시글</div>
+                <div className={styles.statLabel}>작성글</div>
                 <div className={styles.statValue}>{userInfo?.postCount || 0}</div>
               </div>
               <div className={styles.statItem} onClick={() => handleStatClick("comments")}>
