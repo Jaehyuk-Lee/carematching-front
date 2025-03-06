@@ -10,7 +10,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 export default function CreatePost() {
   const navigate = useNavigate()
   const { user } = useAuth()
-  const [category, setCategory] = useState("전체")
+  const [category, setCategory] = useState("자유게시판")
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -109,7 +109,7 @@ export default function CreatePost() {
               className={styles.select}
               disabled={user.role === "ROLE_USER"}
             >
-              <option value="전체">전체</option>
+              <option value="자유게시판">자유게시판</option>
               {user.role !== "ROLE_USER" && <option value="요양사">요양사</option>}
             </select>
           </div>
@@ -185,4 +185,3 @@ export default function CreatePost() {
     </div>
   )
 }
-

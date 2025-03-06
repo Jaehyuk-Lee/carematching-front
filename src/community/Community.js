@@ -3,7 +3,7 @@ import { useNavigate, useLocation, Routes, Route } from "react-router-dom"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useAuth } from "../context/AuthContext"
-import { Eye, Heart, MessageCircle } from "lucide-react"
+import { Eye, Heart, MessageCircle } from 'lucide-react'
 import CreatePost from "./CreatePost"
 import PostDetail from "./PostDetail"
 import Swal from 'sweetalert2'
@@ -13,7 +13,7 @@ function CommunityContent() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
-  const [activeMainTab, setActiveMainTab] = useState("전체")
+  const [activeMainTab, setActiveMainTab] = useState("자유게시판")
   const [activeSubTab, setActiveSubTab] = useState("전체")
   const [userInfo, setUserInfo] = useState(null)
   const [posts, setPosts] = useState([])
@@ -44,8 +44,8 @@ function CommunityContent() {
   )
 
   const getMainTabs = useCallback(() => {
-    if (!user) return ["전체"]
-    const tabs = ["전체"]
+    if (!user) return ["자유게시판"]
+    const tabs = ["자유게시판"]
     if (user.role === "ROLE_USER_CAREGIVER" || user.role === "ROLE_ADMIN") {
       tabs.push("요양사")
     }
@@ -55,13 +55,13 @@ function CommunityContent() {
 
   const subTabs = {
     "내 활동": ["작성글", "댓글", "좋아요"],
-    전체: ["전체", "인기글"],
+    자유게시판: ["전체", "인기글"],
     요양사: ["전체", "인기글"],
   }
 
   const getAccessParam = useCallback((tab) => {
     switch (tab) {
-      case "전체":
+      case "자유게시판":
         return "ALL"
       case "요양사":
         return "CAREGIVER"
@@ -252,7 +252,7 @@ function CommunityContent() {
 
   const isSearchBarVisible = () => {
     return (
-      (activeMainTab === "전체" && activeSubTab === "전체") || (activeMainTab === "요양사" && activeSubTab === "전체")
+      (activeMainTab === "자유게시판" && activeSubTab === "전체") || (activeMainTab === "요양사" && activeSubTab === "전체")
     )
   }
 
@@ -397,7 +397,7 @@ function CommunityContent() {
                 } else {
                   setActiveSubTab("전체")
                 }
-                if (tab === "내 활동" || tab !== "전체") {
+                if (tab === "내 활동" || tab !== "자유게시판") {
                   setIsSearching(false)
                   setSearchKeyword("")
                 }
@@ -480,4 +480,3 @@ export default function Community() {
     </Routes>
   )
 }
-
