@@ -110,7 +110,7 @@ export default function CreatePost() {
               disabled={user.role === "ROLE_USER"}
             >
               <option value="자유게시판">자유게시판</option>
-              {user.role !== "ROLE_USER" && <option value="요양사">요양사</option>}
+              {user.role !== "ROLE_USER" && <option value="요양사게시판">요양사게시판</option>}
             </select>
           </div>
           <div className={styles.formGroup}>
@@ -185,3 +185,4 @@ export default function CreatePost() {
     </div>
   )
 }
+
