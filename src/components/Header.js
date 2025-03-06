@@ -48,10 +48,18 @@ function Header() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           {/* 로고 */}
-            <Link to="/" className={styles.logo}>
-              <img src="/reallogo.png" alt="케어매칭" />
-              케어매칭
+          <Link
+              to="/"
+              className={styles.logo}
+              style={user?.role === "ROLE_ADMIN" ? { color: "#00c896" } : {}}
+            >
+              <img
+                src={user?.role === "ROLE_ADMIN" ? "/admin.png" : "/reallogo.png"}
+                alt="케어매칭"
+              />
+              케어매치
             </Link>
+
           {/* 메인 네비게이션 */}
           <nav className={styles.mainNav}>
             <ul>
