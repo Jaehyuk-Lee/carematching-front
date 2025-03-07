@@ -23,6 +23,7 @@ const CaregiverEdit = ({ isRegistered }) => {
     workDays: "0000000",
     status: "OPEN",
     experienceList: [],
+
   })
 
   useEffect(() => {
