@@ -25,7 +25,6 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     setRoomInfo(currentRoom || { name: `채팅방 #${roomId}` });
   }, [roomId, chatRooms]);
 
-  // ✅ useCallback을 사용하여 함수가 다시 생성되지 않도록 방지
   const onConnected = useCallback(() => {
     console.log("✅ WebSocket 연결 성공");
     stompClient.subscribe(`/topic/chat/${roomId}`, onMessageReceived);
@@ -92,11 +91,23 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       fetchMessages(roomId);
       connectWebSocket();
     }
-
     return () => {
       disconnectWebSocket();
     };
   }, [roomId, fetchMessages, connectWebSocket, disconnectWebSocket]);
+
+  // 메시지들을 createdDate(월/일) 기준으로 그룹화
+  const groupedMessages = messages.reduce((groups, message) => {
+    const date = message.createdDate;
+    if (!groups[date]) {
+      groups[date] = [];
+    }
+    groups[date].push(message);
+    return groups;
+  }, {});
+
+  // 그룹화된 날짜들을 정렬 (필요에 따라 정렬 기준 조정 가능)
+  const sortedDates = Object.keys(groupedMessages).sort();
 
   return (
     <div className="chat-room-container">
@@ -108,11 +119,20 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       <button className="chat-action-button">이 케어코디님으로 결정하기</button>
 
       <div className="chat-messages">
-        {messages.map((msg, index) => (
-          <div key={index} className={`chat-message ${msg.username === user.username ? "chat-message-mine" : "chat-message-other"}`}>
-            <div className="chat-message-bubble">
-              <p className="chat-message-text">{msg.message}</p>
-            </div>
+        {sortedDates.map((date) => (
+          <div key={date} className="chat-date-group">
+            <div className="chat-date-header">{date}</div>
+            {groupedMessages[date].map((msg, index) => (
+              <div
+                key={msg.createdAt + index}
+                className={`chat-message ${msg.username === user.username ? "chat-message-mine" : "chat-message-other"}`}
+              >
+                <div className="chat-message-bubble">
+                  <p className="chat-message-text">{msg.message}</p>
+                  <span className="chat-message-time">{msg.createdTime}</span>
+                </div>
+              </div>
+            ))}
           </div>
         ))}
       </div>
@@ -124,9 +144,11 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="메시지를 입력하세요..."
           className="chat-input"
-          onKeyDown={handleKeyDown}  // 엔터 키를 감지하여 메시지 전송
+          onKeyDown={handleKeyDown}
         />
-        <button onClick={sendMessage} disabled={!newMessage.trim()} className="chat-send-button">전송</button>
+        <button onClick={sendMessage} disabled={!newMessage.trim()} className="chat-send-button">
+          전송
+        </button>
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Bell, MessageSquare } from 'lucide-react';
+import { Bell, MessageSquare } from 'lucide-react'
 import styles from "./Header.module.css";
 import Swal from "sweetalert2";
 import ChatSidebar from "../chat/ChatSidebar";
@@ -48,10 +48,17 @@ function Header() {
       <header className={styles.header}>
         <div className={styles.headerContent}>
           {/* 로고 */}
-          <Link to="/" className={styles.logo}>
-            <img src="/reallogo.png" alt="케어매칭" />
-            케어매칭
-          </Link>
+          <Link
+              to="/"
+              className={styles.logo}
+              style={user?.role === "ROLE_ADMIN" ? { color: "#00c896" } : {}}
+            >
+              <img
+                src={user?.role === "ROLE_ADMIN" ? "/admin.png" : "/reallogo.png"}
+                alt="케어매칭"
+              />
+              케어매칭
+            </Link>
           {/* 메인 네비게이션 */}
           <nav className={styles.mainNav}>
             <ul>
@@ -65,9 +72,7 @@ function Header() {
                 <Link to="/community">커뮤니티</Link>
               </li>
               <li>
-                <a href="https://pf.kakao.com/_MGmGn/chat" target="_blank" rel="noopener noreferrer">
-                  고객센터
-                </a>
+                <Link to="/education">고객센터</Link>
               </li>
             </ul>
           </nav>
@@ -82,7 +87,9 @@ function Header() {
             {user && (
               <div className={styles.chatContainer} onClick={handleChatClick}>
                 <MessageSquare size={18} />
-                {unreadMessages > 0 && <span className={styles.chatBadge}>{unreadMessages}</span>}
+                {unreadMessages > 0 && (
+                  <span className={styles.chatBadge}>{unreadMessages}</span>
+                )}
               </div>
             )}
           </div>
