@@ -19,7 +19,7 @@ export default function UpdatePost() {
   const navigate = useNavigate()
   const { id } = useParams()
   const { user } = useAuth()
-  const [category, setCategory] = useState("전체")
+  const [category, setCategory] = useState("자유게시판")
   const [isAnonymous, setIsAnonymous] = useState(false)
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
@@ -142,8 +142,8 @@ export default function UpdatePost() {
               className={styles.select}
               disabled={user.role === "ROLE_USER"}
             >
-              <option value="전체">전체</option>
-              {user.role !== "ROLE_USER" && <option value="요양사">요양사</option>}
+              <option value="자유게시판">자유게시판</option>
+              {user.role !== "ROLE_USER" && <option value="요양사게시판">요양사게시판</option>}
             </select>
           </div>
           <div className={styles.formGroup}>

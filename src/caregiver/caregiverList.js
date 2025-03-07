@@ -25,16 +25,18 @@ function CaregiverList() {
     return binaryStr
       .split("")
       .map((bit, index) => (bit === "1" ? days[index] : ""))
-      .join("");
+      .filter(Boolean)
+      .join(", ");
   };
 
   const formatSalary = (salary) => {
-    return salary / 10000; // 정수 변환 후 문자열로 변환
+    return salary ? `${(salary / 10000).toFixed(0)}만원` : "0만원";
   };
 
   // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
     const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "");
+    const workDaysWithoutComma = workDaysKorean.replace(/, /g, "");
     const formattedSalary = formatSalary(caregiver.salary);
     const search = searchTerm.toLowerCase();
 
@@ -46,17 +48,18 @@ function CaregiverList() {
       case "전문 분야":
         return (caregiver.servNeeded?.toLowerCase() ?? "").includes(search);
       case "근무 요일":
-        case "월급":
-          return String(formattedSalary ?? "").includes(search);
-        default: // "전체" 검색
-        return (
-          (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
-          (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
-          (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
-          workDaysKorean.includes(search) ||
-          String(formattedSalary ?? "").includes(search) ||
-          (caregiver.status?.toLowerCase() ?? "").includes(search)
-        );
+        return workDaysKorean.includes(search) || workDaysWithoutComma.includes(search);
+      case "월급":
+        return formattedSalary.includes(search);
+      default: // "전체" 검색
+      return (
+        (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
+        (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
+        (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
+        workDaysKorean.includes(search) || workDaysWithoutComma.includes(search) ||
+        formattedSalary.includes(search) ||
+        (caregiver.status?.toLowerCase() ?? "").includes(search)
+      );
     }
   });
 
@@ -101,7 +104,7 @@ function CaregiverList() {
                 <p className={styles.cardText}>지역 | {caregiver.loc}</p>
                 <p className={styles.cardText}>전문 분야 | {caregiver.servNeeded}</p>
                 <p className={styles.cardText}>근무 요일 | {convertBinaryToDays(caregiver.workDays)}</p>
-                <p className={styles.cardText}>월급 | {formatSalary(caregiver.salary)}만원</p>
+                <p className={styles.cardText}>월급 | {formatSalary(caregiver.salary)}</p>
                 <p className={styles.cardText}>{caregiver.status}</p>
               </div>
             </Link>

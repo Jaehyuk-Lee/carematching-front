@@ -26,7 +26,6 @@ h2 {
   color: #555;
 }
 
-/* 기존 input 스타일 */
 .inputGroup input {
   width: 100%;
   padding: 10px;
@@ -36,7 +35,6 @@ h2 {
   font-size: 14px;
 }
 
-/* 추가된 select 스타일 */
 .inputGroup select {
   width: 100%;
   padding: 10px;
@@ -92,7 +90,7 @@ h2 {
 
 .checkboxItem {
   display: flex;
-  flex-direction: column; /* 요일(텍스트) 위, 체크박스 아래 */
+  flex-direction: column; /* 세로 정렬 (텍스트 위, 체크박스 아래) */
   align-items: center;
   font-size: 16px;
 }
@@ -117,4 +115,137 @@ h2 {
   font-size: 14px;
   color: #555;
   white-space: nowrap; /* '만원'이 줄 바꿈되지 않도록 설정 */
+}
+
+/* 경력 카드 관련 새로운 스타일 */
+.experienceSectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 24px;
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.experienceSectionHeader h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.addButton {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background-color: #ff7f50;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addButton:hover {
+  background-color: #e06b3c;
+}
+
+.experienceCardsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.experienceCard {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.3s ease-in-out;
+  text-align: left;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+}
+
+.cardHeader span {
+  font-weight: 600;
+  color: #333;
+}
+
+.removeCardButton {
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.removeCardButton:hover {
+  background-color: #f0f0f0;
+  color: #ff4d4f;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* 경력 카드 내부 요소 스타일 */
+.experienceCard .inputGroup {
+  margin-bottom: 12px;
+}
+
+.experienceCard .inputGroup:last-child {
+  margin-bottom: 0;
+}
+
+.experienceCard textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: vertical;
+  font-family: inherit;
+  box-sizing: border-box;
+  font-size: 14px;
+}
+
+/* 경력 카드 내부 input 스타일 */
+.experienceCard .inputGroup input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 14px;
 }

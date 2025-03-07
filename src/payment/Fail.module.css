@@ -1,0 +1,83 @@
+/* 결제 실패 페이지 스타일 */
+.failContainer {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-height: 80vh;
+  justify-content: center;
+}
+
+.errorIcon {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background-color: #e53935; /* 빨간색 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.errorIcon svg {
+  width: 60px;
+  height: 60px;
+  color: white;
+}
+
+.failTitle {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 2.5rem;
+  color: #333;
+}
+
+.infoSection {
+  width: 100%;
+  margin-bottom: 2.5rem;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #ffcdd2; /* 연한 빨간색 테두리 */
+}
+
+.infoLabel {
+  color: #795548; /* 브라운 계열 */
+  font-size: 1rem;
+}
+
+.infoValue {
+  font-weight: 500;
+  font-size: 1rem;
+  color: #5d4037; /* 진한 브라운 */
+}
+
+.homeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2rem;
+  background-color: white;
+  border: 1px solid #e53935; /* 빨간색 테두리 */
+  border-radius: 2rem;
+  color: #e53935; /* 빨간색 텍스트 */
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.homeButton:hover {
+  background-color: #ffebee; /* 매우 연한 빨간색 배경 */
+}
+
+.backIcon {
+  margin-right: 0.5rem;
+}

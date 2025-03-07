@@ -59,7 +59,6 @@ function Header() {
               />
               케어매칭
             </Link>
-
           {/* 메인 네비게이션 */}
           <nav className={styles.mainNav}>
             <ul>
