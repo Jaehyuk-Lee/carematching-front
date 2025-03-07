@@ -7,6 +7,7 @@ import { Eye, Heart, MessageCircle } from "lucide-react"
 import CreatePost from "./CreatePost"
 import PostDetail from "./PostDetail"
 import Swal from "sweetalert2"
+import basicProfileImage from "../assets/basicprofileimage.png"
 
 // 커뮤니티 메인 콘텐츠 컴포넌트
 function CommunityContent() {
@@ -353,7 +354,7 @@ function CommunityContent() {
         </div>
         <div className={styles.postFooter}>
           <div className={styles.authorInfo}>
-            <img src={post.profileImage || "/placeholder.svg"} alt="" className={styles.authorImage} />
+            <img src={post.profileImage || basicProfileImage} alt="" className={styles.authorImage} />
             <span className={styles.authorName}>{post.nickname}</span>
             <span className={styles.postTime}>{post.relativeTime}</span>
           </div>
@@ -410,7 +411,7 @@ function CommunityContent() {
         <div className={styles.sidebar}>
           <div className={styles.profile}>
             <div className={styles.profileImage}>
-              <img src={userInfo?.profileImage || "/placeholder.svg"} alt="프로필 이미지" className={styles.avatar} />
+              <img src={userInfo?.profileImage || basicProfileImage} alt="프로필 이미지" className={styles.avatar} />
             </div>
             <div className={styles.profileName}>{userInfo?.nickname || "로딩 중..."}</div>
             <div className={styles.profileStats}>
