@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../context/AuthContext";
-import ChatRoom from "./ChatRoom";
-import "./ChatSidebar.css";
+"use client"
 
-const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose를 props로 받음
-  const [activeChatId, setActiveChatId] = useState(null);
-  const [chatRooms, setChatRooms] = useState([]);
-  const { user } = useAuth();
+import { useState, useEffect } from "react"
+import axiosInstance from "../api/axiosInstance"
+import { useAuth } from "../context/AuthContext"
+import ChatRoom from "./ChatRoom"
+import "./ChatSidebar.css"
+
+const ChatSidebar = ({ isChatOpen, onClose }) => {
+  const [activeChatId, setActiveChatId] = useState(null)
+  const [chatRooms, setChatRooms] = useState([])
+  const { user } = useAuth()
 
   useEffect(() => {
     if (user) {
-      fetchChatRooms(user.username);
+      fetchChatRooms(user.username)
     }
-  }, [user]);
+  }, [user])
 
   const fetchChatRooms = async (username) => {
     try {
-      const response = await axiosInstance.get(`/api/rooms?username=${username}`);
+      const response = await axiosInstance.get(`/api/rooms?username=${username}`)
 
       const enhancedRooms = response.data.map((room) => ({
         ...room,
@@ -26,22 +28,30 @@ const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose�
         lastMessageDate: room.lastMessageDate,
         unread: 0,
         avatar: "/placeholder.svg",
-      }));
+      }))
 
-      setChatRooms(enhancedRooms);
-      console.log("✅ [INFO] 채팅방 목록:", enhancedRooms);
+      setChatRooms(enhancedRooms)
+      console.log("✅ [INFO] 채팅방 목록:", enhancedRooms)
     } catch (error) {
-      console.error("❌ [ERROR] 채팅방 목록 불러오기 오류:", error);
+      console.error("❌ [ERROR] 채팅방 목록 불러오기 오류:", error)
     }
-  };
+  }
 
   const handleChatRoomClick = (roomId) => {
-    setActiveChatId(roomId);
-  };
+    setActiveChatId(roomId)
+  }
 
   const handleBackToList = () => {
-    setActiveChatId(null);
-  };
+    setActiveChatId(null)
+  }
+
+  // Handle clicks on the overlay to close the sidebar
+  const handleOverlayClick = (e) => {
+    // Prevent clicks inside the sidebar from closing it
+    if (e.target.classList.contains("chat-overlay")) {
+      onClose()
+    }
+  }
 
   return (
     <>
@@ -51,7 +61,9 @@ const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose�
           <div className="chat-sidebar-container">
             <div className="chat-sidebar-header">
               <h2 className="chat-sidebar-title">채팅</h2>
-              <button className="chat-close-button" onClick={onClose}>×</button>
+              <button className="chat-close-button" onClick={onClose}>
+                ×
+              </button>
             </div>
             <div className="chat-rooms-list">
               {chatRooms.length > 0 ? (
@@ -81,9 +93,10 @@ const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose�
       </div>
 
       {/* 배경 오버레이 */}
-      {isChatOpen && <div className="chat-overlay" onClick={onClose} />}
+      {isChatOpen && <div className="chat-overlay" onClick={handleOverlayClick} />}
     </>
-  );
-};
+  )
+}
 
-export default ChatSidebar;
+export default ChatSidebar
+
