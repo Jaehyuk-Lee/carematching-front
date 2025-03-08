@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from './EditProfile.module.css';
 import axiosInstance from "../../api/axiosInstance";
 import Swal from 'sweetalert2';
+import { useNavigate } from "react-router-dom";
 
 function EditProfile() {
+  const navigate = useNavigate();
+
   const [profileInput, setProfileInput] = useState({
     nickname: "",
     phoneNumber: "",
@@ -12,6 +15,18 @@ function EditProfile() {
     confirmPassword: "",
     certno: "",
   });
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axiosInstance.get("/api/user/info");
+        setProfileInput(response.data);
+      } catch (error) {
+        console.error("사용자 정보 가져오기 실패:", error);
+      }
+    };
+    fetchUserInfo();
+  }, []);
 
   const handleInputChange = (e) => {
     setProfileInput((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -35,11 +50,15 @@ function EditProfile() {
         throw new Error(response.data?.message || "프로필 업데이트에 실패했습니다.");
       }
 
-      Swal.fire({
+      const result = await Swal.fire({
         icon: 'success',
         title: '프로필 업데이트',
         text: "프로필이 성공적으로 업데이트되었습니다."
       });
+
+      if (result.isConfirmed) {
+        navigate("/mypage");
+      }
     } catch (error) {
       console.error("프로필 업데이트 오류:", error);
       Swal.fire({
