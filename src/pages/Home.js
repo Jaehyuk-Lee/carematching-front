@@ -5,6 +5,7 @@ import { MapPin, Calendar, Briefcase, DollarSign, Star, Search, MessageSquare, U
 import basicProfileImage from "../assets/basicprofileimage.png"
 import styles from "../caregiver/caregiverList.module.css"
 import axiosInstance from "../api/axiosInstance"
+import CaregiverList from "../caregiver/caregiverList"
 import './Home.css';
 
 function Home() {
@@ -60,6 +61,7 @@ function Home() {
       .get("/api/caregivers")
       .then((response) => {
         setCaregivers(response.data)
+        console.log(response.data);
       })
       .catch((err) => {
         console.error("요양사 데이터를 가져오는 중 에러 발생:", err)
@@ -191,107 +193,7 @@ function Home() {
 
           {/* Caregivers Tab */}
           <div className={`tab-content ${activeTab === 'caregivers' ? 'active' : ''}`}>
-            <div className="section-header">
-              <h2>요양사 목록</h2>
-              <button className="btn-text" onClick={() => navigate('/caregiver')}>
-                전체보기 <ArrowRight />
-              </button>
-            </div>
-
-            {/* Search Bar */}
-            <div className={styles.searchBar}>
-              <select value={searchField} onChange={(e) => setSearchField(e.target.value)} className={styles.searchSelect}>
-                <option value="전체">전체</option>
-                <option value="이름">이름</option>
-                <option value="지역">지역</option>
-                <option value="전문 분야">전문 분야</option>
-                <option value="근무 요일">근무 요일</option>
-                <option value="월급">월급</option>
-              </select>
-              <div className={styles.searchContainer}>
-                <Search size={20} className={styles.searchIcon} />
-                <input
-                  type="text"
-                  placeholder="검색어를 입력하세요..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className={styles.searchInput}
-                />
-              </div>
-            </div>
-
-            <div className={styles.filterContainer}>
-              <button onClick={() => handleWorkFormFilterChange("전체")}>전체</button>
-              <button onClick={() => handleWorkFormFilterChange("출퇴근형")}>출퇴근형</button>
-              <button onClick={() => handleWorkFormFilterChange("상주형")}>상주형</button>
-            </div>
-
-            {/* Caregivers Grid */}
-            <div className={styles.cardGrid}>
-              {filteredCaregivers.length === 0 ? (
-                <div className={styles.noResults}>검색 결과가 없습니다.</div>
-              ) : (
-                filteredCaregivers.map((caregiver) => (
-                  <Link key={caregiver.id} to={`/caregiver/${caregiver.id}`} className={styles.cardLink}>
-                    <div className={styles.card}>
-                      <div className={styles.cardHeader}>
-                        <div className={styles.caregiverInfo}>
-                          <div className={styles.avatar}>
-                            <img src={caregiver.image || basicProfileImage} alt={caregiver.realName} />
-                          </div>
-                          <div>
-                            <h3 className={styles.cardTitle}>{caregiver.realName || "이름 없음"}</h3>
-                            <div className={styles.rating}>
-                              <Star size={16} className={styles.icon} />
-                              <span>{caregiver?.reviews?.star}3.5</span>
-                              <span className={styles.dot}>•</span>
-                              <span>{formatReviewCount(caregiver?.reviews?.count)} 리뷰</span>
-                            </div>
-                          </div>
-                        </div>
-                        <span className={styles.servNeeded}>
-                          {caregiver.servNeeded
-                            ? caregiver.servNeeded.split(",").map((specialty, i) => (
-                                <span key={i} className={styles.servNeededBadge}>
-                                  {specialty.trim()}
-                                </span>
-                              ))
-                            : "분야 미정"}
-                        </span>
-                      </div>
-                      <div className={styles.cardContent}>
-                        <p className={styles.cardText}>
-                          <MapPin size={16} className={styles.icon} />
-                          <span className={styles.cardTextLabel}>지역:</span> {caregiver.loc || "지역 미정"}
-                        </p>
-                        <p className={styles.cardText}>
-                          <Briefcase size={16} className={styles.icon} />
-                          <span className={styles.cardTextLabel}>근무 형태:</span> {formatWorkForm(caregiver.workForm)}
-                        </p>
-                        <p className={styles.cardText}>
-                          <Calendar size={16} className={styles.icon} />
-                          <span className={styles.cardTextLabel}>근무 요일:</span>{" "}
-                          {convertBinaryToDays(caregiver.workDays) || "요일 미정"}
-                        </p>
-                        <p className={styles.cardText}>
-                          <DollarSign size={16} className={styles.icon} />
-                          <span className={styles.cardTextLabel}>월급:</span> {formatSalary(caregiver.salary)}
-                        </p>
-                      </div>
-                      <div className="card-footer">
-                        <button className="btn-text">
-                          <Calendar size={22} className={styles.icon} />
-                          예약하기
-                        </button>
-                        <button className="btn-text">
-                          프로필 보기
-                        </button>
-                      </div>
-                    </div>
-                  </Link>
-                ))
-              )}
-            </div>
+            <CaregiverList containerClassName="global-no-padding" />
           </div>
 
           {/* Community Tab */}

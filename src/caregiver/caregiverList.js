@@ -5,7 +5,7 @@ import styles from "./caregiverList.module.css"
 import { MapPin, Calendar, Briefcase, DollarSign, Star, Search } from "lucide-react"
 import basicProfileImage from "../assets/basicprofileimage.png"
 
-function CaregiverList() {
+function CaregiverList({ containerClassName = "" }) {
   const [caregivers, setCaregivers] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [searchField, setSearchField] = useState("전체")
@@ -88,9 +88,8 @@ function CaregiverList() {
   }
 
   return (
-    <div className={styles.container}>
-      <h1 className={styles.title}>요양사 목록</h1>
-
+    <div className={`${styles.container} ${containerClassName}`}>
+      <h2 className={styles.title}>요양사 목록</h2>
       <div className={styles.searchBar}>
         <select value={searchField} onChange={(e) => setSearchField(e.target.value)} className={styles.searchSelect}>
           <option value="전체">전체</option>
@@ -134,9 +133,9 @@ function CaregiverList() {
                       <h3 className={styles.cardTitle}>{caregiver.realName || "이름 없음"}</h3>
                       <div className={styles.rating}>
                         <Star size={16} className={styles.icon} />
-                        <span>{caregiver?.reviews?.star}3.5</span>
+                        <span>{caregiver?.reviews?.star || 0}</span>
                         <span className={styles.dot}>•</span>
-                        <span>{formatReviewCount(caregiver?.reviews?.count)} 리뷰</span>
+                        <span>{formatReviewCount(caregiver?.reviewCount)} 리뷰</span>
                       </div>
                     </div>
                   </div>
@@ -187,4 +186,4 @@ function CaregiverList() {
   )
 }
 
-export default CaregiverList
+export default CaregiverList;
