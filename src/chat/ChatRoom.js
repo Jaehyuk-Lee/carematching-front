@@ -41,7 +41,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   }, []);
 
   const connectWebSocket = useCallback(() => {
-    const socket = new SockJS("http://localhost:8080/wss");
+    const socket = new SockJS(config.apiUrl + "/wss");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
   }, [onConnected, onError]);
