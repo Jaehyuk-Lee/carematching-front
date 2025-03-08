@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 import axiosInstance from "../api/axiosInstance";
 import styles from "./caregiverDetail.module.css"
 import { useAuth } from "../context/AuthContext";
@@ -38,31 +39,53 @@ function CaregiverDetail() {
   }
   const handleMatchClick = async () => {
     if (!user) {
-      alert("로그인이 필요합니다.");
+      // 로그인 안 된 상태
+      Swal.fire({
+        icon: 'warning',
+        title: '로그인 필요',
+        text: '로그인이 필요합니다. 로그인 후 다시 시도해 주세요.'
+      });
       return;
     }
 
     try {
-      console.log("📦 [REQUEST] 방 생성 요청:", {
-        requesterUserId: Number(user.id),
-        caregiverId: Number(id),
-      });
-
+      // caregiverId만 보냄
       const response = await axiosInstance.post("/api/rooms", {
-        requesterUserId: Number(user.id),
         caregiverId: Number(id),
       });
 
-      console.log("🚀 [SUCCESS] 방 생성 성공:", response.data);
+      // 성공 시
+      Swal.fire({
+        icon: 'success',
+        title: '매칭 성공!',
+        text: '매칭 되었습니다.',
+        showConfirmButton: false,
+        timer: 1500
+      });
 
+      // 방 ID로 이동
       if (response.data.roomId) {
         navigate(`/rooms/${response.data.roomId}`);
       }
+
     } catch (error) {
-      console.error("❌ [ERROR] 방 생성 중 오류:", error.response?.data || error.message);
-      alert("방 생성 중 오류가 발생했습니다.");
+      console.error("❌ [ERROR] 매칭 중 오류:", error.response?.data || error.message);
+
+      // 서버에서 넘겨주는 메시지(예: "이미 해당 요양사와 매칭이 존재합니다.")를 활용
+      const errorMessage = error?.response?.data?.message
+        || error?.response?.data
+        || error.message
+        || "알 수 없는 오류가 발생했습니다.";
+
+      // SweetAlert2로 예외 메시지 표시
+      Swal.fire({
+        icon: 'error',
+        title: '매칭 실패',
+        text: errorMessage
+      });
     }
   };
+
 
   return (
     <div className={styles.container}>
