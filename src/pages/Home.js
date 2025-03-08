@@ -192,7 +192,7 @@ function Home() {
           {/* Caregivers Tab */}
           <div className={`tab-content ${activeTab === 'caregivers' ? 'active' : ''}`}>
             <div className="section-header">
-              <h2>추천 요양사</h2>
+              <h2>요양사 목록</h2>
               <button className="btn-text" onClick={() => navigate('/caregiver')}>
                 전체보기 <ArrowRight />
               </button>
