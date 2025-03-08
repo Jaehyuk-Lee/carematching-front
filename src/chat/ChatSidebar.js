@@ -13,11 +13,11 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
     if (user) {
       fetchChatRooms(); // username을 직접 안 보내도 됨
     }
-  }, [user]);
+  }, [user])
 
   const fetchChatRooms = async () => {
     try {
-      // 백엔드에서 JWT로 username 식별하므로 쿼리 파라미터 X
+
       const response = await axiosInstance.get(`/api/rooms`);
       const enhancedRooms = response.data.map((room) => ({
         ...room,
@@ -26,22 +26,30 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
         lastMessageDate: room.lastMessageDate,
         unread: 0,
         avatar: "/placeholder.svg",
-      }));
+      }))
 
-      setChatRooms(enhancedRooms);
-      console.log("✅ [INFO] 채팅방 목록:", enhancedRooms);
+      setChatRooms(enhancedRooms)
+      console.log("✅ [INFO] 채팅방 목록:", enhancedRooms)
     } catch (error) {
-      console.error("❌ [ERROR] 채팅방 목록 불러오기 오류:", error);
+      console.error("❌ [ERROR] 채팅방 목록 불러오기 오류:", error)
     }
-  };
+  }
 
   const handleChatRoomClick = (roomId) => {
-    setActiveChatId(roomId);
-  };
+    setActiveChatId(roomId)
+  }
 
   const handleBackToList = () => {
-    setActiveChatId(null);
-  };
+    setActiveChatId(null)
+  }
+
+  // Handle clicks on the overlay to close the sidebar
+  const handleOverlayClick = (e) => {
+    // Prevent clicks inside the sidebar from closing it
+    if (e.target.classList.contains("chat-overlay")) {
+      onClose()
+    }
+  }
 
   // 오버레이 클릭 시 닫기
   const handleOverlayClick = (e) => {
@@ -107,7 +115,8 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
 
       {isChatOpen && <div className="chat-overlay" onClick={handleOverlayClick} />}
     </>
-  );
-};
+  )
+}
 
-export default ChatSidebar;
+export default ChatSidebar
+
