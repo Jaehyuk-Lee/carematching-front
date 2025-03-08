@@ -62,11 +62,21 @@ function CaregiverDetail() {
         showConfirmButton: false,
         timer: 1500
       });
+      // if (response.data.roomId) {
+      //   // 🔥 새로고침 (방법 1) 전체 페이지 새로고침
+      //   window.location.reload();
 
       // 방 ID로 이동
       if (response.data.roomId) {
+        // 1️⃣ 방 생성 후 이동
         navigate(`/rooms/${response.data.roomId}`);
+
+        // 2️⃣ 2초 후 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       }
+
 
     } catch (error) {
       console.error("❌ [ERROR] 매칭 중 오류:", error.response?.data || error.message);
