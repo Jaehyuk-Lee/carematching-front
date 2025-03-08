@@ -11,45 +11,37 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
 
   useEffect(() => {
     if (user) {
-      fetchChatRooms(); // username을 직접 안 보내도 됨
+      fetchChatRooms();
     }
-  }, [user])
+  }, [user]);
 
   const fetchChatRooms = async () => {
     try {
-
       const response = await axiosInstance.get(`/api/rooms`);
+
       const enhancedRooms = response.data.map((room) => ({
         ...room,
-        name: room.otherUsername,  // 백엔드에서 realName/nickname 중 하나를 담아줌
+        name: room.otherUsername, // 백엔드에서 `realName` 또는 `nickname`을 제공
         lastMessage: room.lastMessage,
         lastMessageDate: room.lastMessageDate,
         unread: 0,
         avatar: "/placeholder.svg",
-      }))
+      }));
 
-      setChatRooms(enhancedRooms)
-      console.log("✅ [INFO] 채팅방 목록:", enhancedRooms)
+      setChatRooms(enhancedRooms);
+      console.log("✅ [INFO] 채팅방 목록:", enhancedRooms);
     } catch (error) {
-      console.error("❌ [ERROR] 채팅방 목록 불러오기 오류:", error)
+      console.error("❌ [ERROR] 채팅방 목록 불러오기 오류:", error);
     }
-  }
+  };
 
   const handleChatRoomClick = (roomId) => {
-    setActiveChatId(roomId)
-  }
+    setActiveChatId(roomId);
+  };
 
   const handleBackToList = () => {
-    setActiveChatId(null)
-  }
-
-  // Handle clicks on the overlay to close the sidebar
-  const handleOverlayClick = (e) => {
-    // Prevent clicks inside the sidebar from closing it
-    if (e.target.classList.contains("chat-overlay")) {
-      onClose()
-    }
-  }
+    setActiveChatId(null);
+  };
 
   // 오버레이 클릭 시 닫기
   const handleOverlayClick = (e) => {
@@ -65,9 +57,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
           <div className="chat-sidebar-container">
             <div className="chat-sidebar-header">
               <h2 className="chat-sidebar-title">채팅</h2>
-              <button className="chat-close-button" onClick={onClose}>
-                ×
-              </button>
+              <button className="chat-close-button" onClick={onClose}>×</button>
             </div>
             <div className="chat-rooms-list">
               {chatRooms.length > 0 ? (
@@ -115,8 +105,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
 
       {isChatOpen && <div className="chat-overlay" onClick={handleOverlayClick} />}
     </>
-  )
-}
+  );
+};
 
-export default ChatSidebar
-
+export default ChatSidebar;
