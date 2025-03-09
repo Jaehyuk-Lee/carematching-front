@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
+import config from "../config/config";
 import Swal from "sweetalert2";
 import { useAuth } from "../context/AuthContext";
 
@@ -17,7 +18,7 @@ const NotificationListener = () => {
     console.log("🔗 [INFO] WebSocket 연결 시도...");
 
     // ✅ WebSocket 연결
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(config.apiUrl + "/ws");
     const stompClient = Stomp.over(socket);
     stompClientRef.current = stompClient;
 
