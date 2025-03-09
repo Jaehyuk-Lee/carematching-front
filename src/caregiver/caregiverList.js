@@ -2,14 +2,13 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import axiosInstance from "../api/axiosInstance"
 import styles from "./caregiverList.module.css"
-import { MapPin, Calendar, Briefcase, DollarSign, Star, Search } from "lucide-react"
+import { MapPin, Calendar, Briefcase, DollarSign, Search } from "lucide-react"
 import basicProfileImage from "../assets/basicprofileimage.png"
 
 function CaregiverList({ containerClassName = "" }) {
   const [caregivers, setCaregivers] = useState([])
   const [searchTerm, setSearchTerm] = useState("")
   const [searchField, setSearchField] = useState("전체")
-  const [reviews, setReviews] = useState([])
   const [workFormFilter, setWorkFormFilter] = useState("전체")
 
   useEffect(() => {
@@ -50,12 +49,12 @@ function CaregiverList({ containerClassName = "" }) {
   }
 
   // 리뷰 개수를 포맷하는 함수
-  const formatReviewCount = (count) => {
-    if (count >= 1000) {
-      return `${Math.round(count / 100) / 10}k`; // 1000 이상일 경우 k로 표시
-    }
-    return count; // 1000 미만일 경우 원래 숫자 반환
-  }
+  // const formatReviewCount = (count) => {
+  //   if (count >= 1000) {
+  //     return `${Math.round(count / 100) / 10}k`; // 1000 이상일 경우 k로 표시
+  //   }
+  //   return count; // 1000 미만일 경우 원래 숫자 반환
+  // }
 
   // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
@@ -135,12 +134,12 @@ function CaregiverList({ containerClassName = "" }) {
                     </div>
                     <div>
                       <h3 className={styles.cardTitle}>{caregiver.realName || "이름 없음"}</h3>
-                      <div className={styles.rating}>
+                      {/* <div className={styles.rating}>
                         <Star size={16} className={styles.icon} />
                         <span>{caregiver?.reviews?.star || 0}</span>
                         <span className={styles.dot}>•</span>
                         <span>{formatReviewCount(caregiver?.reviewCount)} 리뷰</span>
-                      </div>
+                      </div> */}
                     </div>
                   </div>
                   <span className={styles.servNeeded}>

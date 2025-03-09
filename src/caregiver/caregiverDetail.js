@@ -134,12 +134,12 @@ function CaregiverDetail() {
           >
             요양사 정보
           </button>
-          <button
-            className={`${styles.tab} ${activeTab === "schedule" ? styles.activeTab : ""}`}
-            onClick={() => setActiveTab("schedule")}
+          {/* <button
+            className={`${styles.tab} ${activeTab === "review" ? styles.activeTab : ""}`}
+            onClick={() => setActiveTab("review")}
           >
             후기/평판
-          </button>
+          </button> */}
           <button
             className={`${styles.tab} ${activeTab === "experience" ? styles.activeTab : ""}`}
             onClick={() => setActiveTab("experience")}
@@ -236,7 +236,7 @@ function CaregiverDetail() {
           </div>
         )}
 
-        {activeTab === "schedule" && (
+        {activeTab === "review" && (
           <div className={styles.reviewSection}>
             <div className={styles.reviewStats}>
               <div className={styles.ratingOverview}>
