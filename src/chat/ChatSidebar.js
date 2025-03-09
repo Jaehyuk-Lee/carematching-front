@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import ChatRoom from "./ChatRoom";
 import "./ChatSidebar.css";
 
-const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose를 props로 받음
+const ChatSidebar = ({ isChatOpen, onClose }) => {
   const [activeChatId, setActiveChatId] = useState(null);
   const [chatRooms, setChatRooms] = useState([]);
   const { user } = useAuth();
 
   useEffect(() => {
     if (user) {
-      fetchChatRooms(user.username);
+      fetchChatRooms();
     }
   }, [user]);
 
-  const fetchChatRooms = async (username) => {
+  const fetchChatRooms = async () => {
     try {
-      const response = await axiosInstance.get(`/api/rooms?username=${username}`);
+      const response = await axiosInstance.get(`/api/rooms`);
 
       const enhancedRooms = response.data.map((room) => ({
         ...room,
-        name: room.otherUsername, // 상대방 username
+        name: room.otherUsername, // 백엔드에서 `realName` 또는 `nickname`을 제공
         lastMessage: room.lastMessage,
         lastMessageDate: room.lastMessageDate,
         unread: 0,
@@ -43,9 +43,15 @@ const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose�
     setActiveChatId(null);
   };
 
+  // 오버레이 클릭 시 닫기
+  const handleOverlayClick = (e) => {
+    if (e.target.classList.contains("chat-overlay")) {
+      onClose();
+    }
+  };
+
   return (
     <>
-      {/* 채팅 사이드바 */}
       <div className={`chat-sidebar ${isChatOpen ? "open" : ""}`}>
         {!activeChatId ? (
           <div className="chat-sidebar-container">
@@ -56,15 +62,27 @@ const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose�
             <div className="chat-rooms-list">
               {chatRooms.length > 0 ? (
                 chatRooms.map((room) => (
-                  <div key={room.roomId} className="chat-room-item" onClick={() => handleChatRoomClick(room.roomId)}>
+                  <div
+                    key={room.roomId}
+                    className="chat-room-item"
+                    onClick={() => handleChatRoomClick(room.roomId)}
+                  >
                     <div className="chat-room-avatar-container">
-                      <img src={room.avatar || "/placeholder.svg"} alt={room.name} className="chat-room-avatar" />
-                      {room.unread > 0 && <span className="chat-room-unread">{room.unread}</span>}
+                      <img
+                        src={room.avatar || "/placeholder.svg"}
+                        alt={room.name}
+                        className="chat-room-avatar"
+                      />
+                      {room.unread > 0 && (
+                        <span className="chat-room-unread">{room.unread}</span>
+                      )}
                     </div>
                     <div className="chat-room-info">
                       <div className="chat-side-header">
                         <h3 className="chat-room-name">{room.name}</h3>
-                        <span className="chat-room-time">{room.lastMessageDate || ""}</span>
+                        <span className="chat-room-time">
+                          {room.lastMessageDate || ""}
+                        </span>
                       </div>
                       <p className="chat-room-last-message">{room.lastMessage}</p>
                     </div>
@@ -76,12 +94,16 @@ const ChatSidebar = ({ isChatOpen, onClose }) => { // ✅ isChatOpen과 onClose�
             </div>
           </div>
         ) : (
-          <ChatRoom roomId={activeChatId} onBack={handleBackToList} onClose={onClose} chatRooms={chatRooms} />
+          <ChatRoom
+            roomId={activeChatId}
+            onBack={handleBackToList}
+            onClose={onClose}
+            chatRooms={chatRooms}
+          />
         )}
       </div>
 
-      {/* 배경 오버레이 */}
-      {isChatOpen && <div className="chat-overlay" onClick={onClose} />}
+      {isChatOpen && <div className="chat-overlay" onClick={handleOverlayClick} />}
     </>
   );
 };

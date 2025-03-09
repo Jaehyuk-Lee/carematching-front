@@ -11,6 +11,7 @@ import MyPosts from "./myPage/MyPosts"
 import MyComments from "./myPage/MyComments"
 import MyLikes from "./myPage/MyLikes"
 import Swal from "sweetalert2"
+import Profile from './myPage/Profile'
 
 function MyPage() {
   const { user, logout } = useAuth()
@@ -242,6 +243,7 @@ function MyPage() {
         </div>
         <div className={styles.contentSection}>
           <Routes>
+            <Route path="/" element={<Profile />} />
             <Route path="edit-profile" element={<EditProfile />} />
             <Route path="my-posts" element={<MyPosts />} />
             <Route path="my-comments" element={<MyComments />} />

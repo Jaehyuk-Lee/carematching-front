@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
+import config from "../config/config";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import { Stomp } from "@stomp/stompjs";
@@ -40,7 +41,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   }, []);
 
   const connectWebSocket = useCallback(() => {
-    const socket = new SockJS("http://localhost:8080/ws");
+    const socket = new SockJS(config.apiUrl + "/wss");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
   }, [onConnected, onError]);
