@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import config from "../config/config";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
@@ -15,6 +15,9 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [roomInfo, setRoomInfo] = useState(null);
+
+  // 메시지 목록을 렌더링하는 컨테이너 참조
+  const chatMessagesRef = useRef(null);
   const navigate = useNavigate();
   const onMessageReceived = useCallback((payload) => {
     const message = JSON.parse(payload.body);
@@ -26,6 +29,8 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     const currentRoom = chatRooms.find((room) => room.roomId === roomId);
     setRoomInfo(currentRoom || { name: `채팅방 #${roomId}` });
   }, [roomId, chatRooms]);
+
+
 
   const onConnected = useCallback(() => {
     console.log("✅ WebSocket 연결 성공");
@@ -42,7 +47,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   }, []);
 
   const connectWebSocket = useCallback(() => {
-    const socket = new SockJS(config.apiUrl + "/wss");
+    const socket = new SockJS(config.apiUrl + "/ws");
     stompClient = Stomp.over(socket);
     stompClient.connect({}, onConnected, onError);
   }, [onConnected, onError]);
@@ -54,6 +59,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       });
     }
   }, []);
+
   const fetchMessages = useCallback(async (roomId) => {
     try {
       const response = await axiosInstance.get(`/api/messages/${roomId}`);
@@ -88,6 +94,14 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     }
   };
 
+  // ➡ 메시지 변경될 때 자동 스크롤
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      // scrollTop을 scrollHeight로 설정해서 맨 아래로 스크롤
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   const handleDecide = async () => {
     const transactionId = await axiosInstance.post(`/api/transactions/add`, {
       receiverUsername: roomInfo.receiverUsername,
@@ -115,19 +129,21 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     return groups;
   }, {});
 
-  // 그룹화된 날짜들을 정렬 (필요에 따라 정렬 기준 조정 가능)
+  // 그룹화된 날짜들을 정렬
   const sortedDates = Object.keys(groupedMessages).sort();
 
   return (
     <div className="chat-room-container">
       <div className="chat-room-header">
         <button className="chat-back-button" onClick={onBack}>←</button>
-        <h1 className="chat-room-title">{roomInfo?.name}</h1>
-        <button className="chat-close-button" onClick={onClose}>×</button>
-      </div>
-      <button className="chat-action-button" onClick={handleDecide}>이 케어코디님으로 결정하기</button>
-
-      <div className="chat-messages">
+          <h1 className="chat-room-title">{roomInfo?.name}</h1>
+          <button className="chat-close-button" onClick={onClose}>×</button>
+        </div>
+        {user.role !== "ROLE_USER_CAREGIVER" && (
+          <button className="chat-action-button" onClick={handleDecide}>이 케어코디님으로 결정하기</button>
+        )}
+      {/* 메시지 목록 컨테이너에 ref 추가 */}
+      <div className="chat-messages" ref={chatMessagesRef}>
         {sortedDates.map((date) => (
           <div key={date} className="chat-date-group">
             <div className="chat-date-header">{date}</div>
