@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Calendar, MessageSquare, Users, Award, ArrowRight, Heart} from "lucide-react"
 import CaregiverList from "../caregiver/caregiverList"
+import basicProfileImage from "../assets/basicprofileimage.png"
 import './Home.css';
 
 function Home() {
@@ -64,7 +65,7 @@ function Home() {
             {user ? (
               <div className="user-welcome">
                 <div className="avatar">
-                  <img src="https://via.placeholder.com/40" alt={user.username} />
+                  <img src={user.profileImage || basicProfileImage} alt={user.username} />
                 </div>
                 <div>
                   <h2>{user.username}님, 환영합니다!</h2>
