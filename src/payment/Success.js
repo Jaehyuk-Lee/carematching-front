@@ -39,9 +39,6 @@ function SuccessPage() {
     }
   }, [searchParams]);
 
-  // 서버로 승인 요청
-  // 실제 구현에서는 여기서 백엔드 API를 호출하여 결제 승인 처리를 완료해야 합니다.
-
   return (
     <div className={styles.successContainer}>
       {/* 체크 아이콘 */}
