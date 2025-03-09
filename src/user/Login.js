@@ -37,9 +37,11 @@ function Login() {
         navigate('/');
       }
     } catch (error) {
-      console.log();
-      // 서버에서 전달받은 에러 메시지가 있다면 그것을 사용, 없다면 기본 메시지 사용
-      setError((error.response?.data?.error || "로그인에 실패했습니다") + " (" + error.response?.status + ")");
+      if (error.response?.status === 401) {
+        setError("아이디 또는 비밀번호가 일치하지 않습니다.");
+      } else {
+        setError((error.response?.data?.error || "로그인에 실패했습니다") + " (" + error?.response?.status + ")");
+      }
       // 입력 필드 초기화
       setLoginInput({
         username: "",

@@ -99,7 +99,7 @@ function Cert() {
 
   return (
     <div className={styles.certContainer}>
-      <h2>자격증 사용자 목록</h2>
+      <h2>요양사 승인 목록</h2>
 
       <div style={{ textAlign: 'right', marginBottom: '10px' }}>
         <label>항목 필터링 선택: </label>

@@ -8,18 +8,23 @@ const axiosInstance = axios.create({
 
 // 토큰 갱신 진행 상태를 추적하는 변수
 let isRefreshing = false;
-// 토큰 갱신 대기 중인 요청들의 배열
 let refreshSubscribers = [];
 
-// 토큰 갱신 후에 대기 중인 요청들을 처리하는 함수
 const onRefreshed = (accessToken) => {
   refreshSubscribers.forEach(callback => callback(accessToken));
   refreshSubscribers = [];
 };
 
-// 토큰 갱신을 기다리는 함수
 const addRefreshSubscriber = (callback) => {
   refreshSubscribers.push(callback);
+};
+
+const removeRefreshToken = async () => {
+  await axiosInstance.post('/api/token/remove', null, {
+    headers: {
+      'Refresh-Token': localStorage.getItem('refreshToken')
+    }
+  });
 };
 
 // 요청 인터셉터 추가
@@ -35,6 +40,17 @@ axiosInstance.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// 인증 관련 요청은 401 에러 개별 처리
+const isAuthRelatedRequest = (url) => {
+  const authEndpoints = ['/api/user/login', '/api/user/signup'];
+  return authEndpoints.some(endpoint => url.includes(endpoint));
+};
+const isAuthRelatedPage = () => {
+  const authPages = ['/login', '/signup'];
+  const currentPath = window.location.pathname;
+  return authPages.some(page => currentPath === page || currentPath.startsWith(page));
+};
 
 // 응답 인터셉터 추가
 axiosInstance.interceptors.response.use(
@@ -68,7 +84,7 @@ axiosInstance.interceptors.response.use(
         // refreshToken을 사용하여 새 accessToken 요청
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
-          const response = await axios.post(`${config.apiUrl}/api/token/reissue`, {}, {
+          const response = await axios.post(`${config.apiUrl}/api/token/reissue`, null, {
             headers: {
               'Refresh-Token': refreshToken
             }
@@ -85,11 +101,8 @@ axiosInstance.interceptors.response.use(
 
             // 새 토큰으로 헤더 설정
             originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-
-            // 대기 중인 다른 요청들도 새 토큰으로 처리
             onRefreshed(newAccessToken);
 
-            // 원래 요청 재시도
             return axios(originalRequest);
           }
         }
@@ -107,13 +120,17 @@ axiosInstance.interceptors.response.use(
 
     // 다른 오류이거나 토큰 갱신 실패 시
     if (error.response?.status === 401) {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      // 인증 관련 요청이나 페이지가 아닌 경우에만 리다이렉트
+      if (!isAuthRelatedRequest(error.config.url) && !isAuthRelatedPage()) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }
 );
 
 export default axiosInstance;
+export { removeRefreshToken };

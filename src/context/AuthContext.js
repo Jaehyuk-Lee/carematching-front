@@ -1,6 +1,6 @@
 import React, { createContext, useState, useContext } from 'react';
 import { jwtDecode } from 'jwt-decode';
-// import { removeRefreshToken } from '../api/axiosInstance';
+import { removeRefreshToken } from '../api/axiosInstance';
 
 const AuthContext = createContext(null);
 
@@ -38,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       // 백엔드에서 refreshToken 제거
-      // await removeRefreshToken();
+      await removeRefreshToken();
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error);
     } finally {
