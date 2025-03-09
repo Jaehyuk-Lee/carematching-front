@@ -15,12 +15,11 @@ function CaregiverDetail() {
   const [isChatOpen, setIsChatOpen] = useState(false)
   const { user } = useAuth()
 
-
   useEffect(() => {
     axiosInstance
       .get(`/api/caregivers/${id}`)
       .then((response) => {
-        setCaregiver(response.data);
+        setCaregiver(response.data)
       })
       .catch((err) => {
         console.error("데이터 로드 에러:", err);
@@ -60,7 +59,7 @@ function CaregiverDetail() {
       // caregiverId만 보냄
       const response = await axiosInstance.post("/api/rooms", {
         caregiverId: Number(id),
-      });
+      })
 
       // 성공 시
       Swal.fire({
@@ -104,7 +103,7 @@ function CaregiverDetail() {
         text: errorMessage
       });
     }
-  };
+  }
 
 
   return (
@@ -112,7 +111,7 @@ function CaregiverDetail() {
       <div className={styles.profileHeader}>
         <div className={styles.profileImageContainer}>
           <img
-            src={caregiver?.profileImage || "/placeholder.svg?height=150&width=150"}
+            src={caregiver?.caregiverImage || "/assets/basicprofileimage.png"}
             alt={caregiver?.realName}
             className={styles.profileImage}
           />
@@ -134,7 +133,7 @@ function CaregiverDetail() {
         </div>
 
         <div className={styles.actions}>
-        <button className={styles.contactButton} onClick={handleMatchClick}>
+          <button className={styles.contactButton} onClick={handleMatchClick}>
             채팅 시작하기
           </button>
         </div>
@@ -191,15 +190,13 @@ function CaregiverDetail() {
                 <p>* 신뢰와 배려로 가족 같은 돌봄을 실천합니다.</p>
               </div>
               <div className={styles.methodItem}>
-                <p>
-                  * 따뜻한 관심과 전문적인 케어로 여러분의 든든한 동반자가 되겠습니다.
-                </p>
+                <p>* 따뜻한 관심과 전문적인 케어로 여러분의 든든한 동반자가 되겠습니다.</p>
               </div>
-              {caregiver?.servNeeded.includes("재활") && (<div className={styles.methodItem}>
-                <p>
-                  * 여러분의 재활을 위해 최선을 다하겠습니다.
-                </p>
-              </div>)}
+              {caregiver?.servNeeded.includes("재활") && (
+                <div className={styles.methodItem}>
+                  <p>* 여러분의 재활을 위해 최선을 다하겠습니다.</p>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -270,7 +267,12 @@ function CaregiverDetail() {
                   <span className={styles.score}>{caregiver?.reviewList?.stars || 0}</span>
                   <div className={styles.stars}>
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Star key={star} className={styles.starIcon} fill={star <= (caregiver?.reviewList?.stars || 0) ? "#FFD700" : "#E0E0E0"} color={star <= (caregiver?.reviewList?.stars || 0) ? "#FFD700" : "#E0E0E0"} />
+                      <Star
+                        key={star}
+                        className={styles.starIcon}
+                        fill={star <= (caregiver?.reviewList?.stars || 0) ? "#FFD700" : "#E0E0E0"}
+                        color={star <= (caregiver?.reviewList?.stars || 0) ? "#FFD700" : "#E0E0E0"}
+                      />
                     ))}
                   </div>
                   <span className={styles.reviewCount}>총 {caregiver?.reviewList?.length || 0}개 후기</span>
@@ -283,7 +285,12 @@ function CaregiverDetail() {
                     <div key={index} className={styles.reviewItem}>
                       <div className={styles.reviewStars}>
                         {[1, 2, 3, 4, 5].map((star) => (
-                          <Star key={star} className={styles.starIcon} fill={star <= review.stars ? "#FFD700" : "#E0E0E0"} color={star <= review.stars ? "#FFD700" : "#E0E0E0"} />
+                          <Star
+                            key={star}
+                            className={styles.starIcon}
+                            fill={star <= review.stars ? "#FFD700" : "#E0E0E0"}
+                            color={star <= review.stars ? "#FFD700" : "#E0E0E0"}
+                          />
                         ))}
                       </div>
                       <div className={styles.reviewContent}>
@@ -307,7 +314,9 @@ function CaregiverDetail() {
                   <h3>{experience.title}</h3>
                   <p className={styles.experienceDetail}>
                     {experience.summary.split(",").map((sum, idx) => (
-                      <span key={idx} className={styles.experienceTag}>{sum}</span>
+                      <span key={idx} className={styles.experienceTag}>
+                        {sum}
+                      </span>
                     ))}
                   </p>
                   <p className={styles.experienceLocation}>
@@ -326,4 +335,5 @@ function CaregiverDetail() {
   )
 }
 
-export default CaregiverDetail;
+export default CaregiverDetail
+
