@@ -21,7 +21,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
 
       const enhancedRooms = response.data.map((room) => ({
         ...room,
-        name: room.otherUsername, // 백엔드에서 `realName` 또는 `nickname`을 제공
+        name: room.otherUsername,
         lastMessage: room.lastMessage,
         lastMessageDate: room.lastMessageDate,
         unread: 0,
@@ -43,7 +43,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
     setActiveChatId(null);
   };
 
-  // 오버레이 클릭 시 닫기
+
   const handleOverlayClick = (e) => {
     if (e.target.classList.contains("chat-overlay")) {
       onClose();
