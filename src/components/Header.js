@@ -72,7 +72,9 @@ function Header() {
                 <Link to="/community">커뮤니티</Link>
               </li>
               <li>
-                <Link to="/education">고객센터</Link>
+                <a href="https://pf.kakao.com/_MGmGn/chat" target="_blank" rel="noopener noreferrer">
+                  고객센터
+                </a>
               </li>
             </ul>
           </nav>
