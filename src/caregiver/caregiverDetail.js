@@ -6,6 +6,7 @@ import styles from "./caregiverDetail.module.css"
 import { useAuth } from "../context/AuthContext";
 import ChatSidebar from "../chat/ChatSidebar";
 import { MapPin, Award, Clock, Calendar, Briefcase, DollarSign, Star } from "lucide-react"
+import basicProfileImage from "../assets/basicprofileimage.png"
 
 function CaregiverDetail() {
   const { id } = useParams()
@@ -14,7 +15,6 @@ function CaregiverDetail() {
   const [chatRooms, setChatRooms] = useState([])
   const [isChatOpen, setIsChatOpen] = useState(false)
   const { user } = useAuth()
-
   useEffect(() => {
     axiosInstance
       .get(`/api/caregivers/${id}`)
@@ -31,7 +31,6 @@ function CaregiverDetail() {
       localStorage.removeItem("openChatSidebar"); // 다시 닫지 않도록 제거
     }
   }, [id]);
-
   const convertBinaryToDays = (binaryString) => {
     const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"]
     return binaryString
@@ -40,7 +39,6 @@ function CaregiverDetail() {
       .filter((day) => day !== "")
       .join(", ")
   }
-
   const formatSalary = (salary) => {
     return salary ? salary / 10000 : 0
   }
@@ -54,13 +52,11 @@ function CaregiverDetail() {
       });
       return;
     }
-
     try {
       // caregiverId만 보냄
       const response = await axiosInstance.post("/api/rooms", {
         caregiverId: Number(id),
       })
-
       // 성공 시
       Swal.fire({
         icon: 'success',
@@ -78,10 +74,8 @@ function CaregiverDetail() {
             name: `채팅방 #${response.data.roomId}`,
           },
         ]);
-
         // 🔥 2) 로컬스토리지에 플래그 저장 → 새로고침 후 사이드바 자동 열기
         localStorage.setItem("openChatSidebar", "true");
-
         // 🔥 3) 2초 후 새로고침
         setTimeout(() => {
           window.location.reload();
@@ -89,13 +83,11 @@ function CaregiverDetail() {
       }
     } catch (error) {
       console.error("❌ [ERROR] 매칭 중 오류:", error.response?.data || error.message);
-
       // 서버에서 넘겨주는 메시지(예: "이미 해당 요양사와 매칭이 존재합니다.")를 활용
       const errorMessage = error?.response?.data?.message
         || error?.response?.data
         || error.message
         || "알 수 없는 오류가 발생했습니다.";
-
       // SweetAlert2로 예외 메시지 표시
       Swal.fire({
         icon: 'error',
@@ -105,18 +97,16 @@ function CaregiverDetail() {
     }
   }
 
-
   return (
     <div className={styles.container}>
       <div className={styles.profileHeader}>
         <div className={styles.profileImageContainer}>
           <img
-            src={caregiver?.caregiverImage || "/assets/basicprofileimage.png"}
+            src={caregiver?.caregiverImage || basicProfileImage}
             alt={caregiver?.realName}
             className={styles.profileImage}
           />
         </div>
-
         <div className={styles.profileInfo}>
           <h1 className={styles.name}>{caregiver?.realName}</h1>
           <p className={styles.location}>
@@ -131,7 +121,6 @@ function CaregiverDetail() {
             ))}
           </div>
         </div>
-
         <div className={styles.actions}>
           <button className={styles.contactButton} onClick={handleMatchClick}>
             채팅 시작하기
@@ -144,7 +133,6 @@ function CaregiverDetail() {
         isChatOpen={isChatOpen}
         onClose={() => setIsChatOpen(false)}
       />
-
       <div className={styles.tabsContainer}>
         <div className={styles.tabs}>
           <button
@@ -159,12 +147,12 @@ function CaregiverDetail() {
           >
             요양사 정보
           </button>
-          <button
-            className={`${styles.tab} ${activeTab === "schedule" ? styles.activeTab : ""}`}
-            onClick={() => setActiveTab("schedule")}
+          {/* <button
+            className={`${styles.tab} ${activeTab === "review" ? styles.activeTab : ""}`}
+            onClick={() => setActiveTab("review")}
           >
             후기/평판
-          </button>
+          </button> */}
           <button
             className={`${styles.tab} ${activeTab === "experience" ? styles.activeTab : ""}`}
             onClick={() => setActiveTab("experience")}
@@ -173,12 +161,10 @@ function CaregiverDetail() {
           </button>
         </div>
       </div>
-
       <div className={styles.contentContainer}>
         {activeTab === "info" && (
           <div className={styles.infoSection}>
             <h2 className={styles.sectionTitle}>요양사 한 마디</h2>
-
             <div className={styles.caringMethod}>
               <div className={styles.methodItem}>
                 <p>* 정성과 배려로 편안한 일상을 만들어 드립니다.</p>
@@ -200,7 +186,6 @@ function CaregiverDetail() {
             </div>
           </div>
         )}
-
         {activeTab === "profile" && (
           <div className={styles.profileSection}>
             <div className={styles.infoCard}>
@@ -259,7 +244,7 @@ function CaregiverDetail() {
           </div>
         )}
 
-        {activeTab === "schedule" && (
+        {activeTab === "review" && (
           <div className={styles.reviewSection}>
             <div className={styles.reviewStats}>
               <div className={styles.ratingOverview}>
@@ -278,7 +263,6 @@ function CaregiverDetail() {
                   <span className={styles.reviewCount}>총 {caregiver?.reviewList?.length || 0}개 후기</span>
                 </div>
               </div>
-
               <div className={styles.reviewList}>
                 {caregiver?.reviewList && caregiver?.reviewList.length > 0 ? (
                   caregiver?.reviewList.map((review, index) => (
@@ -305,7 +289,6 @@ function CaregiverDetail() {
             </div>
           </div>
         )}
-
         {activeTab === "experience" && (
           <div className={styles.experienceSection}>
             {caregiver?.experienceList && caregiver.experienceList.length > 0 ? (
@@ -334,6 +317,4 @@ function CaregiverDetail() {
     </div>
   )
 }
-
 export default CaregiverDetail
-
