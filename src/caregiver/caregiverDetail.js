@@ -5,6 +5,7 @@ import axiosInstance from "../api/axiosInstance";
 import styles from "./caregiverDetail.module.css"
 import { useAuth } from "../context/AuthContext"
 import { MapPin, Award, Clock, Calendar, Briefcase, DollarSign, Star } from "lucide-react"
+import basicProfileImage from "../assets/basicprofileimage.png"
 
 function CaregiverDetail() {
   const { id } = useParams()
@@ -91,7 +92,7 @@ function CaregiverDetail() {
       <div className={styles.profileHeader}>
         <div className={styles.profileImageContainer}>
           <img
-            src={caregiver?.caregiverImage || "/assets/basicprofileimage.png"}
+            src={caregiver?.caregiverImage || basicProfileImage}
             alt={caregiver?.realName}
             className={styles.profileImage}
           />
