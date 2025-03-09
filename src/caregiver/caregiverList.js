@@ -60,6 +60,8 @@ function CaregiverList({ containerClassName = "" }) {
   // 검색어에 맞게 요양사 목록을 필터링
   const filteredCaregivers = caregivers.filter((caregiver) => {
     const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "")
+    const workDaysWithoutComma = workDaysKorean.replace(/, /g, "");
+    const formattedSalary = formatSalary(caregiver.salary);
     const search = searchTerm.toLowerCase()
 
     // 근무 형태 필터링
@@ -71,12 +73,14 @@ function CaregiverList({ containerClassName = "" }) {
     const searchMatches = searchField === "이름" ? (caregiver.realName?.toLowerCase() ?? "").includes(search) :
       searchField === "지역" ? (caregiver.loc?.toLowerCase() ?? "").includes(search) :
       searchField === "전문 분야" ? (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) :
-      searchField === "근무 요일" ? workDaysKorean.includes(search) :
+      searchField === "근무 요일" ? workDaysKorean.includes(search)  || workDaysWithoutComma.includes(search) :
+      searchField === "월급" ? formattedSalary.includes(search) :
       searchField === "전체" ? (
         (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
         (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
         (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
-        workDaysKorean.includes(search)
+        workDaysKorean.includes(search) || workDaysWithoutComma.includes(search) ||
+        formattedSalary.includes(search)
       ) : false
 
     return workFormMatches && searchMatches

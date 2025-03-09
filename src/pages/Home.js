@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { MapPin, Calendar, Briefcase, DollarSign, Star, Search, MessageSquare, Users, Award, ArrowRight, Heart} from "lucide-react"
-import basicProfileImage from "../assets/basicprofileimage.png"
-import styles from "../caregiver/caregiverList.module.css"
-import axiosInstance from "../api/axiosInstance"
+import { Calendar, MessageSquare, Users, Award, ArrowRight, Heart} from "lucide-react"
 import CaregiverList from "../caregiver/caregiverList"
 import './Home.css';
 
@@ -12,60 +9,9 @@ function Home() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('caregivers');
-  const [caregivers, setCaregivers] = useState([])
-  const [searchTerm, setSearchTerm] = useState("")
-  const [searchField, setSearchField] = useState("전체")
-  const [reviews, setReviews] = useState([])
-  const [workFormFilter, setWorkFormFilter] = useState("전체")
-
-  const convertBinaryToDays = (binaryStr) => {
-    if (!binaryStr) return ""
-    const days = ["월", "화", "수", "목", "금", "토", "일"]
-    return binaryStr
-      .split("")
-      .map((bit, index) => (bit === "1" ? days[index] : ""))
-      .filter(Boolean)
-      .join(", ")
-  }
-
-  const formatWorkForm = (workForm) => {
-    switch (workForm) {
-      case "LIVE_IN":
-        return "상주형"
-      case "COMMUTE":
-        return "출퇴근형"
-      default:
-        return "정보 없음" // 기본값
-    }
-  }
-
-  const handleWorkFormFilterChange = (form) => {
-    setWorkFormFilter(form)
-  }
-
-  // 리뷰 개수를 포맷하는 함수
-  const formatReviewCount = (count) => {
-    if (count >= 1000) {
-      return `${Math.round(count / 100) / 10}k`; // 1000 이상일 경우 k로 표시
-    }
-    return count; // 1000 미만일 경우 원래 숫자 반환
-  }
-
-  const formatSalary = (salary) => {
-    return salary ? `${(salary / 10000).toFixed(0)}만원` : "0만원"
-  }
 
   // 관리자 권한 감지: user가 ROLE_ADMIN일 경우 콘솔에 로그 출력
   useEffect(() => {
-    axiosInstance
-      .get("/api/caregivers")
-      .then((response) => {
-        setCaregivers(response.data)
-        console.log(response.data);
-      })
-      .catch((err) => {
-        console.error("요양사 데이터를 가져오는 중 에러 발생:", err)
-      })
     if (user && user.role === 'ROLE_ADMIN') {
       // 관리자일 경우 primary color를 변경 (예시: #00c896)
       document.documentElement.style.setProperty('--primary-color', '#00c896');
@@ -73,7 +19,6 @@ function Home() {
       // 일반 사용자일 경우 원래의 색상 (#ff8450)
       document.documentElement.style.setProperty('--primary-color', '#ff8450');
     }
-
   }, [user]);
 
   const communityPosts = [
@@ -106,38 +51,9 @@ function Home() {
     }
   ];
 
-
   const handleAdminFeature = () => {
     navigate('/admin/cert');
   };
-
-  const filteredCaregivers = caregivers.filter((caregiver) => {
-    const workDaysKorean = convertBinaryToDays(caregiver.workDays ?? "")
-    const workDaysWithoutComma = workDaysKorean.replace(/, /g, "")
-    const formattedSalary = formatSalary(caregiver.salary)
-    const search = searchTerm.toLowerCase()
-
-    // 근무 형태 필터링
-    const workFormMatches = workFormFilter === "전체" ||
-      (workFormFilter === "출퇴근형" && caregiver.workForm === "COMMUTE") ||
-      (workFormFilter === "상주형" && caregiver.workForm === "LIVE_IN")
-
-      // 검색 필터링
-    const searchMatches = searchField === "이름" ? (caregiver.realName?.toLowerCase() ?? "").includes(search) :
-    searchField === "지역" ? (caregiver.loc?.toLowerCase() ?? "").includes(search) :
-    searchField === "전문 분야" ? (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) :
-    searchField === "근무 요일" ? workDaysKorean.includes(search) || workDaysWithoutComma.includes(search) :
-    searchField === "월급" ? formattedSalary.includes(search) :
-    searchField === "전체" ? (
-      (caregiver.realName?.toLowerCase() ?? "").includes(search) ||
-      (caregiver.loc?.toLowerCase() ?? "").includes(search) ||
-      (caregiver.servNeeded?.toLowerCase() ?? "").includes(search) ||
-      workDaysKorean.includes(search) || workDaysWithoutComma.includes(search) ||
-      formattedSalary.includes(search)
-    ) : false
-
-  return workFormMatches && searchMatches
-  })
 
   return (
     <div className="home-container">
