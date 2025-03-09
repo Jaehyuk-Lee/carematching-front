@@ -19,6 +19,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   // 메시지 목록을 렌더링하는 컨테이너 참조
   const chatMessagesRef = useRef(null);
   const navigate = useNavigate();
+
   const onMessageReceived = useCallback((payload) => {
     const message = JSON.parse(payload.body);
     console.log("📨 [RECEIVED] 메시지:", message);
