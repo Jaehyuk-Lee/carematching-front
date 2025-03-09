@@ -188,3 +188,27 @@
   color: #1a73e8;
   margin: 0;
 }
+
+.infoSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.infoTitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #888;
+  margin: 0;
+}
+
+.infoContent {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #555;
+  margin: 0;
+}

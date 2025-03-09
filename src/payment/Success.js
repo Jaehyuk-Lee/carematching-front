@@ -1,8 +1,43 @@
-import { useSearchParams, Link } from "react-router-dom"
-import styles from "./Success.module.css"
+import { useSearchParams, Link } from "react-router-dom";
+import styles from "./Success.module.css";
+import { useEffect } from "react";
+import axiosInstance from "../api/axiosInstance";
+import Swal from "sweetalert2";
 
 function SuccessPage() {
-  const [searchParams] = useSearchParams()
+  const [searchParams] = useSearchParams();
+
+  const wrongPayment = async (message) => {
+    const result = await Swal.fire({
+      icon: 'error',
+      title: '결제 실패',
+      text: message || '결제 정보에 문제가 발생했습니다. 다시 시도해 주세요.'
+    });
+    if (result.isConfirmed) {
+      window.location.href = "/";
+    }
+  }
+  useEffect(() => {
+    const orderId = searchParams.get("orderId");
+    const amount = searchParams.get("amount");
+
+    if (orderId && amount) {
+      try {
+        axiosInstance.post('/api/transactions/success', {
+          orderId,
+          price: amount
+        }).then((res) => {
+          if (res.status !== 200) {
+            wrongPayment();
+          }
+        }).catch((err) => {
+          wrongPayment(err.response.data.message);
+        });
+      } catch (err) {
+        console.log("err", err);
+      }
+    }
+  }, [searchParams]);
 
   // 서버로 승인 요청
   // 실제 구현에서는 여기서 백엔드 API를 호출하여 결제 승인 처리를 완료해야 합니다.

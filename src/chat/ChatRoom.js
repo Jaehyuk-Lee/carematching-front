@@ -89,7 +89,6 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   };
 
   const handleDecide = async () => {
-    console.log(roomInfo);
     const transactionId = await axiosInstance.post(`/api/transactions/add`, {
       receiverUsername: roomInfo.receiverUsername,
     });
