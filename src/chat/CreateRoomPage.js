@@ -7,15 +7,15 @@ function CreateRoomPage() {
     const [caregiverId, setCaregiverId] = useState('');
     const [roomInfo, setRoomInfo] = useState(null);
     const navigate = useNavigate();
-    const { user } = useAuth(); // 현재 로그인한 사용자 정보 가져오기
+    const { user } = useAuth();
 
     useEffect(() => {
-        // 로그인한 사용자 정보 콘솔 출력
-        console.log('✅ [INFO] 로그인한 사용자 정보:', user);
+
+        console.log('[INFO] 로그인한 사용자 정보:', user);
         if (user) {
-            console.log('🔍 [DEBUG] 로그인한 사용자 ID:', user.id);
+            console.log('[DEBUG] 로그인한 사용자 ID:', user.id);
         } else {
-            console.warn('⚠️ [WARN] 사용자 정보가 없습니다. 로그인이 필요합니다.');
+            console.warn('[WARN] 사용자 정보가 없습니다. 로그인이 필요합니다.');
         }
     }, [user]);
 
@@ -28,8 +28,8 @@ function CreateRoomPage() {
         }
 
         try {
-            console.log('📦 [REQUEST] 방 생성 요청:', {
-                requesterUserId: Number(user.id), // 로그인한 사용자 ID 사용
+            console.log('[REQUEST] 방 생성 요청:', {
+                requesterUserId: Number(user.id),
                 caregiverId: Number(caregiverId),
             });
 
@@ -38,10 +38,10 @@ function CreateRoomPage() {
                 caregiverId: Number(caregiverId),
             });
 
-            setRoomInfo(response.data); // 생성된 방 정보 저장
-            console.log('🚀 [SUCCESS] 방 생성 성공:', response.data);
+            setRoomInfo(response.data);
+            console.log('[SUCCESS] 방 생성 성공:', response.data);
         } catch (error) {
-            console.error('❌ [ERROR] 방 생성 중 오류:', error.response?.data || error.message);
+            console.error('[ERROR] 방 생성 중 오류:', error.response?.data || error.message);
             alert('방 생성 중 오류가 발생했습니다.');
         }
     };

@@ -280,7 +280,6 @@ img {
   background: linear-gradient(to top, var(--background-color), transparent);
 }
 
-* 웰컴 섹션 스타일 추가 */
 .welcome-section {
   position: relative;
   width: 100%;
