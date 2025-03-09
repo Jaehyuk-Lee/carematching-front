@@ -30,13 +30,17 @@ const NotificationListener = () => {
         stompClient.subscribe(`/queue/notifications/${user.username}`, (message) => {
           console.log("📩 [알림 수신]:", message.body);
 
-          // ✅ SweetAlert2 알림
+          // ✅ SweetAlert2 알림 + 알림 닫히면 페이지 새로고침
           Swal.fire({
             icon: "info",
             title: "새 알림 도착!",
             text: message.body,
             timer: 3000,
-            showConfirmButton: false
+            showConfirmButton: false,
+            willClose: () => {
+              console.log("🔄 [INFO] 페이지 새로고침 실행");
+              window.location.reload(); // ✅ 전체 페이지 새로고침
+            }
           });
         });
       },

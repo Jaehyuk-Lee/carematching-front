@@ -164,7 +164,7 @@ function Home() {
               </div>
             ) : (
               <div>
-                <h2>요양의 패러다임을 바꾸는 케어매칭칭</h2>
+                <h2>요양의 패러다임을 바꾸는 케어매칭</h2>
                 <p className="text-muted">서비스를 이용해보세요</p>
               </div>
             )}

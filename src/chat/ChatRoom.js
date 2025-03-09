@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import config from "../config/config";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
@@ -14,6 +14,9 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [roomInfo, setRoomInfo] = useState(null);
+
+  // 메시지 목록을 렌더링하는 컨테이너 참조
+  const chatMessagesRef = useRef(null);
 
   const onMessageReceived = useCallback((payload) => {
     const message = JSON.parse(payload.body);
@@ -53,6 +56,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       });
     }
   }, []);
+
   const fetchMessages = useCallback(async (roomId) => {
     try {
       const response = await axiosInstance.get(`/api/messages/${roomId}`);
@@ -87,6 +91,14 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     }
   };
 
+  // ➡ 메시지 변경될 때 자동 스크롤
+  useEffect(() => {
+    if (chatMessagesRef.current) {
+      // scrollTop을 scrollHeight로 설정해서 맨 아래로 스크롤
+      chatMessagesRef.current.scrollTop = chatMessagesRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   useEffect(() => {
     if (roomId) {
       fetchMessages(roomId);
@@ -107,7 +119,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     return groups;
   }, {});
 
-  // 그룹화된 날짜들을 정렬 (필요에 따라 정렬 기준 조정 가능)
+  // 그룹화된 날짜들을 정렬
   const sortedDates = Object.keys(groupedMessages).sort();
 
   return (
@@ -119,7 +131,8 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       </div>
       <button className="chat-action-button">이 케어코디님으로 결정하기</button>
 
-      <div className="chat-messages">
+      {/* 메시지 목록 컨테이너에 ref 추가 */}
+      <div className="chat-messages" ref={chatMessagesRef}>
         {sortedDates.map((date) => (
           <div key={date} className="chat-date-group">
             <div className="chat-date-header">{date}</div>
