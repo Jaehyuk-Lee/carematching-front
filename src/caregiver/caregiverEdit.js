@@ -1,16 +1,21 @@
-import { useEffect, useState } from "react";
-import styles from "./caregiverEdit.module.css";
-import axiosInstance from "../api/axiosInstance";
-import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-import { Plus, X } from "lucide-react";
+import { useEffect, useState, useRef } from "react"
+import styles from "./caregiverEdit.module.css"
+import axiosInstance from "../api/axiosInstance"
+import { useNavigate } from "react-router-dom"
+import Swal from "sweetalert2"
+import { Plus, X } from "lucide-react"
+import basicProfileImage from "../assets/basicprofileimage.png"
 
 const CaregiverEdit = ({ isRegistered }) => {
   const navigate = useNavigate()
   const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"]
+  const fileInputRef = useRef(null)
+  const [isUploading, setIsUploading] = useState(false)
 
   // experienceList 상태 관리
   const [experienceList, setExperienceList] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
+  const [imageFile, setImageFile] = useState(null)
 
   const [formData, setFormData] = useState({
     realName: "",
@@ -36,8 +41,14 @@ const CaregiverEdit = ({ isRegistered }) => {
             salary: data.salary ? Math.floor(data.salary / 10000) : "", // DB에서 가져온 값을 만 단위로 변환
           })
 
+          // caregiverImage 미리보기 설정
+          if (data.caregiverImage) {
+            setImagePreview(data.caregiverImage)
+          } else {
+            setImagePreview(basicProfileImage)
+          }
+
           // experienceList 데이터가 있으면 설정
-          console.log("data", data);
           if (data.experienceList && data.experienceList.length > 0) {
             setExperienceList(data.experienceList)
           }
@@ -49,6 +60,9 @@ const CaregiverEdit = ({ isRegistered }) => {
 
     if (isRegistered) {
       fetchCaregiverData()
+    } else {
+      // 신규 등록 시 기본 이미지 설정
+      setImagePreview(basicProfileImage)
     }
   }, [isRegistered])
 
@@ -61,6 +75,49 @@ const CaregiverEdit = ({ isRegistered }) => {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
+  }
+
+  // 프로필 이미지 클릭 처리
+  const handleProfileImageClick = () => {
+    fileInputRef.current.click()
+  }
+
+  // 이미지 업로드 처리
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // 파일 크기 제한 (5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      Swal.fire({
+        icon: "error",
+        title: "파일 크기 초과",
+        text: "프로필 이미지는 5MB 이하여야 합니다.",
+      })
+      return
+    }
+
+    // 이미지 파일 타입 확인
+    if (!file.type.startsWith("image/")) {
+      Swal.fire({
+        icon: "error",
+        title: "잘못된 파일 형식",
+        text: "이미지 파일만 업로드 가능합니다.",
+      })
+      return
+    }
+
+    setImageFile(file)
+
+    // 이미지 미리보기 생성
+    const objectUrl = URL.createObjectURL(file)
+    setImagePreview(objectUrl)
+
+    // 파일 입력 초기화
+    e.target.value = ""
+
+    // 메모리 누수 방지를 위해 이전 URL 해제
+    return () => URL.revokeObjectURL(objectUrl)
   }
 
   // 경험 카드 관련 함수들
@@ -96,15 +153,48 @@ const CaregiverEdit = ({ isRegistered }) => {
     e.preventDefault()
 
     try {
-      const updatedFormData = {
-        ...formData,
-        salary: Number(formData.salary) * 10000, // 입력된 값 * 10,000을 적용하여 DB에 저장
-        experienceList: experienceList || [], // experienceList가 null이면 빈 배열 전송
+      setIsUploading(true)
+
+      // caregiverDto 객체 생성
+      const caregiverDto = {
+        realName: formData.realName,
+        salary: Number(formData.salary) * 10000,
+        servNeeded: formData.servNeeded,
+        loc: formData.loc,
+        employmentType: formData.employmentType,
+        workForm: formData.workForm,
+        workTime: formData.workTime,
+        workDays: formData.workDays,
+        status: formData.status,
+        experienceList: experienceList || [],
       }
-      console.log("updatedFormData", updatedFormData);
+
+      // FormData 객체 생성
+      const formDataToSend = new FormData()
+
+      // caregiverDto를 JSON Blob으로 변환하여 추가
+      const caregiverDtoBlob = new Blob([JSON.stringify(caregiverDto)], {
+        type: "application/json",
+      })
+      formDataToSend.append("caregiverDto", caregiverDtoBlob)
+
+      // 이미지 파일 추가
+      if (imageFile) {
+        formDataToSend.append("caregiverImage", imageFile)
+      }
+
       const endpoint = "/api/caregivers/build"
-      const response = await axiosInstance.post(endpoint, updatedFormData)
+
+      // axiosInstance 사용하여 요청 보내기
+      const response = await axiosInstance.post(endpoint, formDataToSend, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          // axiosInstance에 이미 토큰이 포함되어 있을 것입니다
+        },
+      })
+
       if (response.status === 201) {
+
         Swal.fire({
           icon: "success",
           title: `${isRegistered ? "수정" : "등록"} 완료`,
@@ -119,13 +209,46 @@ const CaregiverEdit = ({ isRegistered }) => {
         title: "오류 발생",
         text: `요양사 정보 ${isRegistered ? "수정" : "등록"} 중 오류가 발생했습니다.`,
       })
+    } finally {
+      setIsUploading(false)
     }
   }
 
   return (
     <div className={styles.editCaregiverPage}>
       <h2>{isRegistered ? "요양사 정보 수정" : "요양사 등록"}</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
+        {/* 프로필 이미지 업로드 섹션 */}
+        <div className={styles.profileImageSection}>
+          <label className={styles.centerLabel}>요양사 사진</label>
+          <div
+            className={`${styles.profileImageContainer} ${!isUploading ? styles.profileImageClickable : ""}`}
+            onClick={!isUploading ? handleProfileImageClick : undefined}
+          >
+            {isUploading ? (
+              <div className={styles.uploadingOverlay}>
+                <div className={styles.spinner}></div>
+              </div>
+            ) : (
+              <>
+                <img src={imagePreview || basicProfileImage} alt="프로필 이미지" className={styles.profileImage} />
+                <div className={styles.editOverlay}>
+                  <span>수정</span>
+                </div>
+              </>
+            )}
+            <input
+              type="file"
+              id="imageUpload"
+              name="caregiverImage"
+              accept="image/*"
+              onChange={handleFileChange}
+              className={styles.fileInput}
+              ref={fileInputRef}
+            />
+          </div>
+        </div>
+
         <div className={styles.inputGroup}>
           <label>실명</label>
           <input type="text" id="realName" name="realName" value={formData.realName} onChange={handleChange} required />
@@ -251,7 +374,7 @@ const CaregiverEdit = ({ isRegistered }) => {
                   <div className={styles.inputGroup}>
                     <label>장소</label>
                     <input
-                    type="text"
+                      type="text"
                       value={experience.location}
                       onChange={(e) => handleExperienceChange(index, "location", e.target.value)}
                       placeholder="경력을 쌓은 장소를 적어주세요."
@@ -272,3 +395,4 @@ const CaregiverEdit = ({ isRegistered }) => {
 }
 
 export default CaregiverEdit
+
