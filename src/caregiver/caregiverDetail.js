@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams} from "react-router-dom";
 import Swal from 'sweetalert2';
 import axiosInstance from "../api/axiosInstance";
 import styles from "./caregiverDetail.module.css"
-import { useAuth } from "../context/AuthContext"
+import { useAuth } from "../context/AuthContext";
+import ChatSidebar from "../chat/ChatSidebar";
 import { MapPin, Award, Clock, Calendar, Briefcase, DollarSign, Star } from "lucide-react"
 
 function CaregiverDetail() {
   const { id } = useParams()
   const [caregiver, setCaregiver] = useState(null)
   const [activeTab, setActiveTab] = useState("info")
-  const navigate = useNavigate()
+  const [chatRooms, setChatRooms] = useState([])
+  const [isChatOpen, setIsChatOpen] = useState(false)
   const { user } = useAuth()
 
   useEffect(() => {
@@ -20,9 +22,15 @@ function CaregiverDetail() {
         setCaregiver(response.data)
       })
       .catch((err) => {
-        console.error("데이터 로드 에러:", err)
-      })
-  }, [id])
+        console.error("데이터 로드 에러:", err);
+      });
+      // 🔥 새로고침 시 로컬스토리지에서 사이드바 열림 여부 확인
+    const shouldOpenChat = localStorage.getItem("openChatSidebar") === "true";
+    if (shouldOpenChat) {
+      setIsChatOpen(true);
+      localStorage.removeItem("openChatSidebar"); // 다시 닫지 않도록 제거
+    }
+  }, [id]);
 
   const convertBinaryToDays = (binaryString) => {
     const daysOfWeek = ["월", "화", "수", "목", "금", "토", "일"]
@@ -61,12 +69,24 @@ function CaregiverDetail() {
         showConfirmButton: false,
         timer: 1500
       });
-
-      // 방 ID로 이동
       if (response.data.roomId) {
-        navigate(`/rooms/${response.data.roomId}`)
-      }
+        // 🔥 1) 새 채팅방 목록에 추가
+        setChatRooms((prevRooms) => [
+          ...prevRooms,
+          {
+            roomId: response.data.roomId,
+            name: `채팅방 #${response.data.roomId}`,
+          },
+        ]);
 
+        // 🔥 2) 로컬스토리지에 플래그 저장 → 새로고침 후 사이드바 자동 열기
+        localStorage.setItem("openChatSidebar", "true");
+
+        // 🔥 3) 2초 후 새로고침
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
+      }
     } catch (error) {
       console.error("❌ [ERROR] 매칭 중 오류:", error.response?.data || error.message);
 
@@ -118,6 +138,12 @@ function CaregiverDetail() {
           </button>
         </div>
       </div>
+      {/* 🔥 채팅 사이드바: isChatOpen으로 열림 제어 */}
+      <ChatSidebar
+        chatRooms={chatRooms}
+        isChatOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
+      />
 
       <div className={styles.tabsContainer}>
         <div className={styles.tabs}>

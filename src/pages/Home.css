@@ -280,28 +280,44 @@ img {
   background: linear-gradient(to top, var(--background-color), transparent);
 }
 
-/* Welcome Section */
 .welcome-section {
-  padding: 1.5rem 0;
+  position: relative;
+  width: 100%;
+  background-color: #f8f9fa;
+  border-radius: 16px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-.welcome-content {
+.welcome-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.welcome-content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  position: relative;
+  min-height: 400px;
 }
 
-.user-welcome {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+.welcome-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
 }
 
-.welcome-buttons {
-  display: flex;
-  gap: 0.5rem;
+.care-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
 }
-
 /* Tabs */
 .tabs {
   margin: 2rem 0;
