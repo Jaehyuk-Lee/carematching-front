@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import axiosInstance from "../api/axiosInstance"
 import styles from "./caregiverInfo.module.css"
+import basicProfileImage from "../assets/basicprofileimage.png"
 
 const CaregiverInfo = () => {
   const navigate = useNavigate()
@@ -41,6 +42,16 @@ const CaregiverInfo = () => {
   return (
     <div className={styles.infoContainer}>
       <h2 className={styles.title}>요양사 정보</h2>
+
+      {/* 프로필 이미지 섹션 추가 */}
+      <div className={styles.profileImageSection}>
+        <img
+          src={caregiver.caregiverImage || basicProfileImage}
+          alt={`${caregiver.realName} 프로필`}
+          className={styles.profileImage}
+        />
+      </div>
+
       <div className={styles.infoBox}>
         <p>
           <strong>이름:</strong> {caregiver.realName}
