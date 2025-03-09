@@ -145,6 +145,16 @@ function Checkout() {
     <div className={styles.checkoutContainer}>
       <h1 className={styles.checkoutTitle}>주문서</h1>
 
+      <div className={styles.caregiverSection}>
+        <h3 className={styles.caregiverTitle}>매칭 요양사 이름:</h3>
+        <p className={styles.caregiverName}>{paymentInfo.caregiverName}</p>
+      </div>
+
+      <div className={styles.userSection}>
+        <h3 className={styles.userTitle}>주문자 아이디:</h3>
+        <p className={styles.userName}>{paymentInfo.userName}</p>
+      </div>
+
       {/* 결제 금액 섹션 */}
       <div className={styles.priceSection}>
         <h3 className={styles.priceTitle}>결제 금액:</h3>

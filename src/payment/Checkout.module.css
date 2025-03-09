@@ -164,3 +164,27 @@
   text-align: center;
   line-height: 1.5;
 }
+
+.caregiverSection, .userSection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 1.5rem 0;
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+}
+
+.caregiverTitle, .userTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #666;
+  margin: 0;
+}
+
+.caregiverName, .userName {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1a73e8;
+  margin: 0;
+}

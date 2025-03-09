@@ -6,6 +6,7 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import Swal from 'sweetalert2';
 import "./ChatRoom.css";
+import { useNavigate } from "react-router-dom";
 
 let stompClient = null;
 
@@ -14,7 +15,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [roomInfo, setRoomInfo] = useState(null);
-
+  const navigate = useNavigate();
   const onMessageReceived = useCallback((payload) => {
     const message = JSON.parse(payload.body);
     console.log("📨 [RECEIVED] 메시지:", message);
@@ -87,6 +88,14 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     }
   };
 
+  const handleDecide = async () => {
+    console.log(roomInfo);
+    const transactionId = await axiosInstance.post(`/api/transactions/add`, {
+      receiverUsername: roomInfo.receiverUsername,
+    });
+    navigate(`/payment?id=${transactionId.data}`);
+  };
+
   useEffect(() => {
     if (roomId) {
       fetchMessages(roomId);
@@ -117,7 +126,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
         <h1 className="chat-room-title">{roomInfo?.name}</h1>
         <button className="chat-close-button" onClick={onClose}>×</button>
       </div>
-      <button className="chat-action-button">이 케어코디님으로 결정하기</button>
+      <button className="chat-action-button" onClick={handleDecide}>이 케어코디님으로 결정하기</button>
 
       <div className="chat-messages">
         {sortedDates.map((date) => (
