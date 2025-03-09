@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from "react"
 import { useNavigate, Routes, Route } from "react-router-dom"
 import axiosInstance from "../api/axiosInstance"
 import { useAuth } from "../context/AuthContext"
-import defaultProfile from "../assets/basicprofileimage.png"
+import basicProfileImage from "../assets/basicprofileimage.png" // 기본 프로필 이미지
 import styles from "./MyPage.module.css"
 import CaregiverEdit from "../caregiver/caregiverEdit"
 import CaregiverInfo from "../caregiver/caregiverInfo"
@@ -172,7 +172,7 @@ function MyPage() {
             </div>
           ) : (
             <>
-              <img src={userInfo?.profileImage || defaultProfile} alt="프로필" className={styles.profileImage} />
+              <img src={userInfo?.profileImage || basicProfileImage} alt="프로필" className={styles.profileImage} />
               {!isLoading && !isUploading && (
                 <div className={styles.editOverlay}>
                   <span>수정</span>
