@@ -29,6 +29,8 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     setRoomInfo(currentRoom || { name: `채팅방 #${roomId}` });
   }, [roomId, chatRooms]);
 
+
+
   const onConnected = useCallback(() => {
     console.log("✅ WebSocket 연결 성공");
     stompClient.subscribe(`/topic/chat/${roomId}`, onMessageReceived);
@@ -126,11 +128,12 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     <div className="chat-room-container">
       <div className="chat-room-header">
         <button className="chat-back-button" onClick={onBack}>←</button>
-        <h1 className="chat-room-title">{roomInfo?.name}</h1>
-        <button className="chat-close-button" onClick={onClose}>×</button>
-      </div>
-      <button className="chat-action-button">이 케어코디님으로 결정하기</button>
-
+          <h1 className="chat-room-title">{roomInfo?.name}</h1>
+          <button className="chat-close-button" onClick={onClose}>×</button>
+        </div>
+        {user.role !== "ROLE_USER_CAREGIVER" && (
+          <button className="chat-action-button">이 케어코디님으로 결정하기</button>
+        )}
       {/* 메시지 목록 컨테이너에 ref 추가 */}
       <div className="chat-messages" ref={chatMessagesRef}>
         {sortedDates.map((date) => (
