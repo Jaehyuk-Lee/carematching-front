@@ -26,7 +26,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
         lastMessage: room.lastMessage,
         lastMessageDate: room.lastMessageDate,
         unread: 0,
-        avatar: "/placeholder.svg",
+        avatar: room.avatar,
       }));
 
       setChatRooms(enhancedRooms);
