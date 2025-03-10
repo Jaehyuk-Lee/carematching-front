@@ -130,7 +130,7 @@ function CaregiverList({ containerClassName = "" }) {
                 <div className={styles.cardHeader}>
                   <div className={styles.caregiverInfo}>
                     <div className={styles.avatar}>
-                      <img src={caregiver.caregiverImage || basicProfileImage} alt={caregiver.realName} />
+                      <img className={styles.avatarImg} src={caregiver.caregiverImage || basicProfileImage} alt={caregiver.realName} />
                     </div>
                     <div>
                       <h3 className={styles.cardTitle}>{caregiver.realName || "이름 없음"}</h3>
