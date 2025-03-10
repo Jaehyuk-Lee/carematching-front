@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate, useParams, Routes, Route } from "react-router-dom"
 import { ArrowLeft, Heart, MessageCircle, Eye, Trash2, Edit, Send } from "lucide-react"

@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
@@ -59,7 +57,7 @@ export default function CreatePost() {
 
       await Swal.fire({
         title: "성공!",
-        text: "게시글이 등록되었습니다.",
+        text: "��시글이 등록되었습니다.",
         icon: "success",
         timer: 1500,
         showConfirmButton: false,

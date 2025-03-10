@@ -1,5 +1,3 @@
-"use client"
-
 import { useState, useCallback, useRef, useEffect } from "react"
 import { useNavigate, useLocation, Routes, Route } from "react-router-dom"
 import styles from "./Community.module.css"
