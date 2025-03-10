@@ -91,6 +91,7 @@ function Checkout() {
         const paymentRequestButton = document.getElementById('payment-request-button');
 
         paymentRequestButton.addEventListener('click', async () => {
+          const orderId = nanoid();
           try {
             /**
              * 결제 요청
@@ -98,8 +99,13 @@ function Checkout() {
              * 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
              * @docs https://docs.tosspayments.com/sdk/v2/js#widgetsrequestpayment
              */
+            await axiosInstance.post('/api/transactions/save-orderid', {
+              transactionId: paymentId,
+              orderId,
+              price
+            });
             await widgets.requestPayment({
-              orderId: nanoid(),
+              orderId: orderId,
               orderName: paymentInfo.caregiverName,
               successUrl: window.location.origin + "/payment/success",
               failUrl: window.location.origin + "/payment/fail",
@@ -108,7 +114,7 @@ function Checkout() {
               customerMobilePhone: "01012341234",
             });
           } catch (err) {
-            // TODO: 에러 처리
+            console.log("err", err);
           }
         });
       } catch (error) {
@@ -145,14 +151,18 @@ function Checkout() {
     <div className={styles.checkoutContainer}>
       <h1 className={styles.checkoutTitle}>주문서</h1>
 
-      {/* 결제 금액 섹션 */}
-      <div className={styles.priceSection}>
-        <h3 className={styles.priceTitle}>결제 금액:</h3>
-        <div className={styles.priceContainer}>
-          {/* {isDiscounted && paymentInfo && (
-            <span className={styles.originalPrice}>{paymentInfo.price.toLocaleString()}원</span>
-          )} */}
-          <h2 className={styles.priceAmount}>{price.toLocaleString()}원</h2>
+      <div className={styles.infoSection}>
+        <div>
+          <h3 className={styles.infoTitle}>주문자 아이디:</h3>
+          <p className={styles.infoContent}>{paymentInfo.userName}</p>
+        </div>
+        <div>
+          <h3 className={styles.infoTitle}>매칭 요양사 이름:</h3>
+          <p className={styles.infoContent}>{paymentInfo.caregiverName}</p>
+        </div>
+        <div>
+          <h3 className={styles.infoTitle}>결제 금액:</h3>
+          <p className={styles.priceAmount}>{price.toLocaleString()}원</p>
         </div>
       </div>
 
