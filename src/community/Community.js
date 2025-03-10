@@ -1,9 +1,11 @@
+"use client"
+
 import { useState, useCallback, useRef, useEffect } from "react"
 import { useNavigate, useLocation, Routes, Route } from "react-router-dom"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useAuth } from "../context/AuthContext"
-import { Eye, Heart, MessageCircle } from "lucide-react"
+import { Eye, Heart, MessageCircle, Search, PenSquare } from "lucide-react"
 import CreatePost from "./CreatePost"
 import PostDetail from "./PostDetail"
 import Swal from "sweetalert2"
@@ -380,6 +382,36 @@ function CommunityContent() {
     navigate("/community/create-post")
   }
 
+  const renderEmptyState = () => {
+    if (loading) {
+      return (
+        <div className={styles.emptyState}>
+          <div className={styles.loadingSpinner}></div>
+        </div>
+      )
+    }
+
+    if (activeMainTab === "내 활동" && activeSubTab === "댓글") {
+      return (
+        <div className={styles.emptyState}>
+          <p>댓글이 없습니다.</p>
+        </div>
+      )
+    }
+
+    return (
+      <div className={styles.emptyState}>
+        <p>게시글이 없습니다</p>
+        <button
+          className={`${styles.emptyStateButton} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+          onClick={handleCreatePost}
+        >
+          첫 게시글 작성하기
+        </button>
+      </div>
+    )
+  }
+
   return (
     <div className={styles.container}>
       <div className={styles.mainTabsContainer}>
@@ -428,40 +460,66 @@ function CommunityContent() {
                 <div className={styles.statValue}>{userInfo?.likeCount || 0}</div>
               </div>
             </div>
-            <button className={styles.writeButton} onClick={handleCreatePost}>
+            <button
+              className={`${styles.writeButton} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+              onClick={handleCreatePost}
+            >
+              <PenSquare size={16} />
               게시글 작성
             </button>
           </div>
         </div>
 
         <div className={styles.content}>
-          <div className={styles.subTabs}>
-            {currentSubTabs.map((tab) => (
-              <button
-                key={tab}
-                className={`${styles.subTab} ${activeSubTab === tab ? styles.activeSubTab : ""}`}
-                onClick={() => handleSubTabClick(tab)}
-              >
-                {tab}
-              </button>
-            ))}
+          <div className={styles.contentHeader}>
+            <div className={styles.subTabs}>
+              {currentSubTabs.map((tab) => (
+                <button
+                  key={tab}
+                  className={`${styles.subTab} ${activeSubTab === tab ? styles.activeSubTab : ""}`}
+                  onClick={() => handleSubTabClick(tab)}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+
+            {isSearchBarVisible() && (
+              <form onSubmit={handleSearch} className={styles.searchContainer}>
+                <Search className={styles.searchIcon} size={18} />
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder="검색어를 입력하세요"
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                />
+                <button type="submit" className={styles.searchButton}>
+                  검색
+                </button>
+              </form>
+            )}
           </div>
 
-          {isSearchBarVisible() && (
-            <form onSubmit={handleSearch} className={styles.searchContainer}>
-              <input
-                type="text"
-                className={styles.searchInput}
-                placeholder="검색어를 입력하세요"
-                value={searchKeyword}
-                onChange={(e) => setSearchKeyword(e.target.value)}
-              />
-              <button type="submit" className={styles.searchButton} aria-label="검색"></button>
-            </form>
+          <div className={styles.postList}>
+            {posts.length > 0 ? posts.map((post, index) => renderPostItem(post, index)) : renderEmptyState()}
+          </div>
+
+          {loading && posts.length > 0 && (
+            <div className={styles.loadingMore}>
+              <div className={styles.loadingSpinner}></div>
+              <span>게시글을 불러오는 중...</span>
+            </div>
           )}
 
-          <div className={styles.postList}>{posts.map((post, index) => renderPostItem(post, index))}</div>
-          {loading && <div className={styles.loading}>Loading...</div>}
+          <div className={styles.mobileWriteButtonContainer}>
+            <button
+              className={`${styles.mobileWriteButton} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+              onClick={handleCreatePost}
+            >
+              <PenSquare size={20} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
