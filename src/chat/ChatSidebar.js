@@ -70,7 +70,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
                   >
                     <div className="chat-room-avatar-container">
                       <img
-                        src={room.avatar || basicProfileImage}
+                        src={room?.avatar || basicProfileImage}
                         alt={room.name}
                         className="chat-room-avatar"
                       />
