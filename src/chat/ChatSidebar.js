@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 import ChatRoom from "./ChatRoom";
+import basicProfileImage from "../assets/basicprofileimage.png"
 import "./ChatSidebar.css";
 
 const ChatSidebar = ({ isChatOpen, onClose }) => {
@@ -69,7 +70,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
                   >
                     <div className="chat-room-avatar-container">
                       <img
-                        src={room.avatar || "/placeholder.svg"}
+                        src={room?.avatar || basicProfileImage}
                         alt={room.name}
                         className="chat-room-avatar"
                       />
