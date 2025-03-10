@@ -1,6 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from "react"
 import { useNavigate, useLocation, Routes, Route } from "react-router-dom"
-import { Helmet } from "react-helmet"
 import styles from "./Community.module.css"
 import axiosInstance from "../api/axiosInstance"
 import { useAuth } from "../context/AuthContext"
@@ -412,15 +411,6 @@ function CommunityContent() {
   }
 
   return (
-  <>
-    {/* 구글 애드센스 스크립트를 head에 추가 */}
-    <Helmet>
-      <script
-        async
-        src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9165995933652380"
-        crossOrigin="anonymous"
-      ></script>
-    </Helmet>
     <div className={styles.container}>
       <div className={styles.mainTabsContainer}>
         <div className={styles.mainTabs}>
@@ -531,7 +521,6 @@ function CommunityContent() {
         </div>
       </div>
     </div>
-  </>
   )
 }
 
