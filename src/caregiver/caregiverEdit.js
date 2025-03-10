@@ -182,7 +182,8 @@ const CaregiverEdit = ({ isRegistered }) => {
       if (imageFile) {
         formDataToSend.append("caregiverImage", imageFile)
       }
-
+      console.log(caregiverDto)
+      console.log(formDataToSend)
       const endpoint = "/api/caregivers/build"
 
       // axiosInstance 사용하여 요청 보내기
