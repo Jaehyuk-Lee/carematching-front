@@ -64,7 +64,7 @@ function EditProfile() {
       Swal.fire({
         icon: 'error',
         title: '업데이트 오류',
-        text: error.response?.data || "프로필 업데이트 중 오류가 발생했습니다."
+        text: error.response?.data?.message || "프로필 업데이트 중 오류가 발생했습니다."
       });
     }
   };

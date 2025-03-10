@@ -6,6 +6,7 @@ import { Stomp } from "@stomp/stompjs";
 import SockJS from "sockjs-client";
 import Swal from 'sweetalert2';
 import "./ChatRoom.css";
+import { useNavigate } from "react-router-dom";
 
 let stompClient = null;
 
@@ -17,6 +18,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
 
   // 메시지 목록을 렌더링하는 컨테이너 참조
   const chatMessagesRef = useRef(null);
+  const navigate = useNavigate();
 
   const onMessageReceived = useCallback((payload) => {
     const message = JSON.parse(payload.body);
@@ -101,6 +103,13 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     }
   }, [messages]);
 
+  const handleDecide = async () => {
+    const transactionId = await axiosInstance.post(`/api/transactions/add`, {
+      receiverUsername: roomInfo.receiverUsername,
+    });
+    navigate(`/payment?id=${transactionId.data}`);
+  };
+
   useEffect(() => {
     if (roomId) {
       fetchMessages(roomId);
@@ -132,7 +141,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
           <button className="chat-close-button" onClick={onClose}>×</button>
         </div>
         {user.role !== "ROLE_USER_CAREGIVER" && (
-          <button className="chat-action-button">이 케어코디님으로 결정하기</button>
+          <button className="chat-action-button" onClick={handleDecide}>이 케어코디님으로 결정하기</button>
         )}
       {/* 메시지 목록 컨테이너에 ref 추가 */}
       <div className="chat-messages" ref={chatMessagesRef}>
