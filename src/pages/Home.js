@@ -1,60 +1,126 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Calendar, MessageSquare, Users, Award, ArrowRight, Heart} from "lucide-react"
+"use client"
+
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
+import { Calendar, MessageSquare, Users, Award, ArrowRight, Heart, Eye, PenSquare } from "lucide-react"
 import CaregiverList from "../caregiver/caregiverList"
 import basicProfileImage from "../assets/basicprofileimage.png"
-import './Home.css';
+import axiosInstance from "../api/axiosInstance"
+import styles from "../community/Community.module.css"
+import "./Home.css"
 
 function Home() {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState('caregivers');
+  const { user } = useAuth()
+  const navigate = useNavigate()
+  const [activeTab, setActiveTab] = useState("caregivers")
+  const [popularPosts, setPopularPosts] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [userInfo, setUserInfo] = useState(null)
 
   // 관리자 권한 감지: user가 ROLE_ADMIN일 경우 콘솔에 로그 출력
   useEffect(() => {
-    if (user && user.role === 'ROLE_ADMIN') {
+    if (user && user.role === "ROLE_ADMIN") {
       // 관리자일 경우 primary color를 변경 (예시: #00c896)
-      document.documentElement.style.setProperty('--primary-color', '#00c896');
+      document.documentElement.style.setProperty("--primary-color", "#00c896")
     } else {
       // 일반 사용자일 경우 원래의 색상 (#ff8450)
-      document.documentElement.style.setProperty('--primary-color', '#ff8450');
+      document.documentElement.style.setProperty("--primary-color", "#ff8450")
     }
-  }, [user]);
+  }, [user])
 
-  const communityPosts = [
-    {
-      id: 1,
-      title: "요양보호사 선택 시 체크해야 할 5가지",
-      author: "건강지킴이",
-      date: "2일 전",
-      comments: 23,
-      likes: 45,
-      tags: ["가이드", "팁"]
-    },
-    {
-      id: 2,
-      title: "부모님 케어, 어떻게 시작해야 할까요?",
-      author: "효심가득",
-      date: "4일 전",
-      comments: 17,
-      likes: 32,
-      tags: ["질문", "노인케어"]
-    },
-    {
-      id: 3,
-      title: "재활 운동 함께하는 방법 공유합니다",
-      author: "건강한하루",
-      date: "1주일 전",
-      comments: 28,
-      likes: 56,
-      tags: ["정보", "재활"]
+  // 사용자 정보 불러오기
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      if (!user) return
+
+      try {
+        const response = await axiosInstance.get("/api/community/user-info")
+        setUserInfo(response.data)
+      } catch (error) {
+        console.error("Failed to fetch user info:", error)
+      }
     }
-  ];
+
+    fetchUserInfo()
+  }, [user])
+
+  // 인기 게시글 불러오기
+  useEffect(() => {
+    const fetchPopularPosts = async () => {
+      if (activeTab !== "community") return
+
+      setLoading(true)
+      try {
+        const response = await axiosInstance.get("/api/community/popular-posts", {
+          params: {
+            access: "ALL", // 자유게시판
+            page: 0,
+            size: 3, // 3개만 가져오기
+          },
+        })
+
+        if (response.data && response.data.content) {
+          setPopularPosts(response.data.content)
+        }
+      } catch (error) {
+        console.error("Failed to fetch popular posts:", error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPopularPosts()
+  }, [activeTab])
 
   const handleAdminFeature = () => {
-    navigate('/admin/cert');
-  };
+    navigate("/admin/cert")
+  }
+
+  const handleCreatePost = () => {
+    navigate("/community/create-post")
+  }
+
+  const handlePostClick = (postId) => {
+    navigate(`/community/posts/${postId}`)
+  }
+
+  // 게시글 렌더링 함수
+  const renderPostItem = (post, index) => {
+    return (
+      <div key={`${post.id}-${index}`} className={styles.postItem} onClick={() => handlePostClick(post.id)}>
+        <div className={styles.postContent}>
+          <div className={styles.postTextContent}>
+            <h3 className={styles.postTitle}>{post.title}</h3>
+            <p className={styles.postText}>{post.content}</p>
+          </div>
+          {post.image && (
+            <div className={styles.postImageContainer}>
+              <img src={post.image || "/placeholder.svg"} alt="게시물 이미지" className={styles.postImage} />
+            </div>
+          )}
+        </div>
+        <div className={styles.postFooter}>
+          <div className={styles.authorInfo}>
+            <img src={post.profileImage || basicProfileImage} alt="" className={styles.authorImage} />
+            <span className={styles.authorName}>{post.nickname}</span>
+            <span className={styles.postTime}>{post.relativeTime}</span>
+          </div>
+          <div className={styles.postStats}>
+            <span className={styles.viewCount}>
+              <Eye size={16} /> {post.viewCount}
+            </span>
+            <span className={styles.likeCount}>
+              <Heart size={16} /> {post.likeCount}
+            </span>
+            <span className={styles.commentCount}>
+              <MessageSquare size={16} /> {post.commentCount}
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="home-container">
@@ -65,10 +131,10 @@ function Home() {
             {user ? (
               <div className="user-welcome">
                 <div className="avatar">
-                  <img src={user.profileImage || basicProfileImage} alt={user.username} />
+                  <img src={userInfo?.profileImage || basicProfileImage} alt={user.username} />
                 </div>
                 <div>
-                  <h2>{user.username}님, 환영합니다!</h2>
+                  <h2>{userInfo?.nickname || user.username}님, 환영합니다!</h2>
                   <p className="text-muted">오늘도 건강한 하루 되세요.</p>
                 </div>
               </div>
@@ -81,7 +147,7 @@ function Home() {
           </div>
           <div className="welcome-buttons">
             {/* 관리자일 경우에만 자격증 관리 버튼 렌더링 */}
-            {user?.role === 'ROLE_ADMIN' && (
+            {user?.role === "ROLE_ADMIN" && (
               <button className="btn btn-outline" onClick={handleAdminFeature}>
                 자격증 관리 <Award />
               </button>
@@ -95,76 +161,62 @@ function Home() {
         <div className="tabs">
           <div className="tabs-list">
             <button
-              className={`tab-button ${activeTab === 'caregivers' ? 'active' : ''}`}
-              onClick={() => setActiveTab('caregivers')}
+              className={`tab-button ${activeTab === "caregivers" ? "active" : ""}`}
+              onClick={() => setActiveTab("caregivers")}
             >
               <Users /> 요양사 목록
             </button>
             <button
-              className={`tab-button ${activeTab === 'community' ? 'active' : ''}`}
-              onClick={() => setActiveTab('community')}
+              className={`tab-button ${activeTab === "community" ? "active" : ""}`}
+              onClick={() => setActiveTab("community")}
             >
               <MessageSquare /> 커뮤니티
             </button>
           </div>
 
           {/* Caregivers Tab */}
-          <div className={`tab-content ${activeTab === 'caregivers' ? 'active' : ''}`}>
-            <CaregiverList containerClassName="global-no-padding" />
+          <div className={`tab-content ${activeTab === "caregivers" ? "active" : ""}`}>
+            <CaregiverList containerClassName="global-no-padding" avatarClassName="caregiver-avatar" />
           </div>
 
           {/* Community Tab */}
-          <div className={`tab-content ${activeTab === 'community' ? 'active' : ''}`}>
+          <div className={`tab-content ${activeTab === "community" ? "active" : ""}`}>
             <div className="section-header">
               <h2>인기 커뮤니티 글</h2>
-              <button className="btn-text" onClick={() => navigate('/community')}>
+              <button className="btn-text" onClick={() => navigate("/community")}>
                 전체보기 <ArrowRight />
               </button>
             </div>
 
             {/* Community Posts */}
             <div className="community-posts">
-              {communityPosts.map(post => (
-                <div key={post.id} className="card">
-                  <div className="card-header">
-                    <div>
-                      <h3>{post.title}</h3>
-                      <p className="text-muted">작성자: {post.author}</p>
-                    </div>
-                    <div className="post-date">
-                      <span>{post.date}</span>
-                    </div>
-                  </div>
-                  <div className="card-content">
-                    <div className="post-tags">
-                      {post.tags.map((tag, i) => (
-                        <span key={i} className="tag-badge">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="card-footer">
-                    <div className="post-stats">
-                      <div className="stat">
-                        <MessageSquare /> {post.comments}
-                      </div>
-                      <div className="stat">
-                        <Heart /> {post.likes}
-                      </div>
-                    </div>
-                    <button className="btn-text">
-                      읽기
-                    </button>
-                  </div>
+              {loading ? (
+                <div className={styles.loadingMore}>
+                  <div className={styles.loadingSpinner}></div>
+                  <span>게시글을 불러오는 중...</span>
                 </div>
-              ))}
+              ) : popularPosts.length > 0 ? (
+                <div className="home-post-list">{popularPosts.map((post, index) => renderPostItem(post, index))}</div>
+              ) : (
+                <div className={styles.emptyState}>
+                  <p>인기 게시글이 없습니다</p>
+                  <button
+                    className={`${styles.emptyStateButton} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+                    onClick={handleCreatePost}
+                  >
+                    첫 게시글 작성하기
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Quick Post Button */}
             <div className="center-button">
-              <button className="btn btn-primary" onClick={() => navigate('/community/new')}>
-                새 글 작성하기 <ArrowRight />
+              <button
+                className={`btn btn-primary ${user?.role === "ROLE_ADMIN" ? "admin-button" : ""}`}
+                onClick={handleCreatePost}
+              >
+                새 글 작성하기 <PenSquare size={16} />
               </button>
             </div>
           </div>
@@ -181,7 +233,9 @@ function Home() {
                 <Users />
               </div>
               <h3>검증된 요양사</h3>
-              <p>자격증과 경력이 검증된 전문 요양사들을 만나보세요. 철저한 신원 확인으로 안심하고 이용할 수 있습니다.</p>
+              <p>
+                자격증과 경력이 검증된 전문 요양사들을 만나보세요. 철저한 신원 확인으로 안심하고 이용할 수 있습니다.
+              </p>
             </div>
 
             <div className="feature-card">
@@ -194,16 +248,19 @@ function Home() {
 
             <div className="feature-card">
               <div className="feature-icon">
-                <Calendar/>
+                <Calendar />
               </div>
               <h3>간편한 예약</h3>
-              <p>원하는 시간에 필요한 서비스를 쉽고 빠르게 예약하세요. 실시간 일정 확인으로 편리하게 이용할 수 있습니다.</p>
+              <p>
+                원하는 시간에 필요한 서비스를 쉽고 빠르게 예약하세요. 실시간 일정 확인으로 편리하게 이용할 수 있습니다.
+              </p>
             </div>
           </div>
         </div>
       </section>
     </div>
-  );
+  )
 }
 
-export default Home;
+export default Home
+
