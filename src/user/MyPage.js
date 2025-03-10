@@ -11,7 +11,8 @@ import MyPosts from "./myPage/MyPosts"
 import MyComments from "./myPage/MyComments"
 import MyLikes from "./myPage/MyLikes"
 import Swal from "sweetalert2"
-import Profile from './myPage/Profile'
+import Profile from "./myPage/Profile"
+import { User, Edit, FileText, MessageSquare, Heart, UserCog, Award, Trash2 } from "lucide-react"
 
 function MyPage() {
   const { user, logout } = useAuth()
@@ -159,6 +160,22 @@ function MyPage() {
     }
   }
 
+  const handleStatClick = (statType) => {
+    switch (statType) {
+      case "posts":
+        navigate("/myPage/my-posts")
+        break
+      case "comments":
+        navigate("/myPage/my-comments")
+        break
+      case "likes":
+        navigate("/myPage/my-likes")
+        break
+      default:
+        break
+    }
+  }
+
   return (
     <div className={styles.myPageContainer}>
       <div className={styles.profileSection}>
@@ -190,43 +207,56 @@ function MyPage() {
         </div>
         <h2 className={styles.profileName}>{userInfo?.nickname || user?.username || "사용자"}</h2>
         <div className={styles.profileStats}>
-          <div className={styles.statItem}>
+          <div className={styles.statItem} onClick={() => handleStatClick("posts")}>
             <span className={styles.statLabel}>작성글</span>
             <span className={styles.statValue}>{userInfo?.postCount || 0}</span>
           </div>
-          <div className={styles.statItem}>
+          <div className={styles.statItem} onClick={() => handleStatClick("comments")}>
             <span className={styles.statLabel}>댓글</span>
             <span className={styles.statValue}>{userInfo?.commentCount || 0}</span>
           </div>
-          <div className={styles.statItem}>
+          <div className={styles.statItem} onClick={() => handleStatClick("likes")}>
             <span className={styles.statLabel}>좋아요</span>
             <span className={styles.statValue}>{userInfo?.likeCount || 0}</span>
           </div>
         </div>
-        {isLoading && <div className={styles.loadingIndicator}>정보를 불러오는 중...</div>}
+        {isLoading && (
+          <div className={styles.loadingIndicator}>
+            <div className={styles.spinner}></div>
+            정보를 불러오는 중...
+          </div>
+        )}
       </div>
       <div className={styles.contentWrapper}>
         <div className={styles.actionButtons}>
+          <button className={`${styles.actionButton} ${styles.gray}`} onClick={() => navigate("/myPage")}>
+            <User size={18} />
+            프로필
+          </button>
           <button className={`${styles.actionButton} ${styles.gray}`} onClick={() => navigate("/myPage/my-posts")}>
+            <FileText size={18} />
             작성글
           </button>
           <button className={`${styles.actionButton} ${styles.gray}`} onClick={() => navigate("/myPage/my-comments")}>
+            <MessageSquare size={18} />
             댓글
           </button>
           <button className={`${styles.actionButton} ${styles.gray}`} onClick={() => navigate("/myPage/my-likes")}>
+            <Heart size={18} />
             좋아요
           </button>
           <button
             className={`${styles.actionButton} ${styles.orange}`}
             onClick={() => navigate("/myPage/edit-profile")}
           >
-            내 정보 수정
+            <UserCog size={18} />내 정보 수정
           </button>
           {isCaregiverRegistered ? (
             <button
               className={`${styles.actionButton} ${styles.orange}`}
               onClick={() => navigate("/mypage/caregiver-info")}
             >
+              <Award size={18} />
               요양사 정보 보기
             </button>
           ) : (
@@ -234,10 +264,12 @@ function MyPage() {
               className={`${styles.actionButton} ${styles.orange}`}
               onClick={() => navigate("/mypage/edit-caregiver")}
             >
+              <Edit size={18} />
               요양사 등록
             </button>
           )}
-          <button className={`${styles.actionButton} ${styles.gray} ${styles.deleteUser}`} onClick={handleDeleteUser}>
+          <button className={`${styles.actionButton} ${styles.deleteUser}`} onClick={handleDeleteUser}>
+            <Trash2 size={18} />
             회원 탈퇴
           </button>
         </div>
