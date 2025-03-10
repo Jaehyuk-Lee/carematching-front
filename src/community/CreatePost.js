@@ -1,9 +1,12 @@
+"use client"
+
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
 import axiosInstance from "../api/axiosInstance"
 import styles from "./CreatePost.module.css"
 import Swal from "sweetalert2"
+import { ArrowLeft, Upload } from "lucide-react"
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
 
@@ -15,6 +18,7 @@ export default function CreatePost() {
   const [title, setTitle] = useState("")
   const [content, setContent] = useState("")
   const [image, setImage] = useState(null)
+  const [imagePreview, setImagePreview] = useState(null)
 
   useEffect(() => {
     const handlePopState = () => {
@@ -85,6 +89,13 @@ export default function CreatePost() {
         e.target.value = null // 파일 선택 초기화
       } else {
         setImage(file)
+
+        // Create image preview
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          setImagePreview(reader.result)
+        }
+        reader.readAsDataURL(file)
       }
     }
   }
@@ -95,93 +106,112 @@ export default function CreatePost() {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>게시글 작성</h1>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.formHeader}>
-          <div className={styles.formGroup}>
-            <label htmlFor="category" className={styles.label}>
-              카테고리
-            </label>
-            <select
-              id="category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              className={styles.select}
-              disabled={user.role === "ROLE_USER"}
-            >
-              <option value="자유게시판">자유게시판</option>
-              {user.role !== "ROLE_USER" && <option value="요양사게시판">요양사게시판</option>}
-            </select>
+      <div className={styles.header}>
+        <button className={styles.backButton} onClick={handleCancel}>
+          <ArrowLeft size={20} />
+          <span>돌아가기</span>
+        </button>
+        <h1 className={styles.title}>게시글 작성</h1>
+      </div>
+
+      <div className={styles.formCard}>
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formHeader}>
+            <div className={styles.formGroup}>
+              <label htmlFor="category" className={styles.label}>
+                카테고리
+              </label>
+              <select
+                id="category"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className={styles.select}
+                disabled={user.role === "ROLE_USER"}
+              >
+                <option value="자유게시판">자유게시판</option>
+                {user.role !== "ROLE_USER" && <option value="요양사게시판">요양사게시판</option>}
+              </select>
+            </div>
+            <div className={styles.formGroup}>
+              <span className={styles.label}>익명 여부</span>
+              <label className={styles.checkboxLabel}>
+                <input
+                  type="checkbox"
+                  checked={isAnonymous}
+                  onChange={(e) => setIsAnonymous(e.target.checked)}
+                  className={styles.checkbox}
+                />
+                <span className={styles.checkboxText}>익명</span>
+              </label>
+            </div>
           </div>
+
           <div className={styles.formGroup}>
-            <span className={styles.label}>익명 여부</span>
-            <label className={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={isAnonymous}
-                onChange={(e) => setIsAnonymous(e.target.checked)}
-                className={styles.checkbox}
-              />
-              <span className={styles.checkboxText}>익명</span>
+            <label htmlFor="title" className={styles.label}>
+              게시글 제목
             </label>
-          </div>
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="title" className={styles.label}>
-            게시글 제목
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className={styles.input}
-            placeholder="제목 작성"
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="content" className={styles.label}>
-            게시글 내용
-          </label>
-          <textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className={styles.textarea}
-            placeholder="내용 작성"
-            required
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label className={styles.label}>이미지 (최대 10MB)</label>
-          <div className={styles.imageUpload}>
             <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              style={{ display: "none" }}
-              id="image-upload"
+              type="text"
+              id="title"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={styles.input}
+              placeholder="제목을 입력하세요"
+              required
             />
-            <label htmlFor="image-upload" className={styles.uploadButton}>
-              업로드
-            </label>
-            {image && <span className={styles.fileName}>{image.name}</span>}
           </div>
-        </div>
 
-        <div className={styles.buttonGroup}>
-          <button type="submit" className={styles.submitButton}>
-            게시
-          </button>
-          <button type="button" onClick={handleCancel} className={styles.cancelButton}>
-            취소
-          </button>
-        </div>
-      </form>
+          <div className={styles.formGroup}>
+            <label htmlFor="content" className={styles.label}>
+              게시글 내용
+            </label>
+            <textarea
+              id="content"
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className={styles.textarea}
+              placeholder="내용을 입력하세요"
+              required
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>이미지 첨부 (최대 10MB)</label>
+            {!imagePreview ? (
+              <div className={styles.imageUpload}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  style={{ display: "none" }}
+                  id="image-upload"
+                />
+                <label htmlFor="image-upload" className={styles.uploadButton}>
+                  <Upload size={16} />
+                  이미지 업로드
+                </label>
+              </div>
+            ) : (
+              <div className={styles.imagePreviewContainer}>
+                <img src={imagePreview || "/placeholder.svg"} alt="Preview" className={styles.imagePreview} />
+                <span className={styles.fileName}>{image.name}</span>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.buttonGroup}>
+            <button
+              type="submit"
+              className={`${styles.submitButton} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+            >
+              게시하기
+            </button>
+            <button type="button" onClick={handleCancel} className={styles.cancelButton}>
+              취소
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }

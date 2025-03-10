@@ -1,16 +1,20 @@
+"use client"
+
 import { useState, useEffect, useCallback, useRef } from "react"
 import { useNavigate, useParams, Routes, Route } from "react-router-dom"
-import { ArrowLeft, Heart, MessageCircle, Eye, Trash2 } from "lucide-react"
+import { ArrowLeft, Heart, MessageCircle, Eye, Trash2, Edit, Send } from "lucide-react"
 import styles from "./PostDetail.module.css"
 import axiosInstance from "../api/axiosInstance"
 import UpdatePost from "./UpdatePost"
 import Swal from "sweetalert2"
 import basicProfileImage from "../assets/basicprofileimage.png"
+import { useAuth } from "../context/AuthContext"
 
 // 게시글 상세 컴포넌트
 function PostDetailContent() {
   const navigate = useNavigate()
   const { id } = useParams()
+  const { user } = useAuth()
   const [post, setPost] = useState(null)
   const [comment, setComment] = useState("")
   const [isAnonymous, setIsAnonymous] = useState(false)
@@ -312,20 +316,56 @@ function PostDetailContent() {
     }
   }
 
-  if (isLoading) return <div className={styles.loading}>게시글을 불러오는 중입니다...</div>
-  if (error) return <div className={styles.error}>{error}</div>
-  if (!post) return <div className={styles.error}>게시글을 찾을 수 없습니다.</div>
+  if (isLoading) {
+    return (
+      <div className={styles.loadingContainer}>
+        <div className={styles.loadingSpinner}></div>
+        <p className={styles.loadingText}>게시글을 불러오는 중입니다...</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className={styles.errorContainer}>
+        <div className={styles.errorIcon}>!</div>
+        <p className={styles.errorText}>{error}</p>
+        <button className={styles.backButton} onClick={() => navigate("/community")}>
+          커뮤니티로 돌아가기
+        </button>
+      </div>
+    )
+  }
+
+  if (!post) {
+    return (
+      <div className={styles.errorContainer}>
+        <div className={styles.errorIcon}>!</div>
+        <p className={styles.errorText}>게시글을 찾을 수 없습니다.</p>
+        <button className={styles.backButton} onClick={() => navigate("/community")}>
+          커뮤니티로 돌아가기
+        </button>
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>
-      <header className={styles.header}>
-        <button onClick={() => navigate(-1)} className={styles.backButton}>
-          <ArrowLeft size={24} />
-          <span>목록</span>
+      <div className={styles.header}>
+        <button onClick={() => navigate("/community")} className={styles.backButton}>
+          <ArrowLeft size={20} />
+          <span>커뮤니티로 돌아가기</span>
         </button>
-      </header>
+      </div>
 
-      <article className={styles.article}>
+      <div className={styles.postCard}>
+        <div className={styles.postHeader}>
+          <div className={styles.categoryTag}>{post.category || "카테고리 없음"}</div>
+          <div className={styles.postDate}>{post.createdAt}</div>
+        </div>
+
+        <h1 className={styles.postTitle}>{post.title}</h1>
+
         <div className={styles.authorInfo}>
           <div className={styles.authorProfile}>
             <img src={post.profileImage || basicProfileImage} alt="" className={styles.authorImage} />
@@ -334,105 +374,134 @@ function PostDetailContent() {
               <span className={styles.authorRole}>{post.role || "역할 없음"}</span>
             </div>
           </div>
-          <div className={styles.postMeta}>
-            {post.author && (
-              <div className={styles.actionButtons}>
-                <button className={styles.editButton} onClick={handleEdit}>
-                  수정
-                </button>
-                <button className={styles.deleteButton} onClick={handleDelete}>
-                  삭제
-                </button>
-              </div>
-            )}
-          </div>
+
+          {post.author && (
+            <div className={styles.actionButtons}>
+              <button
+                className={`${styles.actionButton} ${styles.editButton} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+                onClick={handleEdit}
+              >
+                <Edit size={16} />
+                수정
+              </button>
+              <button className={styles.actionButton} onClick={handleDelete}>
+                <Trash2 size={16} />
+                삭제
+              </button>
+            </div>
+          )}
         </div>
-        <div className={styles.divider}></div>
-        <div className={styles.categoryDateWrapper}>
-          <div className={styles.category}>{post.category || "카테고리 없음"}</div>
-          <span className={styles.uploadDate}>{post.createdAt}</span>
-        </div>
-        <h1 className={styles.postTitle}>{post.title}</h1>
+
         <div className={styles.postContent}>
           <p className={styles.postText}>{post.content}</p>
           {post.image && (
-            <div className={styles.postImage}>
-              <img src={post.image || "/placeholder.svg"} alt="게시글 이미지" />
+            <div className={styles.postImageContainer}>
+              <img src={post.image || "/placeholder.svg"} alt="게시글 이미지" className={styles.postImage} />
             </div>
           )}
         </div>
 
         <div className={styles.postStats}>
-          <button className={`${styles.likeButton} ${isLiked ? styles.liked : ""}`} onClick={handleLike}>
-            <Heart className={styles.icon} size={24} fill={isLiked ? "currentColor" : "none"} />
+          <button
+            className={`${styles.likeButton} ${isLiked ? styles.liked : ""} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+            onClick={handleLike}
+          >
+            <Heart size={20} fill={isLiked ? "currentColor" : "none"} />
             <span>좋아요</span>
           </button>
+
           <div className={styles.statsInfo}>
-            <span className={styles.statItem}>
-              <Eye className={styles.icon} />
-              {post.viewCount || 0}
-            </span>
-            <span className={styles.statItem}>
-              <Heart className={styles.icon} />
-              {post.likeCount || 0}
-            </span>
-            <span className={styles.statItem}>
-              <MessageCircle className={styles.icon} />
-              {comments.length}
-            </span>
+            <div className={styles.statItem}>
+              <Eye size={18} />
+              <span>{post.viewCount || 0}</span>
+            </div>
+            <div className={styles.statItem}>
+              <Heart size={18} />
+              <span>{post.likeCount || 0}</span>
+            </div>
+            <div className={styles.statItem}>
+              <MessageCircle size={18} />
+              <span>{comments.length}</span>
+            </div>
           </div>
         </div>
-      </article>
+      </div>
 
-      <section className={styles.comments}>
-        <h2 className={styles.commentSectionTitle}>댓글 입력</h2>
+      <div className={styles.commentsCard}>
+        <h2 className={styles.commentsTitle}>댓글 {comments.length}개</h2>
+
         <form onSubmit={handleSubmitComment} className={styles.commentForm}>
-          <label className={styles.anonymousCheck}>
-            <input type="checkbox" checked={isAnonymous} onChange={(e) => setIsAnonymous(e.target.checked)} />
-            <span>익명</span>
-          </label>
-          <input
-            type="text"
-            placeholder="댓글을 입력해 주세요."
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            className={styles.commentInput}
-          />
-          <button type="submit" className={styles.commentSubmit}>
-            등록
-          </button>
+          <div className={styles.commentFormTop}>
+            <label className={styles.anonymousCheck}>
+              <input
+                type="checkbox"
+                checked={isAnonymous}
+                onChange={(e) => setIsAnonymous(e.target.checked)}
+                className={styles.checkbox}
+              />
+              <span>익명</span>
+            </label>
+          </div>
+
+          <div className={styles.commentInputWrapper}>
+            <input
+              type="text"
+              placeholder="댓글을 입력해 주세요."
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className={styles.commentInput}
+            />
+            <button
+              type="submit"
+              className={`${styles.commentSubmit} ${user?.role === "ROLE_ADMIN" ? styles.admin : ""}`}
+            >
+              <Send size={16} />
+              <span>등록</span>
+            </button>
+          </div>
         </form>
 
-        <div className={styles.commentList}>
-          {comments.map((comment, index) => (
-            <div
-              key={comment.id}
-              className={styles.commentItem}
-              ref={index === comments.length - 1 ? lastCommentElementRef : null}
-            >
-              <div className={styles.commentHeader}>
-                <div className={styles.commentAuthor}>
-                  <img src={comment.profileImage || basicProfileImage} alt="" className={styles.commentAuthorImage} />
-                  <div className={styles.commentAuthorInfo}>
-                    <span className={styles.commentAuthorName}>{comment.nickname || "익명"}</span>
-                    <span className={styles.commentAuthorRole}>{comment.role || "역할 없음"}</span>
+        {comments.length > 0 ? (
+          <div className={styles.commentList}>
+            {comments.map((comment, index) => (
+              <div
+                key={comment.id}
+                className={styles.commentItem}
+                ref={index === comments.length - 1 ? lastCommentElementRef : null}
+              >
+                <div className={styles.commentHeader}>
+                  <div className={styles.commentAuthor}>
+                    <img src={comment.profileImage || basicProfileImage} alt="" className={styles.commentAuthorImage} />
+                    <div className={styles.commentAuthorInfo}>
+                      <span className={styles.commentAuthorName}>{comment.nickname || "익명"}</span>
+                      <span className={styles.commentTime}>{comment.createdAt}</span>
+                    </div>
                   </div>
+                  {comment.author && (
+                    <button className={styles.deleteCommentButton} onClick={() => handleDeleteComment(comment.id)}>
+                      <Trash2 size={16} />
+                    </button>
+                  )}
                 </div>
-                {comment.author && (
-                  <button className={styles.deleteCommentButton} onClick={() => handleDeleteComment(comment.id)}>
-                    <Trash2 size={16} />
-                  </button>
-                )}
+                <div className={styles.commentContent}>
+                  <p className={styles.commentText}>{comment.content}</p>
+                </div>
               </div>
-              <div className={styles.commentContent}>
-                <p className={styles.commentText}>{comment.content}</p>
-                <span className={styles.commentTime}>{comment.createdAt}</span>
+            ))}
+
+            {isLoadingComments && (
+              <div className={styles.commentLoading}>
+                <div className={styles.loadingSpinner}></div>
+                <span>댓글을 불러오는 중...</span>
               </div>
-            </div>
-          ))}
-          {isLoadingComments && <div className={styles.loading}>댓글을 불러오는 중...</div>}
-        </div>
-      </section>
+            )}
+          </div>
+        ) : (
+          <div className={styles.emptyComments}>
+            <p>아직 댓글이 없습니다. 첫 댓글을 작성해보세요!</p>
+          </div>
+        )}
+      </div>
     </div>
   )
 }
