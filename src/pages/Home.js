@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext"
-import { Calendar, MessageSquare, Users, Award, ArrowRight, Heart, Eye, PenSquare } from "lucide-react"
+import { Calendar, MessageSquare, Users, Award, ArrowRight, Heart, Eye, PenSquare, MessageCircle } from "lucide-react"
 import CaregiverList from "../caregiver/caregiverList"
 import basicProfileImage from "../assets/basicprofileimage.png"
 import axiosInstance from "../api/axiosInstance"
@@ -94,7 +94,15 @@ function Home() {
           </div>
           {post.image && (
             <div className={styles.postImageContainer}>
-              <img src={post.image || "/placeholder.svg"} alt="게시물 이미지" className={styles.postImage} />
+              <img
+                src={post.image || "/placeholder.svg"}
+                alt="게시물 이미지"
+                className={styles.postImage}
+                onError={(e) => {
+                  e.target.onerror = null
+                  e.target.src = "/placeholder.svg"
+                }}
+              />
             </div>
           )}
         </div>
@@ -112,7 +120,7 @@ function Home() {
               <Heart size={16} /> {post.likeCount}
             </span>
             <span className={styles.commentCount}>
-              <MessageSquare size={16} /> {post.commentCount}
+              <MessageCircle size={16} /> {post.commentCount}
             </span>
           </div>
         </div>
