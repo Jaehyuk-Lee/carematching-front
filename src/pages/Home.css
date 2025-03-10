@@ -292,7 +292,7 @@ img.caregiverList_avatar {
 img.caregiverList_avatar,
 .caregiver-card img,
 .caregiver-list img,
-.tab-content img:not(.avatar img),
+.tab-content .caregiver-avatar img,
 .caregiverList_avatar img {
   width: 60px !important;
   height: 60px !important;
@@ -307,7 +307,7 @@ img.caregiverList_avatar,
 .caregiverList_avatar_container,
 .caregiver-card > div:first-child,
 .caregiver-list > div:first-child,
-.tab-content [class*="avatar"]:not(.avatar),
+.tab-content .caregiver-avatar,
 .avatar {
   width: 60px !important;
   height: 60px !important;
@@ -546,6 +546,7 @@ img.caregiverList_avatar,
   margin-bottom: 2rem;
 }
 
+/* Add specific styles for the home-post-list to ensure proper image display */
 .home-post-list {
   display: flex;
   flex-direction: column;
@@ -553,6 +554,42 @@ img.caregiverList_avatar,
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Override any conflicting styles for post images in the home page */
+.home-post-list .postImageContainer,
+.home-post-list .postImage {
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+}
+
+.home-post-list .postImage {
+  transition: transform 0.3s ease;
+}
+
+.home-post-list .postItem:hover .postImage {
+  transform: scale(1.05);
+}
+
+/* Fix for mobile view */
+@media (max-width: 768px) {
+  .home-post-list .postContent {
+    flex-direction: column;
+  }
+
+  .home-post-list .postImageContainer {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    margin-top: 12px;
+  }
+
+  .home-post-list .postImage {
+    width: 100% !important;
+    height: 100% !important;
+  }
 }
 
 .post-date {
@@ -731,6 +768,36 @@ img.caregiverList_avatar,
 @media (min-width: 1024px) {
   .caregivers-grid {
     grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Override any conflicting styles for post images in the home page */
+.tab-content .postImageContainer,
+.tab-content .postImage {
+  width: 120px !important;
+  height: 120px !important;
+  border-radius: 8px !important;
+  object-fit: cover !important;
+  border: none !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Fix for mobile view */
+@media (max-width: 768px) {
+  .tab-content .postContent {
+    flex-direction: column;
+  }
+
+  .tab-content .postImageContainer {
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 16 / 9;
+    margin-top: 12px;
+  }
+
+  .tab-content .postImage {
+    width: 100% !important;
+    height: 100% !important;
   }
 }
 
