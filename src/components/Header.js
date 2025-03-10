@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Bell, MessageSquare } from 'lucide-react'
+import { MessageSquare } from 'lucide-react'
 import styles from "./Header.module.css";
 import Swal from "sweetalert2";
 import ChatSidebar from "../chat/ChatSidebar";
@@ -66,9 +66,6 @@ function Header() {
                 <Link to="/caregiver">요양사 찾기</Link>
               </li>
               <li>
-                <Link to="/hospital">요양병원 찾기</Link>
-              </li>
-              <li>
                 <Link to="/community">커뮤니티</Link>
               </li>
               <li>
@@ -79,12 +76,8 @@ function Header() {
             </ul>
           </nav>
 
-          {/* 액션 버튼 (검색, 알림) */}
+          {/* 액션 버튼 (검색) */}
           <div className={styles.actionButtons}>
-            <button className={styles.iconButton}>
-              <Bell size={18} />
-            </button>
-
             {/* 채팅 버튼 */}
             {user && (
               <div className={styles.chatContainer} onClick={handleChatClick}>
