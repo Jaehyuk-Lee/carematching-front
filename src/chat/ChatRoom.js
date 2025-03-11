@@ -77,7 +77,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   }, []);
 
   const sendMessage = useCallback(() => {
-    if (stompClient && newMessage.trim() !== "") {
+    if (stompClient && newMessage.trim() !== "" && user) {
       const messageRequest = {
         roomId: Number.parseInt(roomId),
         username: user.username,
@@ -87,7 +87,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
       stompClient.send("/app/chat/send", {}, JSON.stringify(messageRequest));
       setNewMessage("");
     }
-  }, [newMessage, roomId, user.username]);
+  }, [newMessage, roomId, user]);
 
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
@@ -140,7 +140,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
           <h1 className="chat-room-title">{roomInfo?.name}</h1>
           <button className="chat-close-button" onClick={onClose}>×</button>
         </div>
-        {user.role !== "ROLE_USER_CAREGIVER" && (
+        {user && user.role !== "ROLE_USER_CAREGIVER" && (
           <button className="chat-action-button" onClick={handleDecide}>이 케어코디님으로 결정하기</button>
         )}
       {/* 메시지 목록 컨테이너에 ref 추가 */}
