@@ -34,7 +34,7 @@ function Signup() {
       }
     } catch (error) {
       console.log(error);
-      setError(error.response?.data?.error || "회원가입 중 오류가 발생했습니다.");
+      setError(error.response?.data?.message || "회원가입 중 오류가 발생했습니다.");
     }
   };
 
