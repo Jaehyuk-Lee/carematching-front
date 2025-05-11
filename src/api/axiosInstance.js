@@ -2,7 +2,7 @@ import axios from 'axios';
 import config from '../config/config'
 
 const axiosInstance = axios.create({
-  baseURL: config.apiUrl,
+  baseURL: `${config.apiUrl}/api/v1`,
   withCredentials: true,
 });
 
@@ -20,7 +20,7 @@ const addRefreshSubscriber = (callback) => {
 };
 
 const removeRefreshToken = async () => {
-  await axiosInstance.post('/api/token/remove', null, {
+  await axiosInstance.post('/token/remove', null, {
     headers: {
       'Refresh-Token': localStorage.getItem('refreshToken')
     }
@@ -43,7 +43,7 @@ axiosInstance.interceptors.request.use(
 
 // 인증 관련 요청은 401 에러 개별 처리
 const isAuthRelatedRequest = (url) => {
-  const authEndpoints = ['/api/user/login', '/api/user/signup'];
+  const authEndpoints = ['/user/login', '/user/signup'];
   return authEndpoints.some(endpoint => url.includes(endpoint));
 };
 const isAuthRelatedPage = () => {
@@ -84,7 +84,10 @@ axiosInstance.interceptors.response.use(
         // refreshToken을 사용하여 새 accessToken 요청
         const refreshToken = localStorage.getItem('refreshToken');
         if (refreshToken) {
-          const response = await axios.post(`${config.apiUrl}/api/token/reissue`, null, {
+          // ※ 다른 코드들과 달리 axiosInstance를 호출하지 않고 axios를 독립적으로 호출
+          // 만약 토큰 갱신 요청(/token/reissue) 자체에 axiosInstance를 사용한다면
+          // 이 요청이 실패했을 때 다시 토큰 갱신을 시도하게 되어 무한 루프가 발생할 수 있음
+          const response = await axios.post(`${config.apiUrl}/api/v1/token/reissue`, null, {
             headers: {
               'Refresh-Token': refreshToken
             }

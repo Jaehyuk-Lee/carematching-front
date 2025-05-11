@@ -13,7 +13,7 @@ function CaregiverList({ containerClassName = "" }) {
 
   useEffect(() => {
     axiosInstance
-      .get("/api/caregivers")
+      .get("/caregivers")
       .then((response) => {
         setCaregivers(response.data)
       })

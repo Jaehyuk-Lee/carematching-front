@@ -15,7 +15,7 @@ function Profile() {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await axiosInstance.get('/api/user/info');
+        const response = await axiosInstance.get('/user/info');
         setProfile(response.data);
       } catch (error) {
         console.error('프로필 정보 로딩 실패:', error);

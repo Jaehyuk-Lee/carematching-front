@@ -18,7 +18,7 @@ const ChatSidebar = ({ isChatOpen, onClose }) => {
 
   const fetchChatRooms = async () => {
     try {
-      const response = await axiosInstance.get(`/api/rooms`);
+      const response = await axiosInstance.get(`/rooms`);
 
       const enhancedRooms = response.data.map((room) => ({
         ...room,

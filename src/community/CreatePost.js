@@ -49,7 +49,7 @@ export default function CreatePost() {
       }
 
       // eslint-disable-next-line no-unused-vars
-      const response = await axiosInstance.post("/api/community/add", formData, {
+      const response = await axiosInstance.post("/community/add", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

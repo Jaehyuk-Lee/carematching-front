@@ -50,7 +50,7 @@ function MyPosts() {
     isLoadingRef.current = true
 
     try {
-      const response = await axiosInstance.get("/api/community/my-posts", {
+      const response = await axiosInstance.get("/community/my-posts", {
         params: {
           page: page,
           size: 10,

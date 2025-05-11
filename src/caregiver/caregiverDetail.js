@@ -17,7 +17,7 @@ function CaregiverDetail() {
   const { user } = useAuth()
   useEffect(() => {
     axiosInstance
-      .get(`/api/caregivers/${id}`)
+      .get(`/caregivers/${id}`)
       .then((response) => {
         setCaregiver(response.data)
       })

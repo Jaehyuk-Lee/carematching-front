@@ -49,7 +49,7 @@ function MyComments() {
     isLoadingRef.current = true
 
     try {
-      const response = await axiosInstance.get("/api/community/my-comments", {
+      const response = await axiosInstance.get("/community/my-comments", {
         params: {
           page: page,
           size: 10,

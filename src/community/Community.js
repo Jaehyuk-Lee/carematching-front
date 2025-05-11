@@ -80,7 +80,7 @@ function CommunityContent() {
     isLoadingRef.current = true
 
     try {
-      let endpoint = "/api/community/posts"
+      let endpoint = "/community/posts"
       let params = {
         access: getAccessParam(activeMainTab),
         page,
@@ -88,20 +88,20 @@ function CommunityContent() {
       }
 
       if (isSearching && searchKeyword.trim() !== "") {
-        endpoint = "/api/community/search"
+        endpoint = "/community/search"
         params = {
           ...params,
           keyword: searchKeyword,
         }
       } else if (activeSubTab === "인기글") {
-        endpoint = "/api/community/popular-posts"
+        endpoint = "/community/popular-posts"
       } else if (activeMainTab === "내 활동") {
         if (activeSubTab === "작성글") {
-          endpoint = "/api/community/my-posts"
+          endpoint = "/community/my-posts"
         } else if (activeSubTab === "댓글") {
-          endpoint = "/api/community/my-comments"
+          endpoint = "/community/my-comments"
         } else if (activeSubTab === "좋아요") {
-          endpoint = "/api/community/my-likes"
+          endpoint = "/community/my-likes"
         }
       }
 
@@ -177,7 +177,7 @@ function CommunityContent() {
         })
       } else {
         try {
-          const response = await axiosInstance.get("/api/community/user-info")
+          const response = await axiosInstance.get("/community/user-info")
           setUserInfo(response.data)
         } catch (error) {
           console.error("Failed to fetch user info:", error)

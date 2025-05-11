@@ -19,7 +19,7 @@ function EditProfile() {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const response = await axiosInstance.get("/api/user/info");
+        const response = await axiosInstance.get("/user/info");
         setProfileInput(response.data);
       } catch (error) {
         console.error("사용자 정보 가져오기 실패:", error);
@@ -44,7 +44,7 @@ function EditProfile() {
     }
 
     try {
-      const response = await axiosInstance.post("/api/user/update", profileInput);
+      const response = await axiosInstance.post("/user/update", profileInput);
 
       if (response.status !== 200) {
         throw new Error(response.data?.message || "프로필 업데이트에 실패했습니다.");
