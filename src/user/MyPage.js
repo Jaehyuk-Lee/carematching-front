@@ -25,7 +25,7 @@ function MyPage() {
 
   const checkCaregiverStatus = useCallback(async () => {
     try {
-      const response = await axiosInstance.get("/api/caregivers/check")
+      const response = await axiosInstance.get("/caregivers/check")
       if (response.status === 200) {
         setIsCaregiverRegistered(response.data)
       } else {
@@ -40,7 +40,7 @@ function MyPage() {
   const fetchUserInfo = useCallback(async () => {
     try {
       setIsLoading(true)
-      const response = await axiosInstance.get("/api/community/user-info")
+      const response = await axiosInstance.get("/community/user-info")
       setUserInfo(response.data)
     } catch (error) {
       console.error("사용자 정보 가져오기 실패:", error)
@@ -94,7 +94,7 @@ function MyPage() {
 
     try {
       setIsUploading(true)
-      await axiosInstance.post("/api/user/update/profile-image", formData, {
+      await axiosInstance.post("/user/update/profile-image", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -136,7 +136,7 @@ function MyPage() {
 
     if (result.isConfirmed) {
       try {
-        const res = await axiosInstance.post(`/api/user/delete`)
+        const res = await axiosInstance.post(`/user/delete`)
         if (res.status !== 200) {
           throw new Error("회원 탈퇴 실패")
         }

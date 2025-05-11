@@ -23,7 +23,7 @@ function SuccessPage() {
 
     if (orderId && amount) {
       try {
-        axiosInstance.post('/api/transactions/success', {
+        axiosInstance.post('/transactions/success', {
           orderId,
           price: amount
         }).then((res) => {

@@ -31,7 +31,7 @@ function Login() {
     }
 
     try {
-      const res = await axiosInstance.post(`/api/user/login`, loginInput);
+      const res = await axiosInstance.post(`/user/login`, loginInput);
       if (res.status === 200) {
         login(res.data);
         navigate('/');

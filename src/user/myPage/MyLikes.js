@@ -50,7 +50,7 @@ function MyLikes() {
     isLoadingRef.current = true
 
     try {
-      const response = await axiosInstance.get("/api/community/my-likes", {
+      const response = await axiosInstance.get("/community/my-likes", {
         params: {
           page: page,
           size: 10,

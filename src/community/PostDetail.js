@@ -51,7 +51,7 @@ function PostDetailContent() {
     if (!id || isLoadingComments || !hasMoreComments) return
     setIsLoadingComments(true)
     try {
-      const response = await axiosInstance.get(`/api/community/comments`, {
+      const response = await axiosInstance.get(`/community/comments`, {
         params: { postId: id, page: commentsPage, size: 10 },
       })
       const newComments = response.data.content.map((comment) => ({
@@ -90,7 +90,7 @@ function PostDetailContent() {
       setIsLoading(true)
       setError(null)
       try {
-        const response = await axiosInstance.get(`/api/community/posts/${id}`)
+        const response = await axiosInstance.get(`/community/posts/${id}`)
         const postData = response.data
 
         if (!postData) {
@@ -145,7 +145,7 @@ function PostDetailContent() {
       return
     }
     try {
-      const response = await axiosInstance.post("/api/community/comment/add", {
+      const response = await axiosInstance.post("/community/comment/add", {
         postId: post.id,
         content: comment,
         anonymous: isAnonymous,
@@ -187,7 +187,7 @@ function PostDetailContent() {
 
     if (result.isConfirmed) {
       try {
-        await axiosInstance.post(`/api/community/comment/delete?commentId=${commentId}`)
+        await axiosInstance.post(`/community/comment/delete?commentId=${commentId}`)
         setComments((prevComments) => prevComments.filter((comment) => comment.id !== commentId))
         Swal.fire({
           title: "성공!",
@@ -226,7 +226,7 @@ function PostDetailContent() {
         liked: isLiked,
       }
 
-      const response = await axiosInstance.post("/api/community/like", requestData)
+      const response = await axiosInstance.post("/community/like", requestData)
       const { data } = response
 
       let success = false
@@ -293,7 +293,7 @@ function PostDetailContent() {
 
     if (result.isConfirmed) {
       try {
-        await axiosInstance.post(`/api/community/posts/${id}/delete`)
+        await axiosInstance.post(`/community/posts/${id}/delete`)
         Swal.fire({
           title: "성공!",
           text: "게시글이 삭제되었습니다.",

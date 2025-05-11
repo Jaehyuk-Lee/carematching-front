@@ -23,7 +23,7 @@ function Checkout() {
   useEffect(() => {
     if (paymentId) {
       // 결제 ID로 결제 정보 조회
-      axiosInstance.get(`/api/transactions/${paymentId}`)
+      axiosInstance.get(`/transactions/${paymentId}`)
         .then(response => {
           setPaymentInfo(response.data);
           setPrice(response.data.price);
@@ -99,7 +99,7 @@ function Checkout() {
              * 결제 과정에서 악의적으로 결제 금액이 바뀌는 것을 확인하는 용도입니다.
              * @docs https://docs.tosspayments.com/sdk/v2/js#widgetsrequestpayment
              */
-            await axiosInstance.post('/api/transactions/save-orderid', {
+            await axiosInstance.post('/transactions/save-orderid', {
               transactionId: paymentId,
               orderId,
               price

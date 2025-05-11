@@ -23,7 +23,7 @@ function Signup() {
     setError("");
 
     try {
-      const res = await axiosInstance.post(`/api/user/signup`, signupInput);
+      const res = await axiosInstance.post(`/user/signup`, signupInput);
       if (res.status === 200) {
         Swal.fire({
           icon: 'success',

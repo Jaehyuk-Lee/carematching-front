@@ -33,7 +33,7 @@ function CreateRoomPage() {
                 caregiverId: Number(caregiverId),
             });
 
-            const response = await axiosInstance.post('/api/rooms', {
+            const response = await axiosInstance.post('/rooms', {
                 requesterUserId: Number(user.id),
                 caregiverId: Number(caregiverId),
             });

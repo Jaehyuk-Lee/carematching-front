@@ -33,7 +33,7 @@ const CaregiverEdit = ({ isRegistered }) => {
   useEffect(() => {
     const fetchCaregiverData = async () => {
       try {
-        const response = await axiosInstance.get("/api/caregivers/user")
+        const response = await axiosInstance.get("/caregivers/user")
         if (response.status === 200) {
           const data = response.data
           setFormData({
@@ -184,7 +184,7 @@ const CaregiverEdit = ({ isRegistered }) => {
       }
       console.log(caregiverDto)
       console.log(formDataToSend)
-      const endpoint = "/api/caregivers/build"
+      const endpoint = "/caregivers/build"
 
       // axiosInstance 사용하여 요청 보내기
       const response = await axiosInstance.post(endpoint, formDataToSend, {

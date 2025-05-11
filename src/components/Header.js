@@ -16,7 +16,7 @@ function Header() {
   useEffect(() => {
     if (user) {
       axiosInstance
-        .get(`/api/chat/unread-count?userId=${user.id}`)
+        .get(`/chat/unread-count?userId=${user.id}`)
         .then((response) => setUnreadMessages(response.data.unreadCount))
         .catch((err) => console.error("채팅 알림 로드 오류:", err));
     }

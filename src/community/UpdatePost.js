@@ -33,7 +33,7 @@ export default function UpdatePost() {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axiosInstance.get(`/api/community/posts/${id}/update`)
+        const response = await axiosInstance.get(`/community/posts/${id}/update`)
         const { category, isAnonymous, title, content, image } = response.data
         setCategory(category)
         setIsAnonymous(isAnonymous)
@@ -72,7 +72,7 @@ export default function UpdatePost() {
       }
 
       // eslint-disable-next-line no-unused-vars
-      const response = await axiosInstance.post(`/api/community/posts/${id}/update`, formData, {
+      const response = await axiosInstance.post(`/community/posts/${id}/update`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

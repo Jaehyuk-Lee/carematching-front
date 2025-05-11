@@ -33,7 +33,7 @@ function Home() {
       if (!user) return
 
       try {
-        const response = await axiosInstance.get("/api/community/user-info")
+        const response = await axiosInstance.get("/community/user-info")
         setUserInfo(response.data)
       } catch (error) {
         console.error("Failed to fetch user info:", error)
@@ -50,7 +50,7 @@ function Home() {
 
       setLoading(true)
       try {
-        const response = await axiosInstance.get("/api/community/popular-posts", {
+        const response = await axiosInstance.get("/community/popular-posts", {
           params: {
             access: "ALL", // 자유게시판
             page: 0,

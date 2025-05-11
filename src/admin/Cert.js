@@ -9,7 +9,7 @@ function Cert() {
 
   const fetchCertUsers = async () => {
     try {
-      const response = await axiosInstance.post(`/api/user/admin/cert`);
+      const response = await axiosInstance.post(`/user/admin/cert`);
       if (Array.isArray(response.data)) {
         setCertUsers(response.data);
       } else {
@@ -40,7 +40,7 @@ function Cert() {
 
     if (result.isConfirmed) {
       try {
-        const response = await axiosInstance.post(`/api/user/admin/cert/approve`, { username });
+        const response = await axiosInstance.post(`/user/admin/cert/approve`, { username });
         if (response.status === 200) {
           fetchCertUsers();
           Swal.fire({
@@ -71,7 +71,7 @@ function Cert() {
 
     if (result.isConfirmed) {
       try {
-        const response = await axiosInstance.post(`/api/user/admin/cert/revoke`, { username });
+        const response = await axiosInstance.post(`/user/admin/cert/revoke`, { username });
         if (response.status === 200) {
           fetchCertUsers();
           Swal.fire({

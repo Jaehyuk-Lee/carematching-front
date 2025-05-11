@@ -63,7 +63,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
 
   const fetchMessages = useCallback(async (roomId) => {
     try {
-      const response = await axiosInstance.get(`/api/messages/${roomId}`);
+      const response = await axiosInstance.get(`/messages/${roomId}`);
       setMessages(response.data);
       console.log("✅ [INFO] 기존 메시지 불러오기:", response.data);
     } catch (error) {
@@ -104,7 +104,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   }, [messages]);
 
   const handleDecide = async () => {
-    const transactionId = await axiosInstance.post(`/api/transactions/add`, {
+    const transactionId = await axiosInstance.post(`/transactions/add`, {
       receiverUsername: roomInfo.receiverUsername,
     });
     navigate(`/payment?id=${transactionId.data}`);

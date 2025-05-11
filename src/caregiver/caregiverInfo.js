@@ -11,7 +11,7 @@ const CaregiverInfo = () => {
   useEffect(() => {
     const fetchCaregiverData = async () => {
       try {
-        const response = await axiosInstance.get("/api/caregivers/user")
+        const response = await axiosInstance.get("/caregivers/user")
         if (response.status === 200) {
           setCaregiver(response.data)
         }
