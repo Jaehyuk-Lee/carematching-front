@@ -69,3 +69,5 @@ yarn build:prod
 ## 배포
 
 프로젝트는 GitHub Actions를 통해 자동 배포됩니다. `.github`과 `deployment` 디렉토리에서 배포 관련 설정을 확인할 수 있습니다.
+
+단, 이 레파지토리의 Github Action은 AWS 사용이 중지됨에 따라 자동 배포 Action을 중지시켰습니다.
