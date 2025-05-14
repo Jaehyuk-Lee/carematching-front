@@ -79,7 +79,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const sendMessage = useCallback(() => {
     if (stompClient && newMessage.trim() !== "" && user) {
       const messageRequest = {
-        roomId: Number.parseInt(roomId),
+        roomId,
         username: user.username,
         message: newMessage,
       };
