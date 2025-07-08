@@ -40,7 +40,7 @@ function Cert() {
 
     if (result.isConfirmed) {
       try {
-        const response = await axiosInstance.post(`/user/admin/cert/approve`, { username });
+        const response = await axiosInstance.post(`/user/admin/cert/${username}/pending/update`, { state: true });
         if (response.status === 200) {
           fetchCertUsers();
           Swal.fire({
@@ -71,7 +71,7 @@ function Cert() {
 
     if (result.isConfirmed) {
       try {
-        const response = await axiosInstance.post(`/user/admin/cert/revoke`, { username });
+        const response = await axiosInstance.post(`/user/admin/cert/pending/update`, { username, state: false });
         if (response.status === 200) {
           fetchCertUsers();
           Swal.fire({
