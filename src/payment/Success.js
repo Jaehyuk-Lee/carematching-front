@@ -48,8 +48,30 @@ function SuccessPage() {
   if (verifyResult.loading) {
     return (
       <div className={styles.successContainer}>
-        <div className={styles.loadingSpinner}></div>
-        <h2 className={styles.successTitle}>결제 검증 중입니다...</h2>
+        {/* 로딩 아이콘: 체크 아이콘 위치에 회전 애니메이션 */}
+        <div className={styles.checkIcon}>
+          <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48" fill="none">
+            <circle cx="24" cy="24" r="20" stroke="#1976d2" strokeWidth="4" opacity="0.2" />
+            <path d="M44 24c0-11.046-8.954-20-20-20" stroke="#1976d2" strokeWidth="4" strokeLinecap="round">
+              <animateTransform attributeName="transform" type="rotate" from="0 24 24" to="360 24 24" dur="1s" repeatCount="indefinite" />
+            </path>
+          </svg>
+        </div>
+        <h1 className={styles.successTitle} style={{ color: '#1976d2' }}>결제 검증 중입니다...</h1>
+        <div className={styles.infoSection}>
+          <div className={styles.infoRow}>
+            <span className={styles.infoLabel}>잠시만 기다려 주세요</span>
+            <span className={styles.infoValue} style={{ color: '#1976d2' }}>결제 정보를 확인하고 있습니다</span>
+          </div>
+        </div>
+        <Link to="/" className={styles.homeButton}>
+          <span className={styles.backIcon}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+            </svg>
+          </span>
+          홈으로 돌아가기
+        </Link>
       </div>
     );
   }
