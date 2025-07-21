@@ -2,7 +2,6 @@ import { useSearchParams, Link } from "react-router-dom";
 import styles from "./Success.module.css";
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
-import Swal from "sweetalert2";
 
 function SuccessPage() {
   const [searchParams] = useSearchParams();
