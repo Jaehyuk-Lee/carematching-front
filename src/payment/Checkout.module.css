@@ -1,4 +1,55 @@
-/* 결제 페이지 스타일 */
+/* 결제수단 버튼 그룹: border 변화에도 높이/위치가 흔들리지 않도록 min-height, padding 추가 */
+.methodButtonGroup {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+  min-height: 52px;
+  padding: 4px 0;
+  align-items: center;
+}
+.paymentMethodLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  color: #222;
+}
+/* 결제수단 버튼: 모든 상태에서 동일한 크기, 폰트, 두께 유지 */
+.methodButton {
+  padding: 12px 24px;
+  margin: 0 8px 8px 0;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 1rem;
+  font-weight: 400;
+  color: #333;
+  cursor: pointer;
+  transition: border 0.2s, box-shadow 0.2s;
+  min-width: 110px;
+  min-height: 44px;
+  box-sizing: border-box;
+  outline: none;
+  display: inline-block;
+  vertical-align: top;
+}
+.emailInput {
+  width: 260px;
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fafbfc;
+}
+/* 선택된 결제수단 버튼 파란색 border 스타일 */
+/* 선택된 결제수단 버튼: border만 강조, 폰트 두께/크기 변화 없음 */
+.selectedMethodButton {
+  border: 2.5px solid #1976d2;
+  color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.08);
+  font-weight: 400;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
 .checkoutContainer {
   max-width: 600px;
   margin: 0 auto;
