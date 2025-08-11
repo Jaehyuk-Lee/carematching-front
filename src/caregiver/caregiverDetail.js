@@ -54,7 +54,7 @@ function CaregiverDetail() {
     }
     try {
       // caregiverId만 보냄
-      const response = await axiosInstance.post("/api/rooms", {
+      const response = await axiosInstance.post("/rooms", {
         caregiverId: Number(id),
       })
       // 성공 시
