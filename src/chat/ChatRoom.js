@@ -31,8 +31,6 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     setRoomInfo(currentRoom || { name: `채팅방 #${roomId}` });
   }, [roomId, chatRooms]);
 
-
-
   const onConnected = useCallback(() => {
     console.log("✅ WebSocket 연결 성공");
     stompClient.subscribe(`/topic/chat/${roomId}`, onMessageReceived);
@@ -61,9 +59,11 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
     }
   }, []);
 
-  const fetchMessages = useCallback(async (roomId) => {
+  // roomId와 userId를 받아 메시지를 가져오도록 변경
+  const fetchMessages = useCallback(async (roomIdParam, userId) => {
     try {
-      const response = await axiosInstance.get(`/messages/${roomId}`);
+      const uid = userId || '';
+      const response = await axiosInstance.get(`/messages/${roomIdParam}/${uid}`);
       setMessages(response.data);
       console.log("✅ [INFO] 기존 메시지 불러오기:", response.data);
     } catch (error) {
@@ -112,13 +112,13 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
 
   useEffect(() => {
     if (roomId) {
-      fetchMessages(roomId);
+      fetchMessages(roomId, user?.username);
       connectWebSocket();
     }
     return () => {
       disconnectWebSocket();
     };
-  }, [roomId, fetchMessages, connectWebSocket, disconnectWebSocket]);
+  }, [roomId, fetchMessages, connectWebSocket, disconnectWebSocket, user?.username]);
 
   // 메시지들을 createdDate(월/일) 기준으로 그룹화
   const groupedMessages = messages.reduce((groups, message) => {
@@ -151,8 +151,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
             {groupedMessages[date].map((msg, index) => (
               <div
                 key={msg.createdAt + index}
-                className={`chat-message ${msg.username === user.username ? "chat-message-mine" : "chat-message-other"}`}
-              >
+                className={`chat-message ${msg.username === user?.username ? "chat-message-mine" : "chat-message-other"}`}>
                 <div className="chat-message-bubble">
                   <p className="chat-message-text">{msg.message}</p>
                   <span className="chat-message-time">{msg.createdTime}</span>
