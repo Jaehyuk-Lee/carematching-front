@@ -61,11 +61,13 @@
   align-items: flex-start;
   gap: 8px;
   max-width: 80%;
+  position: relative;
 }
 
 .chat-message-mine {
   margin-left: auto;
   flex-direction: row-reverse;
+  margin-right: 8px;
 }
 
 .chat-message-avatar {
@@ -85,6 +87,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
+  position: relative; /* make this the positioning context for the read indicator */
 }
 
 .chat-message-username {
@@ -98,6 +101,23 @@
   padding: 8px 12px;
   border-radius: 16px;
   max-width: fit-content;
+}
+
+.chat-message-read-right {
+  /* remove absolute positioning and let flexbox place the indicator
+     For .chat-message-mine (row-reverse) this will appear to the left of the bubble */
+  position: static;
+  display: inline-flex;
+  align-self: center;
+  font-size: 0.75rem;
+  color: #888;
+  white-space: nowrap;
+  margin: 0 6px;
+}
+
+/* Ensure other-user messages (left) have the read indicator to their right outside the bubble */
+.chat-message-other {
+  margin-right: auto;
 }
 
 .chat-message-mine .chat-message-bubble {
