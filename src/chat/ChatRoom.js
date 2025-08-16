@@ -82,7 +82,7 @@ const ChatRoom = ({ roomId, onBack, onClose, chatRooms }) => {
   const fetchMessages = useCallback(async (roomIdParam, userId) => {
     try {
       const uid = userId || '';
-      const response = await axiosInstance.get(`/messages/${roomIdParam}/${uid}`);
+      const response = await axiosInstance.get(`/messages/${roomIdParam}`);
       setMessages(response.data);
       console.log("✅ [INFO] 기존 메시지 불러오기:", response.data);
   // 읽음 처리: 상대방의 마지막 메시지(내 메시지 제외)를 찾아 시간(createdAt 등)을 epoch(ms)로 변환해 전송
