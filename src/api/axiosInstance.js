@@ -1,12 +1,10 @@
 import axios from 'axios';
 import config from '../config/config'
 
-const axiosInstance = axios.create({
-  baseURL: `${config.apiUrl}/${config.apiPrefix}/${config.apiVersion}`,
-  withCredentials: true,
-});
+// clients 캐시: 서비스 키별로 하나의 axios 인스턴스만 생성
+const clients = {};
 
-// 토큰 갱신 진행 상태를 추적하는 변수
+// 토큰 갱신 진행 상태를 추적하는 변수 (전역 공유)
 let isRefreshing = false;
 let refreshSubscribers = [];
 
@@ -19,28 +17,6 @@ const addRefreshSubscriber = (callback) => {
   refreshSubscribers.push(callback);
 };
 
-const removeRefreshToken = async () => {
-  await axiosInstance.post('/token/remove', null, {
-    headers: {
-      'Refresh-Token': localStorage.getItem('refreshToken')
-    }
-  });
-};
-
-// 요청 인터셉터 추가
-axiosInstance.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem('accessToken');
-    if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
 // 인증 관련 요청은 401 에러 개별 처리
 const isAuthRelatedRequest = (url) => {
   const authEndpoints = ['/user/login', '/user/signup'];
@@ -52,88 +28,121 @@ const isAuthRelatedPage = () => {
   return authPages.some(page => currentPath === page || currentPath.startsWith(page));
 };
 
-// 응답 인터셉터 추가
-axiosInstance.interceptors.response.use(
-  (response) => {
-    // 로그인 응답에서 accessToken과 refreshToken 저장
-    if (response.data && response.data.accessToken && response.data.refreshToken) {
-      localStorage.setItem('accessToken', response.data.accessToken);
-      localStorage.setItem('refreshToken', response.data.refreshToken);
-    }
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
+// 논리적 서비스별 axios 인스턴스를 생성하는 팩토리
+// 단, 이미 생성된 인스턴스는 캐시에서 재사용
+const createApiClient = (serviceKey = 'platform') => {
+  if (clients[serviceKey]) return clients[serviceKey];
 
-    // 액세스 토큰이 만료되었고, 재시도하지 않은 요청인 경우
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        // 이미 토큰 갱신 중이면 새로운 토큰으로 요청 재시도를 대기열에 추가
-        return new Promise((resolve) => {
-          addRefreshSubscriber((accessToken) => {
-            originalRequest.headers.Authorization = `Bearer ${accessToken}`;
-            resolve(axios(originalRequest));
-          });
-        });
+  const baseURL = config.buildServiceUrl(serviceKey);
+  const client = axios.create({
+    baseURL,
+    withCredentials: true,
+  });
+
+  // 요청 인터셉터: 공통 access token 삽입
+  client.interceptors.request.use(
+    (cfg) => {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken) {
+        cfg.headers.Authorization = `Bearer ${accessToken}`;
       }
+      return cfg;
+    },
+    (error) => Promise.reject(error)
+  );
 
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        // refreshToken을 사용하여 새 accessToken 요청
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (refreshToken) {
-          // ※ 다른 코드들과 달리 axiosInstance를 호출하지 않고 axios를 독립적으로 호출
-          // 만약 토큰 갱신 요청(/token/reissue) 자체에 axiosInstance를 사용한다면
-          // 이 요청이 실패했을 때 다시 토큰 갱신을 시도하게 되어 무한 루프가 발생할 수 있음
-          const response = await axios.post(`${config.apiUrl}/${config.apiPrefix}/${config.apiVersion}/token/reissue`, null, {
-            headers: {
-              'Refresh-Token': refreshToken
-            }
+  // 응답 인터셉터: 토큰 저장 및 401 처리 (refresh는 platform으로 요청)
+  client.interceptors.response.use(
+    (response) => {
+      // 로그인 응답에서 accessToken과 refreshToken 저장
+      if (response.data && response.data.accessToken && response.data.refreshToken) {
+        localStorage.setItem('accessToken', response.data.accessToken);
+        localStorage.setItem('refreshToken', response.data.refreshToken);
+      }
+      return response;
+    },
+    async (error) => {
+      const originalRequest = error.config;
+      // 액세스 토큰이 만료되었고, 재시도하지 않은 요청인 경우
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        if (isRefreshing) {
+          // 이미 토큰 갱신 중이면 새로운 토큰으로 요청 재시도를 대기열에 추가
+          return new Promise((resolve) => {
+            addRefreshSubscriber((accessToken) => {
+              originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+              resolve(axios(originalRequest));
+            });
           });
-
-          // 새로운 토큰 저장
-          if (response.data && response.data.accessToken) {
-            const newAccessToken = response.data.accessToken;
-            localStorage.setItem('accessToken', newAccessToken);
-            // 새 refreshToken이 있다면 저장
-            if (response.data.refreshToken) {
-              localStorage.setItem('refreshToken', response.data.refreshToken);
-            }
-
-            // 새 토큰으로 헤더 설정
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-            onRefreshed(newAccessToken);
-
-            return axios(originalRequest);
-          }
         }
-      } catch (refreshError) {
-        // 토큰 갱신 실패 시 로그아웃 처리
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
-    }
 
-    // 다른 오류이거나 토큰 갱신 실패 시
-    if (error.response?.status === 401) {
-      // 인증 관련 요청이나 페이지가 아닌 경우에만 리다이렉트
-      if (!isAuthRelatedRequest(error.config.url) && !isAuthRelatedPage()) {
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        try {
+          const refreshToken = localStorage.getItem('refreshToken');
+          if (refreshToken) {
+            // refresh는 platform 서비스로 직접 호출 (무한 루프 방지)
+            const reissueUrl = config.buildServiceUrl('platform', '/token/reissue');
+            const response = await axios.post(reissueUrl, null, {
+              headers: { 'Refresh-Token': refreshToken }
+            });
+            // 새로운 토큰 저장
+
+            if (response.data && response.data.accessToken) {
+              const newAccessToken = response.data.accessToken;
+              localStorage.setItem('accessToken', newAccessToken);
+              // 새 refreshToken이 있다면 저장
+              if (response.data.refreshToken) {
+                localStorage.setItem('refreshToken', response.data.refreshToken);
+              }
+
+              // 새 토큰으로 헤더 설정
+              originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+              onRefreshed(newAccessToken);
+
+              return axios(originalRequest);
+            }
+          }
+        } catch (refreshError) {
+          // 토큰 갱신 실패 시 로그아웃 처리
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
+        }
       }
+
+      if (error.response?.status === 401) {
+        if (!isAuthRelatedRequest(error.config.url) && !isAuthRelatedPage()) {
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+        }
+      }
+
+      return Promise.reject(error);
     }
-    return Promise.reject(error);
-  }
-);
+  );
+
+  clients[serviceKey] = client;
+  return client;
+};
+
+// 기본 플랫폼 인스턴스: 기존 코드와의 호환성 유지
+const axiosInstance = createApiClient('platform');
+
+const removeRefreshToken = async () => {
+  const client = createApiClient('platform');
+  await client.post('/token/remove', null, {
+    headers: {
+      'Refresh-Token': localStorage.getItem('refreshToken')
+    }
+  });
+};
 
 export default axiosInstance;
-export { removeRefreshToken };
+export { removeRefreshToken, createApiClient };
