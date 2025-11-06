@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { loadTossPayments, ANONYMOUS } from "@tosspayments/tosspayments-sdk";
-import { nanoid } from "nanoid";
 import styles from './Checkout.module.css';
 import { useSearchParams } from 'react-router-dom';
 import axiosInstance from "../api/axiosInstance";
@@ -15,7 +14,7 @@ function Checkout() {
   const [payment, setPayment] = useState(null);
 
   const [searchParams] = useSearchParams();
-  const paymentId = searchParams.get('id');
+  const orderId = searchParams.get('id');
   const [paymentInfo, setPaymentInfo] = useState(null);
 
   const [customerEmail, setCustomerEmail] = useState("");
@@ -38,9 +37,9 @@ function Checkout() {
   }, [clientKey, customerKey, paymentInfo]);
 
   useEffect(() => {
-    if (paymentId) {
+    if (orderId) {
       // 결제 ID로 결제 정보 조회
-      axiosInstance.get(`/transactions/${paymentId}`)
+      axiosInstance.get(`/transactions/${orderId}`)
         .then(response => {
           setPaymentInfo(response.data);
           setPrice(response.data.price);
@@ -59,7 +58,7 @@ function Checkout() {
           }
         });
     }
-  }, [paymentId, navigate]);
+  }, [orderId, navigate]);
 
   // 할인 적용 처리 함수
   // const handleDiscountChange = (event) => {
@@ -151,13 +150,7 @@ function Checkout() {
           className={styles.paymentButton}
           onClick={async () => {
             if (!payment) return;
-            const orderId = nanoid();
             const amountObj = { currency: "KRW", value: price };
-            await axiosInstance.post('/transactions/save-orderid', {
-              transactionId: paymentId,
-              orderId,
-              price
-            });
             try {
               switch (selectedMethod) {
                 case "CARD":
