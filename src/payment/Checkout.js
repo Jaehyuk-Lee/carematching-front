@@ -9,32 +9,14 @@ import { useNavigate } from "react-router-dom";
 function Checkout() {
   const navigate = useNavigate();
   const [price, setPrice] = useState(0);
-  const [selectedMethod, setSelectedMethod] = useState("CARD");
-  const [payment, setPayment] = useState(null);
-  const [pg, setPg] = useState('TOSS'); // PG사 선택
+  const [paymentInfo, setPaymentInfo] = useState(null);
+  const [customerEmail, setCustomerEmail] = useState("");
 
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('id');
-  const [paymentInfo, setPaymentInfo] = useState(null);
-
-  const [customerEmail, setCustomerEmail] = useState("");
 
   const clientKey = process.env.REACT_APP_TOSS_CLIENT_KEY;
   const customerKey = paymentInfo?.userName || ANONYMOUS;
-
-  useEffect(() => {
-    async function fetchTossPayment() {
-      if (pg !== 'TOSS' || !paymentInfo) return;
-      try {
-        const tossPayments = await loadTossPayments(clientKey);
-        const paymentObj = tossPayments.payment({ customerKey });
-        setPayment(paymentObj);
-      } catch (error) {
-        console.error("Error fetching Toss payment:", error);
-      }
-    }
-    fetchTossPayment();
-  }, [clientKey, customerKey, paymentInfo, pg]);
 
   useEffect(() => {
     if (orderId) {
@@ -69,16 +51,27 @@ function Checkout() {
   );
 
   const handlePayment = async () => {
-    const amountObj = { currency: "KRW", value: price };
-
-    if (pg === 'TOSS') {
-      if (!payment) {
-        Swal.fire('오류', '결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.', 'error');
-        return;
+    Swal.fire({
+      title: '결제 처리 중',
+      text: 'PG사를 선택하고 결제를 준비합니다. 잠시만 기다려주세요.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
       }
-      try {
+    });
+
+    try {
+      const pgResponse = await axiosInstance.post(`/transactions/select-pg/${orderId}`);
+      const pgProvider = pgResponse.data.pg;
+
+      const amountObj = { currency: "KRW", value: price };
+
+      if (pgProvider === 'TOSS') {
+        const tossPayments = await loadTossPayments(clientKey);
+        const payment = tossPayments.payment({ customerKey });
+
         await payment.requestPayment({
-          method: selectedMethod,
+          method: 'CARD',
           amount: amountObj,
           orderId,
           orderName: paymentInfo.caregiverName,
@@ -94,21 +87,18 @@ function Checkout() {
             useAppCardOnly: false,
           },
         });
-      } catch (err) {
-        console.error("Toss Payment Error:", err);
-        Swal.fire('결제 오류', '결제 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
-      }
-    } else if (pg === 'KAKAO') {
-      try {
+      } else if (pgProvider === 'KAKAO') {
         const response = await axiosInstance.post(`/transactions/kakao/ready/${orderId}`, {
           orderId: orderId,
         });
-        const { redirectUrl } = response.data;
-        window.location.href = redirectUrl;
-      } catch (error) {
-        console.error('Kakao Payment Error:', error);
-        Swal.fire('카카오페이 오류', error?.response?.data?.message || '결제 준비 중 오류가 발생했습니다.', 'error');
+        const res = response.data;
+        window.location.href = res.nextRedirectPcUrl;
+      } else {
+        throw new Error('지원하지 않는 PG사입니다.');
       }
+    } catch (error) {
+      console.error('Payment Error:', error);
+      Swal.fire('결제 오류', error?.response?.data?.message || error.message || '결제 중 오류가 발생했습니다.', 'error');
     }
   };
 
@@ -130,47 +120,6 @@ function Checkout() {
           <p className={styles.priceAmount}>{price.toLocaleString()}원</p>
         </div>
       </div>
-
-      {/* 결제수단 선택 및 이메일 입력 UI 개선 */}
-      <div className={styles.paymentMethodSection}>
-        <label className={styles.paymentMethodLabel}><b>PG사 선택</b></label>
-        <div className={styles.methodButtonGroup}>
-          <button
-            type="button"
-            className={pg === 'TOSS' ? `${styles.methodButton} ${styles.selectedMethodButton}` : styles.methodButton}
-            onClick={() => setPg('TOSS')}
-          >
-            토스페이먼츠
-          </button>
-          <button
-            type="button"
-            className={pg === 'KAKAO' ? `${styles.methodButton} ${styles.selectedMethodButton}` : styles.methodButton}
-            onClick={() => setPg('KAKAO')}
-          >
-            카카오페이
-          </button>
-        </div>
-      </div>
-
-      {pg === 'TOSS' && (
-        <div className={styles.paymentMethodSection}>
-          <label className={styles.paymentMethodLabel}><b>결제 수단 선택</b></label>
-          <div className={styles.methodButtonGroup}>
-            {[
-              { key: "CARD", label: "카드" },
-            ].map(method => (
-              <button
-                key={method.key}
-                type="button"
-                className={selectedMethod === method.key ? `${styles.methodButton} ${styles.selectedMethodButton}` : styles.methodButton}
-                onClick={() => setSelectedMethod(method.key)}
-              >
-                {method.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       <div className={styles.paymentMethodSection}>
         <div className={styles.emailSection}>
