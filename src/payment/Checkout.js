@@ -8,10 +8,10 @@ import { useNavigate } from "react-router-dom";
 
 function Checkout() {
   const navigate = useNavigate();
-  const [price, setPrice] = useState(0); // 실제 결제 가격
-  // const [isDiscounted, setIsDiscounted] = useState(false); // 할인 적용 여부
-  const [selectedMethod, setSelectedMethod] = useState("CARD"); // 결제수단
+  const [price, setPrice] = useState(0);
+  const [selectedMethod, setSelectedMethod] = useState("CARD");
   const [payment, setPayment] = useState(null);
+  const [pg, setPg] = useState('TOSS'); // PG사 선택
 
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('id');
@@ -19,26 +19,25 @@ function Checkout() {
 
   const [customerEmail, setCustomerEmail] = useState("");
 
-  const clientKey = process.env.REACT_APP_TOSS_CLIENT_KEY; // 환경변수에서 불러옴
+  const clientKey = process.env.REACT_APP_TOSS_CLIENT_KEY;
   const customerKey = paymentInfo?.userName || ANONYMOUS;
 
   useEffect(() => {
-    async function fetchPayment() {
-      if (!paymentInfo) return;
+    async function fetchTossPayment() {
+      if (pg !== 'TOSS' || !paymentInfo) return;
       try {
         const tossPayments = await loadTossPayments(clientKey);
         const paymentObj = tossPayments.payment({ customerKey });
         setPayment(paymentObj);
       } catch (error) {
-        console.error("Error fetching payment:", error);
+        console.error("Error fetching Toss payment:", error);
       }
     }
-    fetchPayment();
-  }, [clientKey, customerKey, paymentInfo]);
+    fetchTossPayment();
+  }, [clientKey, customerKey, paymentInfo, pg]);
 
   useEffect(() => {
     if (orderId) {
-      // 결제 ID로 결제 정보 조회
       axiosInstance.get(`/transactions/${orderId}`)
         .then(response => {
           setPaymentInfo(response.data);
@@ -60,13 +59,6 @@ function Checkout() {
     }
   }, [orderId, navigate]);
 
-  // 할인 적용 처리 함수
-  // const handleDiscountChange = (event) => {
-  //   const applyDiscount = event.target.checked;
-  //   setIsDiscounted(applyDiscount);
-  //   setPrice(applyDiscount ? Math.round(paymentInfo.price * 0.9) : paymentInfo.price);
-  // };
-
   if (!paymentInfo) return (
     <div className={styles.loadingContainer}>
       <div className={styles.loadingSpinner}></div>
@@ -75,6 +67,50 @@ function Checkout() {
       <p className={styles.loadingHint}>1분 이상 소요되는 경우 새로고침을 시도해주세요</p>
     </div>
   );
+
+  const handlePayment = async () => {
+    const amountObj = { currency: "KRW", value: price };
+
+    if (pg === 'TOSS') {
+      if (!payment) {
+        Swal.fire('오류', '결제 모듈을 불러오는 중입니다. 잠시 후 다시 시도해주세요.', 'error');
+        return;
+      }
+      try {
+        await payment.requestPayment({
+          method: selectedMethod,
+          amount: amountObj,
+          orderId,
+          orderName: paymentInfo.caregiverName,
+          successUrl: window.location.origin + "/payment/success",
+          failUrl: window.location.origin + "/payment/fail",
+          customerEmail,
+          customerName: paymentInfo.userName,
+          customerMobilePhone: "01012341234",
+          card: {
+            useEscrow: false,
+            flowMode: "DEFAULT",
+            useCardPoint: false,
+            useAppCardOnly: false,
+          },
+        });
+      } catch (err) {
+        console.error("Toss Payment Error:", err);
+        Swal.fire('결제 오류', '결제 중 오류가 발생했습니다. 다시 시도해주세요.', 'error');
+      }
+    } else if (pg === 'KAKAO') {
+      try {
+        const response = await axiosInstance.post(`/transactions/kakao/ready/${orderId}`, {
+          orderId: orderId,
+        });
+        const { redirectUrl } = response.data;
+        window.location.href = redirectUrl;
+      } catch (error) {
+        console.error('Kakao Payment Error:', error);
+        Swal.fire('카카오페이 오류', error?.response?.data?.message || '결제 준비 중 오류가 발생했습니다.', 'error');
+      }
+    }
+  };
 
   return (
     <div className={styles.checkoutContainer}>
@@ -95,40 +131,48 @@ function Checkout() {
         </div>
       </div>
 
-      {/* 할인 쿠폰 섹션 */}
-      {/* <div className={styles.discountSection}>
-        <label className={styles.discountLabel}>
-          <input
-            type="checkbox"
-            className={styles.discountCheckbox}
-            checked={isDiscounted}
-            onChange={handleDiscountChange}
-          />
-          <span className={styles.discountText}>첫 결제 10% 할인 쿠폰 적용</span>
-        </label>
-      </div> */}
-
-
       {/* 결제수단 선택 및 이메일 입력 UI 개선 */}
       <div className={styles.paymentMethodSection}>
-        <label className={styles.paymentMethodLabel}><b>결제 수단 선택</b></label>
+        <label className={styles.paymentMethodLabel}><b>PG사 선택</b></label>
         <div className={styles.methodButtonGroup}>
-          {[
-            { key: "CARD", label: "카드" },
-            { key: "TRANSFER", label: "계좌이체" },
-            { key: "MOBILE_PHONE", label: "휴대폰" },
-            { key: "CULTURE_GIFT_CERTIFICATE", label: "문화상품권" }
-          ].map(method => (
-            <button
-              key={method.key}
-              type="button"
-              className={selectedMethod === method.key ? `${styles.methodButton} ${styles.selectedMethodButton}` : styles.methodButton}
-              onClick={() => setSelectedMethod(method.key)}
-            >
-              {method.label}
-            </button>
-          ))}
+          <button
+            type="button"
+            className={pg === 'TOSS' ? `${styles.methodButton} ${styles.selectedMethodButton}` : styles.methodButton}
+            onClick={() => setPg('TOSS')}
+          >
+            토스페이먼츠
+          </button>
+          <button
+            type="button"
+            className={pg === 'KAKAO' ? `${styles.methodButton} ${styles.selectedMethodButton}` : styles.methodButton}
+            onClick={() => setPg('KAKAO')}
+          >
+            카카오페이
+          </button>
         </div>
+      </div>
+
+      {pg === 'TOSS' && (
+        <div className={styles.paymentMethodSection}>
+          <label className={styles.paymentMethodLabel}><b>결제 수단 선택</b></label>
+          <div className={styles.methodButtonGroup}>
+            {[
+              { key: "CARD", label: "카드" },
+            ].map(method => (
+              <button
+                key={method.key}
+                type="button"
+                className={selectedMethod === method.key ? `${styles.methodButton} ${styles.selectedMethodButton}` : styles.methodButton}
+                onClick={() => setSelectedMethod(method.key)}
+              >
+                {method.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className={styles.paymentMethodSection}>
         <div className={styles.emailSection}>
           <label htmlFor="customerEmail" className={styles.emailLabel}><b>이메일(선택) </b></label>
           <input
@@ -143,83 +187,11 @@ function Checkout() {
         </div>
       </div>
 
-      {/* 결제 버튼 */}
       <div className={styles.buttonSection}>
         <button
           type="button"
           className={styles.paymentButton}
-          onClick={async () => {
-            if (!payment) return;
-            const amountObj = { currency: "KRW", value: price };
-            try {
-              switch (selectedMethod) {
-                case "CARD":
-                  await payment.requestPayment({
-                    method: "CARD",
-                    amount: amountObj,
-                    orderId,
-                    orderName: paymentInfo.caregiverName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName: paymentInfo.userName,
-                    customerMobilePhone: "01012341234",
-                    card: {
-                      useEscrow: false,
-                      flowMode: "DEFAULT",
-                      useCardPoint: false,
-                      useAppCardOnly: false,
-                    },
-                  });
-                  return;
-                case "TRANSFER":
-                  await payment.requestPayment({
-                    method: "TRANSFER",
-                    amount: amountObj,
-                    orderId,
-                    orderName: paymentInfo.caregiverName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName: paymentInfo.userName,
-                    transfer: {
-                      cashReceipt: { type: "소득공제" },
-                      useEscrow: false,
-                    },
-                  });
-                  return;
-                case "MOBILE_PHONE":
-                  await payment.requestPayment({
-                    method: "MOBILE_PHONE",
-                    amount: amountObj,
-                    orderId,
-                    orderName: paymentInfo.caregiverName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName: paymentInfo.userName,
-                  });
-                  return;
-                case "CULTURE_GIFT_CERTIFICATE":
-                  await payment.requestPayment({
-                    method: "CULTURE_GIFT_CERTIFICATE",
-                    amount: amountObj,
-                    orderId,
-                    orderName: paymentInfo.caregiverName,
-                    successUrl: window.location.origin + "/payment/success",
-                    failUrl: window.location.origin + "/payment/fail",
-                    customerEmail,
-                    customerName: paymentInfo.userName,
-                  });
-                  return;
-                default:
-                  alert("결제수단을 선택해주세요.");
-                  return;
-              }
-            } catch (err) {
-              console.log("err", err);
-            }
-          }}
+          onClick={handlePayment}
         >
           결제하기
         </button>
