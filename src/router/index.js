@@ -9,6 +9,7 @@ import CaregiverDetailPage from '../caregiver/caregiverDetail';
 import Checkout from '../payment/Checkout';
 import Success from '../payment/Success';
 import Fail from '../payment/Fail';
+import KakaoPaySuccess from '../payment/KakaoPaySuccess';
 import Cert from '../admin/Cert';
 import Community from '../community/Community';
 import CreatePost from '../community/CreatePost';
@@ -41,6 +42,8 @@ function AppRouter() {
       <Route path="/payment" element={<Checkout />} />
       <Route path="/payment/success" element={<Success />} />
       <Route path="/payment/fail" element={<Fail />} />
+      <Route path="/payment/kakao-success" element={<KakaoPaySuccess />} />
+      <Route path="/payment/kakao-fail" element={<Fail />} />
 
       {/* 관리자 */}
       <Route path="/admin/cert" element={<Cert />} />
